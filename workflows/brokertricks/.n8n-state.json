@@ -1,0 +1,29 @@
+{
+  "workflows": {
+    "DLyxGg3CIEt94Mf9": {
+      "lastSyncedHash": "71ec32302a1daae260c25fbd1ed9e961a4a1b22c5dbaa42d47927f2e64ae6df9",
+      "lastSyncedAt": "2026-05-19T21:44:06.190Z",
+      "filename": "get-parcel-to-checkout.workflow.ts"
+    },
+    "eiHeW6leMz4NRikO": {
+      "lastSyncedHash": "c71cd9a41cf38fc93c4c6cf8eae3ceb230d3c11cd5293a850abf450d3d7e08c9",
+      "lastSyncedAt": "2026-05-25T04:58:08.292Z",
+      "filename": "Full.workflow.ts"
+    },
+    "Siddcwr4PORBPgdL": {
+      "lastSyncedHash": "b0e77a164e6e1a96854cf8cc59f3272e24ded42c5231c1dc6d83c25398abc54a",
+      "lastSyncedAt": "2026-05-24T20:49:04.148Z",
+      "filename": "Idempotency Manage.workflow.ts"
+    },
+    "NxcEiPloqLn1EJ87": {
+      "lastSyncedHash": "656706fddb0237b6f55e606b249c79d298a47ffa2d686f6382b8006ff488dd9d",
+      "lastSyncedAt": "2026-05-25T05:05:18.331Z",
+      "filename": "new-order.workflow.ts"
+    },
+    "sTOjWDor1GgzoCCt": {
+      "lastSyncedHash": "5df138b6566022344163d9032e6390afdc3229497667f92d91ccfdd9d9ecbf72",
+      "lastSyncedAt": "2025-11-12T11:49:33.662Z",
+      "filename": "cookie.workflow.ts"
+    }
+  }
+}
