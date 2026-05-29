@@ -137,7 +137,9 @@ WHERE idempotency_key = $1;`,
     })
     InsertIdempotencyKey = {
         operation: 'executeQuery',
-        query: `WITH inserted AS (
+        query: `ALTER TABLE idempotency_keys ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+DELETE FROM idempotency_keys WHERE idempotency_key = $1 AND status = 'pending' AND created_at < NOW() - INTERVAL '15 minutes';
+WITH inserted AS (
   INSERT INTO idempotency_keys (idempotency_key, status)
   VALUES ($1, 'pending')
   ON CONFLICT (idempotency_key) DO NOTHING
