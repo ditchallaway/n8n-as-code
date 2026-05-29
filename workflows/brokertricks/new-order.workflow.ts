@@ -649,6 +649,12 @@ export class NewOrderWorkflow {
                     value: '={{ $json.body.order_id }}',
                     type: 'string',
                 },
+                {
+                    id: 'surecart-timestamp-assign',
+                    name: 'surecart_timestamp',
+                    value: '={{ $json.body.created_at || $json.body.data.object.created_at || $now }}',
+                    type: 'string',
+                },
             ],
         },
         options: {},
@@ -750,6 +756,114 @@ export class NewOrderWorkflow {
         options: {},
     };
 
+    @node({
+        id: 'if-stale-data-check',
+        name: 'If Stale Data',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [-1100, 300],
+    })
+    IfStale = {
+        conditions: {
+            options: {},
+            conditions: [
+                {
+                    id: 'stale-time-diff',
+                    leftValue: "={{ DateTime.now().diff(DateTime.fromISO($('Edit Fields1').item.json.surecart_timestamp), 'minutes').minutes }}",
+                    rightValue: 20,
+                    operator: {
+                        type: 'number',
+                        operation: 'larger',
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
+    };
+
+    @node({
+        id: 'if-cancelled-check',
+        name: 'If Cancelled',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [-700, -80],
+    })
+    IfCancelled = {
+        conditions: {
+            options: {},
+            conditions: [
+                {
+                    id: 'status-cancelled',
+                    leftValue: '={{ JSON.stringify($json).includes("canceled") || JSON.stringify($json).includes("revoked") }}',
+                    rightValue: '',
+                    operator: {
+                        type: 'boolean',
+                        operation: 'true',
+                        singleValue: true,
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
+    };
+
+    @node({
+        id: 'cancel-data-shaper',
+        name: 'Cancel Data Shaper',
+        type: 'n8n-nodes-base.set',
+        version: 3.4,
+        position: [-400, -80],
+    })
+    CancelDataShaper = {
+        assignments: {
+            assignments: [
+                {
+                    id: 'cancel-action',
+                    name: 'action',
+                    value: 'complete',
+                    type: 'string',
+                },
+                {
+                    id: 'cancel-idemp-key',
+                    name: 'idempotency_key',
+                    value: "={{ $('Webhook').item.json.body.order_id }}",
+                    type: 'string',
+                },
+                {
+                    id: 'cancel-final-status',
+                    name: 'final_status',
+                    value: 'cancelled_before_review',
+                    type: 'string',
+                },
+            ],
+        },
+        options: {},
+    };
+
+    @node({
+        id: 'cancel-cleanup',
+        name: 'Idempotency Cleanup Cancel',
+        type: 'n8n-nodes-base.executeWorkflow',
+        version: 1.3,
+        position: [-150, -80],
+    })
+    IdempotencyCleanupCancel = {
+        workflowId: {
+            __rl: true,
+            value: 'Siddcwr4PORBPgdL',
+            mode: 'list',
+        },
+        workflowInputs: {
+            mappingMode: 'defineBelow',
+            value: {},
+            matchingColumns: [],
+            schema: [],
+        },
+        options: { waitForSubWorkflow: true },
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -762,12 +876,23 @@ export class NewOrderWorkflow {
         this.EditFields.out(0).to(this.Switch_.in(0));
         this.GetCheckoutFields.out(0).to(this.GetManyUsers.in(0));
         this.GeoToPath.out(0).to(this.PathToData.in(0));
-        this.HttpRequest2.out(0).to(this.GeoToPath.in(0));
         this.PathToData.out(0).to(this.GetCheckoutFields.in(0));
         this.CallIdempotencyManage.out(0).to(this.If_.in(0));
         this.EditFields1.out(0).to(this.CallIdempotencyManage.in(0));
-        this.If_.out(0).to(this.HttpRequest2.in(0));
         this.If_.out(1).to(this.NoOperationDoNothing.in(0));
+        
+        // Stale Data Check branch
+        this.If_.out(0).to(this.IfStale.in(0));
+        this.IfStale.out(1).to(this.HttpRequest2.in(0)); // False (not stale)
+        this.IfStale.out(0).to(this.HttpRequest.in(0)); // True (stale)
+        
+        // Stale Data API verification
+        this.HttpRequest.out(0).to(this.IfCancelled.in(0));
+        this.IfCancelled.out(1).to(this.HttpRequest2.in(0)); // False (not cancelled)
+        this.IfCancelled.out(0).to(this.CancelDataShaper.in(0)); // True (cancelled)
+        this.CancelDataShaper.out(0).to(this.IdempotencyCleanupCancel.in(0));
+
+        this.HttpRequest2.out(0).to(this.GeoToPath.in(0));
         this.HttpRequest1.out(0).to(this.DataShaper.in(0));
         this.DataShaper.out(0).to(this.IdempotencyCleanup.in(0));
     }

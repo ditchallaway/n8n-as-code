@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Idempotency Manage
-// Nodes   : 5  |  Connections: 4
+// Nodes   : 6  |  Connections: 5
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -10,6 +10,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // WhenExecutedByAnotherWorkflow      executeWorkflowTrigger
 // Switch_                            switch
 // ExecuteASqlQuery                   postgres                   [creds]
+// CleanupStuckKeys                   postgres                   [creds]
 // InsertIdempotencyKey               postgres                   [creds]
 // FormatCheckResposne                set
 //
@@ -17,8 +18,9 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ──────────────────────────────────────────────────────────────────
 // WhenExecutedByAnotherWorkflow
 //    → Switch_
-//      → InsertIdempotencyKey
-//        → FormatCheckResposne
+//      → CleanupStuckKeys
+//        → InsertIdempotencyKey
+//          → FormatCheckResposne
 //     .out(1) → ExecuteASqlQuery
 // </workflow-map>
 
@@ -120,11 +122,27 @@ export class IdempotencyManageWorkflow {
     ExecuteASqlQuery = {
         operation: 'executeQuery',
         query: `UPDATE idempotency_keys 
-SET status = 'completed' 
+SET status = $2 
 WHERE idempotency_key = $1;`,
         options: {
-            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key] }}",
+            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.final_status || 'pending_human_review'] }}",
         },
+    };
+
+    @node({
+        id: 'c7a2e1f0-3b4d-4e5f-9a6b-8c7d0e1f2a3b',
+        name: 'Initialize Database',
+        type: 'n8n-nodes-base.postgres',
+        version: 2.6,
+        position: [-16, -96],
+        credentials: { postgres: { id: 'WQPTR9tzMvuDweJv', name: 'Postgres account' } },
+    })
+    InitializeDatabase = {
+        operation: 'executeQuery',
+        query: `ALTER TABLE idempotency_keys 
+ADD COLUMN IF NOT EXISTS surecart_timestamp TIMESTAMP,
+ADD COLUMN IF NOT EXISTS system_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;`,
+        options: {},
     };
 
     @node({
@@ -132,22 +150,20 @@ WHERE idempotency_key = $1;`,
         name: 'Insert Idempotency Key',
         type: 'n8n-nodes-base.postgres',
         version: 2.6,
-        position: [-16, -32],
+        position: [128, -96],
         credentials: { postgres: { id: 'WQPTR9tzMvuDweJv', name: 'Postgres account' } },
     })
     InsertIdempotencyKey = {
         operation: 'executeQuery',
-        query: `ALTER TABLE idempotency_keys ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-DELETE FROM idempotency_keys WHERE idempotency_key = $1 AND status = 'pending' AND created_at < NOW() - INTERVAL '15 minutes';
-WITH inserted AS (
-  INSERT INTO idempotency_keys (idempotency_key, status)
-  VALUES ($1, 'pending')
+        query: `WITH inserted AS (
+  INSERT INTO idempotency_keys (idempotency_key, status, surecart_timestamp)
+  VALUES ($1, 'received', $2::timestamp)
   ON CONFLICT (idempotency_key) DO NOTHING
   RETURNING idempotency_key
 )
 SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
         options: {
-            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key] }}",
+            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.surecart_timestamp] }}",
         },
     };
 
@@ -156,7 +172,7 @@ SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
         name: 'Format Check Resposne',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [128, -32],
+        position: [272, -96],
     })
     FormatCheckResposne = {
         assignments: {
@@ -179,8 +195,9 @@ SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
     @links()
     defineRouting() {
         this.WhenExecutedByAnotherWorkflow.out(0).to(this.Switch_.in(0));
-        this.Switch_.out(0).to(this.InsertIdempotencyKey.in(0));
-        this.Switch_.out(1).to(this.ExecuteASqlQuery.in(0));
+        this.Switch_.out(0).to(this.InitializeDatabase.in(0));
+        this.InitializeDatabase.out(0).to(this.InsertIdempotencyKey.in(0));
         this.InsertIdempotencyKey.out(0).to(this.FormatCheckResposne.in(0));
+        this.Switch_.out(1).to(this.ExecuteASqlQuery.in(0));
     }
 }
