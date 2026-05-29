@@ -123,7 +123,7 @@ export class IdempotencyManageWorkflow {
 SET status = 'completed' 
 WHERE idempotency_key = $1;`,
         options: {
-            queryReplacement: "={{ $('When Executed by Another Workflow').item.json.idempotency_key }}",
+            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key] }}",
         },
     };
 
@@ -145,7 +145,7 @@ WHERE idempotency_key = $1;`,
 )
 SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
         options: {
-            queryReplacement: "={{ $('When Executed by Another Workflow').item.json.idempotency_key }}",
+            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key] }}",
         },
     };
 
