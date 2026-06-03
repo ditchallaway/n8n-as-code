@@ -2,12 +2,11 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 21  |  Connections: 17
+// Nodes   : 19  |  Connections: 16
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
 // Property name                    Node type (short)         Flags
-// WhenClickingExecuteWorkflow        manualTrigger
 // HttpRequest                        httpRequest
 // EditFields                         set
 // EditFields9                        set
@@ -19,7 +18,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // CodeInJavascript                   code
 // UploadAFile                        s3                         [creds]
 // EditFields2                        set
-// StickyNote1                        stickyNote
 // StickyNote2                        stickyNote
 // EditFields3                        set
 // AllImagesUrlBuilder                code
@@ -27,12 +25,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // Webhook                            webhook
-// Ntfy                               ntfy                       [creds]
+// RespondToWebhook                   respondToWebhook
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
-// WhenClickingExecuteWorkflow
-//    → HttpRequest
 // Webhook
 //    → GetElevation
 //      → EditFields
@@ -49,7 +45,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                            → EditFields3
 //                              → EditFields2
 //                                → AllImagesUrlBuilder
-//                                  → Ntfy
+//                                  → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -76,15 +72,6 @@ export class FullWorkflow {
     // =====================================================================
 
     @node({
-        id: '7fe0934f-a94a-40d6-8122-cd19344755da',
-        name: 'When clicking ‘Execute workflow’',
-        type: 'n8n-nodes-base.manualTrigger',
-        version: 1,
-        position: [-2928, -48],
-    })
-    WhenClickingExecuteWorkflow = {};
-
-    @node({
         id: '79bdc4a0-a87c-4ab8-ae34-74434bc5c188',
         name: 'HTTP Request',
         type: 'n8n-nodes-base.httpRequest',
@@ -109,49 +96,43 @@ export class FullWorkflow {
                 {
                     id: '411ea856-ca12-4349-9313-e3c087580f43',
                     name: 'ap parcel number',
-                    value: "={{ $('HTTP Request').item.json.fields.parcelnumb }}",
-                    type: 'string',
-                },
-                {
-                    id: 'f519640f-87eb-44dc-aef6-eacdd48afd0f',
-                    name: 'owner',
-                    value: "={{ $('HTTP Request').item.json.fields.owner }}",
+                    value: "={{ $('Webhook').item.json.body.payload.parcel_apn }}",
                     type: 'string',
                 },
                 {
                     id: '2f2f92f2-3a15-4405-a5a6-e192f98bad73',
                     name: 'centroid',
-                    value: "={{ $('HTTP Request').item.json.centroid }}",
-                    type: 'array',
+                    value: "={{ $('Webhook').item.json.body.payload.centroid }}",
+                    type: 'string',
                 },
                 {
                     id: '211a05ff-4ba4-465b-96c8-2355925a86cc',
                     name: 'lat',
-                    value: "={{ $('HTTP Request').item.json.fields.lat }}",
+                    value: "={{ $('Webhook').item.json.body.payload.latitude }}",
                     type: 'string',
                 },
                 {
                     id: '0957b2c4-2d14-4a22-b3d6-b38b8ba4182c',
                     name: 'lon',
-                    value: "={{ $('HTTP Request').item.json.fields.lon }}",
+                    value: "={{ $('Webhook').item.json.body.payload.longitude }}",
                     type: 'string',
                 },
                 {
                     id: 'f421ae78-f1a1-4e76-a374-ecc15170c676',
-                    name: 'll_gisacre',
-                    value: "={{ $('HTTP Request').item.json.fields.ll_gisacre }}",
+                    name: 'acres',
+                    value: "={{ $('Webhook').item.json.body.payload.acres }}",
                     type: 'number',
                 },
                 {
                     id: '4c435da0-704e-4e80-9a11-89349464e6c2',
                     name: 'geometry',
-                    value: "={{ $('HTTP Request').item.json.geometry }}",
+                    value: "={{ $('Webhook').item.json.body.payload.geometry }}",
                     type: 'object',
                 },
                 {
                     id: '57c40033-7331-4897-b3c4-2589c8422c62',
                     name: 'county',
-                    value: "={{ $('HTTP Request').item.json.context[3].name }}",
+                    value: "={{ $('Webhook').item.json.body.payload.county }}",
                     type: 'string',
                 },
                 {
@@ -163,13 +144,13 @@ export class FullWorkflow {
                 {
                     id: '79de9b5b-743c-4c2e-9a30-b954e9352f5f',
                     name: 'customer_id',
-                    value: 'cust_12345',
+                    value: "=cust_{{ $('Webhook').item.json.body.payload.wpuser_id }}",
                     type: 'string',
                 },
                 {
                     id: '9c19d833-5884-4467-bb5f-ab1f7a435c5f',
                     name: 'order_id',
-                    value: 'order_12345',
+                    value: "order_{{ $('Webhook').item.json.body.payload.order_id }}",
                     type: 'string',
                 },
             ],
@@ -188,27 +169,21 @@ export class FullWorkflow {
         assignments: {
             assignments: [
                 {
-                    id: 'fbffd5dc-6e53-4038-a1b1-9d53ccc9986c',
-                    name: 'owner',
-                    value: "={{ $if($json.owner, $isEmpty(),$('HTTP Request').item.json.fields.primaryownername ) }}",
-                    type: 'string',
-                },
-                {
                     id: '833f249c-1c9e-4761-a33a-3a3db158b696',
                     name: 'elevation',
-                    value: '={{ $json.elevation }}',
+                    value: "={{ $('get elevation').item.json.results[0].elevation }}",
                     type: 'number',
                 },
                 {
                     id: '371329a8-6fc2-40da-a44f-a2e0ecf85799',
                     name: 'lat',
-                    value: '={{ $json.lat }}',
+                    value: "={{ $('get elevation').item.json.results[0].location.lat }}",
                     type: 'string',
                 },
                 {
                     id: 'd9e3c9b4-6d08-4581-93b6-1b71c7196349',
                     name: 'lon',
-                    value: '={{ $json.lon }}',
+                    value: "={{ $('get elevation').item.json.results[0].location.lng }}",
                     type: 'string',
                 },
                 {
@@ -236,9 +211,15 @@ export class FullWorkflow {
                     type: 'object',
                 },
                 {
+                    id: 'fbffd5dc-6e53-4038-a1b1-9d53ccc9986c',
+                    name: 'owner',
+                    value: "={{ $if($input['edit fields'].item.json.owner, $isEmpty(),$('HTTP Request').item.json.fields.primaryownername ) }}",
+                    type: 'string',
+                },
+                {
                     id: 'dd033ec8-237e-4e04-9004-623914baa468',
-                    name: 'fields.gisacre',
-                    value: "={{ $('HTTP Request').item.json.fields.gisacre }}",
+                    name: 'acres',
+                    value: '=',
                     type: 'number',
                 },
             ],
@@ -316,12 +297,6 @@ export class FullWorkflow {
                     id: 'c33cc601-a399-4bfc-b167-6ee2a7677468',
                     name: 'srcmap',
                     value: "={{ $('static map url builder').item.json.srcmap }}",
-                    type: 'string',
-                },
-                {
-                    id: 'e43cd9a6-6166-4204-aaa7-bffac3644e26',
-                    name: '',
-                    value: '',
                     type: 'string',
                 },
             ],
@@ -404,7 +379,7 @@ export class FullWorkflow {
         name: 'Compression',
         type: 'n8n-nodes-base.compression',
         version: 1.1,
-        position: [-688, 176],
+        position: [-640, 176],
     })
     Compression = {
         outputPrefix: '=',
@@ -494,21 +469,6 @@ return items;`,
             ],
         },
         options: {},
-    };
-
-    @node({
-        id: 'a415ac96-ce78-4234-9574-96d007f2bd1a',
-        name: 'Sticky Note1',
-        type: 'n8n-nodes-base.stickyNote',
-        version: 1,
-        position: [-2976, -160],
-    })
-    StickyNote1 = {
-        content: `## 🚩Replace Me
-**Replace** With webhook node.`,
-        height: 272,
-        width: 192,
-        color: '#477D40',
     };
 
     @node({
@@ -670,7 +630,7 @@ return [
                 {
                     id: 'fd464050-4749-47b5-bde9-4ecd7b47ab58',
                     name: 'acres',
-                    value: "={{ $('HTTP Request').item.json.fields.lglacres }}",
+                    value: "={{ $('Edit Fields').item.json.acres }}",
                     type: 'string',
                 },
             ],
@@ -717,7 +677,7 @@ return [{ json: { pathString: pathString } }];`,
         position: [-2704, 176],
     })
     GetElevation = {
-        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $json.fields.lat }},{{ $json.fields.lon }}&key={{ $env.GOOGLE_API_KEY }}',
+        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $json.body.payload.latitude }},{{ $json.body.payload.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
         options: {},
     };
 
@@ -735,16 +695,21 @@ return [{ json: { pathString: pathString } }];`,
     };
 
     @node({
-        id: '882892ce-45f7-465b-a2af-9fe70d0ee563',
-        name: 'ntfy',
-        type: '@afunworm/n8n-nodes-ntfy.ntfy',
-        version: 1,
-        position: [640, 176],
-        credentials: { ntfyApi: { id: 'W2xKUTn1PP43EdnG', name: 'ntfy account' } },
+        id: '9fc5d717-c41f-43b4-95aa-dd024b1a1a51',
+        name: 'Respond to Webhook',
+        type: 'n8n-nodes-base.respondToWebhook',
+        version: 1.5,
+        position: [752, 176],
     })
-    Ntfy = {
-        topic: 'to-human-bt-test',
-        message: 'new order is a band',
+    RespondToWebhook = {
+        respondWith: 'json',
+        responseBody: `={
+  "status": "success",
+  "order": "order_{{ $('Webhook').item.json.body.payload.order_id }}",
+"wp_user": "{{ $('Webhook').item.json.body.payload.wpuser_id }}",
+"editor_url": "{{ $('all images url builder').item.json.editorUrl }}"
+} `,
+        options: {},
     };
 
     // =====================================================================
@@ -753,7 +718,6 @@ return [{ json: { pathString: pathString } }];`,
 
     @links()
     defineRouting() {
-        this.WhenClickingExecuteWorkflow.out(0).to(this.HttpRequest.in(0));
         this.EditFields.out(0).to(this.EditFields9.in(0));
         this.EditFields9.out(0).to(this.GeometryToStaticMapUrlPath.in(0));
         this.EditFields1.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
@@ -769,6 +733,6 @@ return [{ json: { pathString: pathString } }];`,
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
         this.Webhook.out(0).to(this.GetElevation.in(0));
-        this.AllImagesUrlBuilder.out(0).to(this.Ntfy.in(0));
+        this.AllImagesUrlBuilder.out(0).to(this.RespondToWebhook.in(0));
     }
 }
