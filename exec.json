@@ -1,0 +1,973 @@
+{
+  "id": "766",
+  "finished": true,
+  "mode": "webhook",
+  "retryOf": null,
+  "retrySuccessId": null,
+  "startedAt": "2026-05-31T07:46:32.659Z",
+  "stoppedAt": "2026-05-31T07:46:34.186Z",
+  "workflowId": "sTOjWDor1GgzoCCt",
+  "waitTill": null,
+  "customData": {},
+  "status": "success",
+  "data": {
+    "version": 1,
+    "startData": {},
+    "resultData": {
+      "runData": {
+        "Webhook": [
+          {
+            "startTime": 1780213592746,
+            "executionIndex": 0,
+            "source": [],
+            "hints": [],
+            "executionTime": 1,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "headers": {
+                        "x-forwarded-host": "auto.brokertricks.com",
+                        "x-forwarded-server": "auto.brokertricks.com",
+                        "x-real-ip": "172.68.23.65",
+                        "x-forwarded-for": "64.98.29.14, 172.68.23.65",
+                        "x-forwarded-proto": "https",
+                        "host": "auto.brokertricks.com",
+                        "connection": "Upgrade",
+                        "content-type": "application/json",
+                        "accept": "application/json, text/plain, */*",
+                        "accept-encoding": "gzip, br",
+                        "user-agent": "n8n-as-code",
+                        "cf-ray": "a0445d894c187540-SEA",
+                        "cdn-loop": "cloudflare; loops=1",
+                        "cf-connecting-ip": "64.98.29.14",
+                        "cf-ipcountry": "US",
+                        "cf-visitor": "{\"scheme\":\"https\"}"
+                      },
+                      "params": {},
+                      "query": {},
+                      "body": {},
+                      "webhookUrl": "https://auto.brokertricks.com/webhook/cookie",
+                      "executionMode": "production"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "HTTP Request1": [
+          {
+            "startTime": 1780213592748,
+            "executionIndex": 1,
+            "source": [
+              {
+                "previousNode": "Webhook",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 531,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "data": "<!DOCTYPE html>\n<html lang='en'>\n<head>\n<meta charset='utf-8'>\n<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>\n<title>\nSign in - Regrid\n\n</title>\n<script src=\"//script.crazyegg.com/pages/scripts/0109/1382.js\" async=\"async\"></script>\n<script>\n  var data = {\"popup\":[null,null],\"admin\":null,\"current_user_id\":null,\"dataset\":\"sitecontrol\",\"dimensions_host\":\"https://app.regrid.com\",\"ds\":\"us\",\"ds_names\":[\"us\",\"2019\",\"2018\",\"2017\",\"2016\",\"2015\",\"2014\",\"2013\",\"2012\",\"2011\"],\"ds_lookup\":{\"sitecontrol\":\"us\",\"pig\":\"2019\",\"dog\":\"2018\",\"rooster\":\"2017\",\"monkey\":\"2016\",\"sheep\":\"2015\",\"horse\":\"2014\",\"snake\":\"2013\",\"dragonfly\":\"2012\",\"rabbit\":\"2011\"},\"env\":\"production\",\"esri_basemap_key\":\"AAPK299be3bc75404f02bbe776e20f212e75oX5QWHW4q_AmGhesopDo0ynZefr7cTqo7rny0-QP3YAb3TmtD-hhb0Yi2BKGaBMx\",\"flags\":{\"csv_streaming\":true,\"stripe_ach\":true,\"jwt_mobile\":false,\"self_serve_api\":true,\"hubspot\":true,\"canada_app\":true,\"ap_auth\":true,\"ap_self_serve\":false},\"groups\":[],\"group\":null,\"group_slug\":null,\"group_token\":false,\"has_sitecontrol\":null,\"is_manager\":null,\"host\":\"app.regrid.com\",\"mapbox\":{\"access_token\":\"pk.eyJ1IjoibG92ZWxhbmQiLCJhIjoibHFTSURFNCJ9.titsQDMlSIud_r60hOlmeA\"},\"jwt\":null,\"min_zoom\":11,\"notifications\":[],\"plan_name\":null,\"plan_simple\":null,\"session_id\":{\"public_id\":\"2f1d90ae05f0c181ac33ce851849779e\"},\"show_tips\":null,\"signed_in\":false,\"sitecontrol\":true,\"tileserver\":\"https://tiles.regrid.com\",\"tile_token\":null,\"username\":\"Anonymous\",\"usage_and_limits\":null,\"max_list_count\":5000,\"support_url\":\"https://support.regrid.com\",\"localization\":{\"admin1\":{\"ca\":{\"one\":\"province\",\"other\":\"provinces\"},\"us\":{\"one\":\"state\",\"other\":\"states\"}},\"admin2\":{\"ca\":{\"one\":\"census division\",\"other\":\"census divisions\"},\"us\":{\"one\":\"county\",\"other\":\"counties\"},\"us/pr\":{\"one\":\"municipio\",\"other\":\"municipios\"}},\"admin3\":{\"us\":{\"one\":\"city\",\"other\":\"cities\"},\"ca\":{\"one\":\"census subdivision\",\"other\":\"census subdivisions\"},\"us/pr\":{\"one\":\"barrio\",\"other\":\"barrios\"}}},\"limits\":{\"max_pro_sessions\":2,\"max_pro_bookmarks\":100,\"max_pro_hoods\":10,\"max_hood_sqmi\":80,\"max_free_hoods\":0,\"max_free_bookmarks\":0,\"max_geojson\":8000,\"max_list_count\":5000,\"max_sources\":4,\"antiscrape_anon\":5,\"antiscrape_free\":25,\"antiscrape_pro\":1000,\"antiscrape_team\":2000,\"api\":{\"default_limit\":20,\"max_radius\":32187,\"point_limit\":1000,\"length_limit\":150000,\"area_limit\":1000000000,\"area_limit_miles\":386.1021,\"min_score\":0.5,\"tokens\":5,\"tokens_admin\":10,\"tokens_admin_eval\":1,\"batch_slice_size\":500,\"batch_count_limit\":100000,\"batch_mb_limit\":50,\"batch_max_active\":10}}};\n</script>\n<script src=\"/packs/js/runtime-4b0ddfe046da7a4756d2.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/316-a29400d7488bd1774ffb.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/719-2c67f5a706952013e519.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/application-4422e9277ebe9bbeebf9.js\" defer=\"defer\"></script>\n<script src=\"/assets/application-78b00259f0f2d6df5dc45cc2ba7d61eb664059c13184b90e4eadf52ed57867ba.js\"></script>\n<!-- / Lazy load SDK -->\n<script crossorigin='anonymous' src='https://js.sentry-cdn.com/9434e191ece3499f96dcb3e13b2fc134.min.js'></script>\n<script>\n  Sentry.onLoad(function() {\n    Sentry.init({\n      dsn: 'https://9434e191ece3499f96dcb3e13b2fc134@o68153.ingest.sentry.io/1377081',\n      environment: \"production\",\n      //integrations: [new Integrations.BrowserTracing()],\n      tracesSampleRate: 0.1\n    });\n    if(window.data.signed_in) {\n      Sentry.configureScope(function(scope) {\n        scope.setUser({\n          email: null,\n          id: window.data.current_user_id\n        });\n      });\n    }\n  });\n</script>\n\n\n<script src=\"/assets/components-3f2398f1a4daf11d4e42b8061b862bd2b567729c1c300aebb15ff848a2d67d3a.js\"></script>\n<script>\n  // Initialize + config GA4 as recommended by these migration docs:\n  //   https://support.google.com/analytics/answer/10271001?hl=en#zippy=%2Cin-this-article\n  //   https://support.google.com/analytics/answer/9310895#zippy=%2Cin-this-article\n  // This block is above the GTM container loader so that it will already have user_id present when it inits\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  \n  // Initial user-data variables\n  // - user_id gets read into a GTM variable and passed to the special user_id GA4 var \n  // - we used to pass window.data.plan_name in a custom dimension too\n  let gtagConfig = {};\n  if(window.data.current_user_id) {\n    // Leave property missing/undefined if we have these null\n    // They also seem to want a string property vs numeric\n    gtagConfig.user_id = _.toString(window.data.current_user_id);\n  }\n  if(window.data.group) {\n    gtagConfig.group_id = _.toString(window.data.group.id);\n  }\n  dataLayer.push(gtagConfig);\n  gtag('config', 'G-NGWML8455J');\n</script>\n<script>\n  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n  })(window,document,'script','dataLayer','GTM-TQGH3PV');\n</script>\n\n<script>\n  // Limited HubSpot Embed \n  // omits banner functionality, web interactivity, Facebook ad integration, form collection\n  \n  // This turns off dynamic loading of all the other HS scripts (see https://github.com/loveland/wdwot/pull/5894)\n  var _hsq = _hsq || [];\n  _hsq.push(['setTrackingGate', 'AnalyticsTracking:BlockEmbeddedScriptReload']);\n  \n  (function(scriptId) {\n    // Check if the script already exists (\"hs-analytics\")\n    if (!document.getElementById(scriptId)) {\n      var newScript = document.createElement(\"script\");\n      newScript.src = \"https://js.hs-analytics.net/analytics/1691517900000/9363140.js\";\n      newScript.type = \"text/javascript\";\n      newScript.id = scriptId; // \"hs-analytics\"\n  \n      var firstScript = document.getElementsByTagName(\"script\")[0];\n      firstScript.parentNode.insertBefore(newScript, firstScript);\n    }\n  })(\"hs-analytics\");\n  \n  // Limited HubSpot Embed - one line\n  // omits banner functionality, web interactivity, Facebook ad integration, form collection\n  // !function(e,t){if(!document.getElementById(e)){var c=document.createElement(\"script\");c.src=\"https://js.hs-analytics.net/analytics/1691517900000/9363140.js\",c.type=\"text/javascript\",c.id=e;var n=document.getElementsByTagName(\"script\")[0];n.parentNode.insertBefore(c,n)}}(\"hs-analytics\");\n  \n  \n  // Full HubSpot Embed \n  // includes banner functionality, web interactivity, Facebook ad integration, form collection\n  // Start of HubSpot Embed Code\n  // var s = document.createElement('script');\n  // s.type = 'text/javascript';\n  // s.async = true;\n  // s.defer = true;\n  // s.src = '//js.hs-scripts.com/9363140.js';\n  // s.id = 'hs-script-loader';\n  // document.getElementsByTagName('head')[0].appendChild(s);\n  // End of HubSpot Embed Code\n</script>\n\n<script>\n  function loadZendesk() {\n    var script = document.createElement('script');\n    script.id = 'ze-snippet';\n    script.src = \"https://static.zdassets.com/ekr/snippet.js?key=5a21b789-89a8-42bc-b298-4e065babad00\";\n    script.async = true;\n    document.head.appendChild(script);\n    script.addEventListener('load', function() {\n      initZendesk();\n    })\n  }\n  \n  function initZendesk() {\n    let zendeskSettings = {\"metadata\":{\"21374011251476\":\"web\"},\"tags\":[\"webapp\"]};\n    // Authenticated identity - https://developer.zendesk.com/api-reference/widget-messaging/web/authentication/\n    if(zendeskSettings.jwt) {\n      zE(\"messenger\", \"loginUser\", function(callback) {\n        callback(zendeskSettings.jwt);\n      });\n    }\n    if(zendeskSettings.metadata) {\n      // https://support.zendesk.com/hc/en-us/articles/5658339908378\n      let fieldArray = Object.entries(zendeskSettings.metadata).map(([id, value]) => {\n        return { id: id, value: value };\n      });\n      zE('messenger:set', 'conversationFields', fieldArray);\n    }\n    if(zendeskSettings.tags) {\n      zE('messenger:set', 'conversationTags', zendeskSettings.tags);\n    }\n  }\n  \n  // Don't show on mobile\n  // https://developer.zendesk.com/documentation/classic-web-widget-sdks/chat-widget/customising-the-widget/hiding-the-chat-widget-on-mobile-devices/\n  (function() {\n    let ua = navigator.userAgent.toLowerCase(), platform = navigator.platform.toLowerCase();\n    let platformName = ua.match(/ip(?:ad|od|hone)/) ? 'ios' : (ua.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || ['other'])[0],\n    isMobile = /ios|android|webos/.test(platformName);\n    if(!isMobile && window.innerWidth > 768) { // use screen width to avoid mobile browsers in desktop mode\n      loadZendesk();\n    }\n  })();\n</script>\n\n<link rel=\"stylesheet\" media=\"all\" href=\"/assets/application-0ddd1494f77808c01f391c3ace7fbdfc3f2c14c427b90d69f32c54d779a2c34c.css\" />\n<meta content='IE=edge' http-equiv='X-UA-Compatible'>\n<meta http-equiv='x-pjax-version'>\n<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"https://app.regrid.com/blog.rss\" />\n<meta content='Sign in - Regrid' name='title'>\n<meta content='parcels properties detroit city tax foreclosure advocates blight surveys vacancy blexting blext real land use estate mobile motor city mapping open data database' name='keywords'>\n<meta content='Regrid.com is dedicated to putting America online parcel by parcel. We work with governments, developers, neighborhood groups, and passionate individuals to gather and present information about property in clear, actionable ways. In Detroit our community missions include arming people with information to battle a plague of tax foreclosures and running an ongoing survey of property conditions to help fight blight.' name='description'>\n<meta content='A5CD5975BFD5109FCFC2157E7EEE1B2A' name='msvalidate.01'>\n<meta content='2901636,620415163' property='fb:admins'>\n<meta content='Sign in - Regrid' property='og:title'>\n<meta content='https://app.regrid.com/users/sign_in' property='og:url'>\n<meta content='Regrid' property='og:site_name'>\n<meta content='website' property='og:type'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='og:image'>\n<meta content='summary_large_image' property='twitter:card'>\n<meta content='Regrid' property='twitter:title'>\n<meta content='@regridapp' property='twitter:creator'>\n<meta content='https://app.regrid.com/users/sign_in' property='twitter:url'>\n<meta content='Nationwide property data and mapping tools for everyone. Surf 160 million land parcels on our map or license them for yours.' property='twitter:description'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='twitter:image'>\n<meta property='map.name'>\n<meta property='map.slug'>\n<meta property='map.auction'>\n<meta property='group.name'>\n<meta property='group.slug'>\n<meta property='page_type'>\n<link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/assets/favicons/apple-touch-icon.png\">\n<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/assets/favicons/favicon-32x32.png\">\n<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/assets/favicons/favicon-16x16.png\">\n<link rel=\"manifest\" href=\"/assets/favicons/site.webmanifest\">\n<link rel=\"shortcut icon\" href=\"/assets/favicons/favicon.ico\">\n<meta name=\"theme-color\" content=\"#ffffff\">\n\n<meta name=\"csrf-param\" content=\"authenticity_token\" />\n<meta name=\"csrf-token\" content=\"/XWhUI/e9OfZLTVcH5f4aL5e/C/co6aeegdLJEvkCn1JjEz9oxLVQRIaj31lq3k3R3iGTq3vSf91wDA0eNOLWQ==\" />\n<meta name=\"action-cable-url\" content=\"/cable\" />\n\n</head>\n<body class='production free minimal not-signed-in plan-free'>\n<noscript>\n<iframe height='0' src='https://www.googletagmanager.com/ns.html?id=GTM-TQGH3PV' style='display:none;visibility:hidden' width='0'></iframe>\n</noscript>\n<div class='all'>\n<div class='modal mobile-only' id='mobile-app'>\n<div class='modal-dialog'>\n<div class='modal-content'>\n<a class='close'>\n<i class='fas fa-times' id='x-button'></i>\n</a>\n<div class='container'>\n<p class='centered bold'>\nGet the Regrid App for a better mobile experience\n</p>\n<div class='centered'>\n<a class='btn btn-primary btn-lg btn-round' href='https://regrid.com/apps' id='app-btn'>\nGet App\n</a>\n</div>\n</div>\n</div>\n</div>\n</div>\n<script>\n  $(document).ready(function() {\n    // Hide modal if it has been closed recently\n    if (localStorage.getItem('app-banner-closed')) {\n      $('#mobile-app.modal').hide();\n    } else {\n      $('#mobile-app #x-button').click(function(e) {\n        $('#mobile-app.modal').hide();\n        localStorage.setItem('app-banner-closed', true);\n      });\n  \n      // Detect OS and modify button href\n      var userAgent = navigator.userAgent || navigator.vendor || window.opera;\n      var $appBtn = $('#app-btn');\n  \n      // Windows Phone must come first because its UA also contains \"Android\"\n      if(userAgent.match(/windows phone/i)) {\n        return;\n      } else if(userAgent.match(/android/i)) {\n        $appBtn.attr('href', 'https://play.google.com/store/apps/details?id=com.loveland.pr');\n      } else if(userAgent.match(/ipad|iphone|ipad/i)) {\n        $appBtn.attr('href', 'https://itunes.apple.com/us/app/loveland-next/id1338927298?mt=8');\n      }\n    }\n  });\n</script>\n\n<div id='pjax-container'>\n<div class='signin-page-wrapper'>\n<div class='signin-page-bg'>\n<picture>\n<source media='(min-width: 992px)' srcset='/assets/backgrounds/rg_signin_bg_desktop-a0d608daebea5d8a3dbc4e10b0a08b2a5f401e94fa1041692edf22083d2feecf.avif' type='image/avif'>\n<source media='(min-width: 992px)' srcset='/assets/backgrounds/rg_signin_bg_desktop_fallback-c2cb6f357f14e46c971219927be09b45e106142a4af94146d2ade44d743e3a74.webp' type='image/webp'>\n<source media='(max-width: 991px)' srcset='/assets/backgrounds/rg_signin_bg_600x800-6f62f45be2b30fe9c03bea7a19520420bd83b8f48576a084201418359deb6adc.webp' type='image/webp'>\n<img alt='' src='/assets/backgrounds/rg_signin_bg_600x800_fallback-16b6676b90fdd19b15594ecf5339cc4cce3f4f0990c278175d5ae7983bb1ed18.jpg'>\n</picture>\n</div>\n<div class='signin-page-content'>\n\n<div class='home-tile padded-lg rounded-lg shadow-gl'>\n<div class='flex-col-center margin-btm-md width-100'>\n<img alt=\"Regrid\" class=\"signin-logo margin-btm-md margin-top-lg\" src=\"/assets/logos/regrid_tm_white-5d8597923c0a3b75a5a9cb694e28e89d5bf74187296fca7ad94d8416012b22a1.svg\" />\n<p class='white museo'>Property data at your fingertips</p>\n</div>\n<p class='hr'></p>\n<div class='home-tile-body'>\n<div class='home-welcome-col padded centered'>\n<p class='lead white'>\nWelcome to the\n<br>\nRegrid Property App!\n</p>\n<p class='white'>\nInvestigate, analyze, and visualize property data across the US and Canada.\n</p>\n<div class='margin-top-lg'>\n<a class=\"btn btn-primary btn-round\" style=\"margin-bottom: 1em;\" href=\"/us\">Jump to the map</a>\n<a class=\"btn btn-primary btn-round\" target=\"_blank\" rel=\"noopener\" style=\"margin-bottom: 1em;\" href=\"https://regrid.com\">Regrid homepage</a>\n</div>\n</div>\n<div class='home-form-col'>\n<div class='signin-container padded rounded-lg shadow-gl'>\n<div class='sign-in-card padded rounded margin-btm-md'>\n<form id=\"signInCard-signIn\" action=\"/users/sign_in\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type=\"hidden\" name=\"authenticity_token\" value=\"b/iSAOAIMsfhEwwsPHsttk1bxMO0JZeeIWCcSPOpdPjbAX+tzMQTYSoktg1GR6zptH2+osVpeP8up+dYwJ713A==\" />\n\n<input type=\"hidden\" name=\"_return_to\" id=\"_return_to\" value=\"/users/sign_in?form=signin\" />\n<div class='row'>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signin_email\" class=\"\">Email address</label>\n<input class=\"form-control\" id=\"signin_email\" autocomplete=\"email\" type=\"email\" name=\"user[email]\" />\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signin_password\" class=\"\">Password</label>\n<div class='password-input-wrapper'>\n<input class=\"form-control\" id=\"signin_password\" autocomplete=\"current-password\" type=\"password\" name=\"user[password]\" />\n<button aria-label='Show password' class='toggle-password' type='button'>\n<i class='fa fa-eye'></i>\n</button>\n</div>\n</div>\n</div>\n<div class='col-xs-12'>\n<p class='small pull-left'><a href=\"/users/password/new\">Forgot your password?</a></p>\n</div>\n</div>\n<div class='form-group'><input type=\"submit\" name=\"commit\" value=\"Sign In\" class=\"btn btn-round btn-block btn-default\" id=\"submit-sign-in\" data-disable-with=\"Sign In\" /></div>\n</form><div class='centered'>\n<a class='signup-flip' href='#'>\nDon't have an account?\n<br>\nCreate one for free.\n</a>\n</div>\n</div>\n<div class='sign-up-card hide padded rounded margin-btm-md'>\n<p class='margin-top-md italic'>\nSign up for a free Regrid Starter account to enjoy an increased daily limit of 25 property lookups.\n</p>\n<form id=\"signInCard-register\" action=\"/users\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type=\"hidden\" name=\"authenticity_token\" value=\"wlVcvDGDPX8Gmjt8CMErIqP0hbWAAIXyVcHtTc7JZp12rLERHU8c2c2tgV1y/ap9WtL/1PFMapNaBpZd/f7nuQ==\" /><input type=\"hidden\" name=\"via\" id=\"via\" value=\"map\" />\n\n\n\n<input type=\"hidden\" name=\"_return_to\" id=\"_return_to\" value=\"/users/sign_in?form=signup\" />\n<div class='row'>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_name\">Name</label>\n<input class=\"form-control registration-user-name\" id=\"signup_name\" autocomplete=\"name\" type=\"text\" name=\"user[name]\" />\n<div class='error small name-error hide'>Please enter a valid name.</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_email\">Email address</label>\n<input class=\"form-control registration-user-email\" id=\"signup_email\" autocomplete=\"email\" type=\"email\" name=\"user[email]\" />\n<div class='error small email-error hide'>Please enter a valid email address.</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_password\">Password</label>\n<div class='password-input-wrapper'>\n<input class=\"form-control registration-user-password\" id=\"signup_password\" autocomplete=\"new-password\" type=\"password\" name=\"user[password]\" />\n<button aria-label='Show password' class='toggle-password' type='button'>\n<i class='fa fa-eye'></i>\n</button>\n</div>\n<div class='error small password-error hide'>Must contain at least one number or symbol and at least 5 or more characters</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12 textcaptcha hide'>\n<div class='form-group'>\n<label for=\"tc_answer\">Prove you&#39;re not a robot, please:</label>\n<p class='tc-question'></p>\n<input type=\"text\" name=\"tc_answer\" id=\"tc_answer\" value=\"\" class=\"form-control\" />\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n\n<div class=\"form-group\">\n  <label for=\"industry\" class=\"small\">What industry do you work in? <span style=\"font-weight: 500;\">(optional)</span></label>\n  <select class=\"form-control\"\n          name=\"user[preferences][profile_answers][industry]\"\n          id=\"industry\">\n    <option value=\"\" selected>Select</option>\n      <option value=\"Academia\">Academia</option>\n      <option value=\"Agriculture\">Agriculture</option>\n      <option value=\"Automotive\">Automotive</option>\n      <option value=\"Construction/Architecture\">Construction/Architecture</option>\n      <option value=\"Education\">Education</option>\n      <option value=\"Environmental Consulting\">Environmental Consulting</option>\n      <option value=\"Engineering\">Engineering</option>\n      <option value=\"Finance &amp; Capital Markets\">Finance &amp; Capital Markets</option>\n      <option value=\"Government - Federal\">Government - Federal</option>\n      <option value=\"Government - Local\">Government - Local</option>\n      <option value=\"Government - State\">Government - State</option>\n      <option value=\"Insurance\">Insurance</option>\n      <option value=\"Legal\">Legal</option>\n      <option value=\"NPO - Telecommunications\">NPO - Telecommunications</option>\n      <option value=\"NPO/NGO - Land Conservancies\">NPO/NGO - Land Conservancies</option>\n      <option value=\"NPO/NGO - Community Orgs\">NPO/NGO - Community Orgs</option>\n      <option value=\"NPO/NGO - Disaster Relief\">NPO/NGO - Disaster Relief</option>\n      <option value=\"Oil/Gas/Mining\">Oil/Gas/Mining</option>\n      <option value=\"Outdoor Recreation\">Outdoor Recreation</option>\n      <option value=\"Real Estate - Residential\">Real Estate - Residential</option>\n      <option value=\"Real Estate - Commercial\">Real Estate - Commercial</option>\n      <option value=\"Renewable Energy\">Renewable Energy</option>\n      <option value=\"Retail\">Retail</option>\n      <option value=\"Technology\">Technology</option>\n      <option value=\"Telecom/Broadband\">Telecom/Broadband</option>\n      <option value=\"Transportation &amp; Logistics\">Transportation &amp; Logistics</option>\n      <option value=\"Utilities\">Utilities</option>\n      <option value=\"Other\">Other</option>\n  </select>\n</div>\n\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='checkbox'>\n<label class='small'>\n<input type=\"checkbox\" name=\"wants_email\" id=\"signup_wants_email\" value=\"1\" checked=\"checked\" />\nReceive account updates and occasional newsletters?\n<span class='italic'>(optional)</span>\n</label>\n</div>\n<div class='checkbox'>\n<label class='small'>\n<input type=\"checkbox\" name=\"terms_agreed\" id=\"terms_agreed\" value=\"1\" required=\"required\" checked=\"checked\" />\nI agree to the Loveland\n<a data-skip-pjax='1' href='/hs/terms' target='agreement'>Terms of Use</a>\nand\n<a data-skip-pjax='1' href='/hs/terms/privacy' target='agreement'>Privacy Policy</a>\n</label>\n</div>\n<div class='alert alert-danger registration-error hide'></div>\n<div class='form-group'><input type=\"submit\" name=\"commit\" value=\"Create Account\" class=\"btn btn-round btn-block btn-default registration-submit\" id=\"submit-create-account-free\" data-disable-with=\"Create Account\" /></div>\n</div>\n</div>\n<script>\n  var submitting = false;\n  \n  $(document).ready(function() {\n    var $nameInput = $('.registration-user-name')\n    var $emailInput = $('.registration-user-email')\n    var $passwordInput = $('.registration-user-password')\n    var $submitBtn = $('.registration-submit')\n    var $registrationError = $('.registration-error')\n    var $registrationForm;\n  \n    if ($('#signup-form').length) {\n      $registrationForm = $('#signup-form');\n    } else if ($('#signInCard-register').length) {\n      $registrationForm = $('#signInCard-register');\n    }\n    \n  \n    function isValidName(name) {\n      return validName(name);\n    }\n  \n    function isValidEmail(email) {\n      return validEmail(email);\n    }\n  \n    function isValidPassword(password) {\n      return validPassword(password);\n    }\n  \n    function toggleError($input, isValid, $error) {\n      if (isValid) {\n        $error.addClass('hide');\n      } else {\n        $error.removeClass('hide');\n      }\n    }\n  \n    // Multiple forms use same named inputs(logo register drop down, timed Modal, old UI)\n    function getLongestValue($inputs) {\n      let longestValue = '';\n      $inputs.each(function () {\n        var value = $(this).val();\n        if (value.length > longestValue.length) {\n          longestValue = value;\n        }\n      });\n      return longestValue;\n    }\n  \n    function allFieldsValid() {\n      const nameValid = isValidName(getLongestValue($nameInput));\n  \n      const emailValid = isValidEmail(getLongestValue($emailInput));\n  \n      const passwordValid = isValidPassword(getLongestValue($passwordInput));\n  \n      return nameValid && emailValid && passwordValid;\n    }\n  \n    function toggleSubmitButton() {\n      const valid = allFieldsValid();\n  \n      if (valid) {\n        $registrationError.addClass('hide');\n      }\n  \n      $submitBtn.prop('disabled', !valid);\n    }\n  \n    $nameInput.on('input', function() {\n      const isValid = isValidName($(this).val());\n      toggleError($(this), isValid, $('.name-error'));\n      toggleSubmitButton();\n    });\n  \n    $emailInput.on('input', function() {\n      const isValid = isValidEmail($(this).val());\n      toggleError($(this), isValid, $('.email-error'));\n      toggleSubmitButton();\n    });\n  \n    $passwordInput.on('input', function() {\n      const isValid = isValidPassword($(this).val());\n      toggleError($(this), isValid, $('.password-error'));\n      toggleSubmitButton();\n    });\n  \n    $registrationForm.submit(function(e) {\n      if (submitting) {\n        e.preventDefault();\n        return false;\n      }\n  \n      if (!allFieldsValid()) {\n        e.preventDefault();\n        $submitBtn.prop('disabled', true);\n        $registrationError.removeClass('hide').text('One or more required fields are missing or invalid.');\n        return false\n      } \n  \n      submitting = true; // Prevent double submission\n    });\n  });\n</script>\n\n</form><div class='centered'><a class=\"signin-flip\" href=\"#\">Already have an account?</a></div>\n</div>\n<script>\n  $(document).ready(function() {\n  \n    $('a.signup-flip, a.signin-flip', '.signin-container').click(function(e) {\n      var toSignup = $(e.currentTarget).hasClass('signup-flip');\n      var toHide = toSignup ? '.sign-in-card' : '.sign-up-card';\n      var toShow = toSignup ? '.sign-up-card' : '.sign-in-card';\n      $(toHide).addClass('hide');\n      $(toShow).removeClass('hide');\n      if (toSignup) {\n        $('.signup-message').removeClass('hide')\n        $('#signup-signin.tab-pane > h3').text('Sign Up');\n      } else {\n        $('.signup-message').addClass('hide')\n        $('#signup-signin.tab-pane > h3').text('Sign In');\n      }\n    });\n  });\n</script>\n</div>\n<script>\n  $(document).ready(function() {\n    function toggleProFieldsForSelect($select) {\n      var value = $select.val();\n      var show = (value === 'Professional' || value === 'Both');\n      var $container = $select.closest('form, .sign-up-card, .sign-in-card, .signin-container');\n      $container.find('.job_title_group').toggle(show);\n      $container.find('.industry_group').toggle(show);\n    }\n    $(document).on('change', '.js-personal-professional', function() {\n      toggleProFieldsForSelect($(this));\n    });\n    $('.js-personal-professional').each(function() {\n      toggleProFieldsForSelect($(this));\n    });\n  });\n  // Password visibility toggle\n  document.querySelectorAll('.toggle-password').forEach(function(btn) {\n    btn.addEventListener('click', function() {\n      var input = btn.closest('.password-input-wrapper').querySelector('input');\n      var isPassword = input.type === 'password';\n      input.type = isPassword ? 'text' : 'password';\n      btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');\n      btn.querySelector('i').classList.toggle('fa-eye', !isPassword);\n      btn.querySelector('i').classList.toggle('fa-eye-slash', isPassword);\n    });\n  });\n</script>\n\n<script>\n  document.getElementById('signin_email').focus(); // Focus email field on page load\n</script>\n</div>\n</div>\n</div>\n</div>\n</div>\n<footer>\n<section>\n<div class='container'>\n<div class='row'>\n<div class='col-md-3 col-xs-12'>\n<div class='contact margin-btm-md'>\n<img class=\"logo margin-btm-lg\" alt=\"Regrid Logo\" src=\"/assets/logos/regrid_registered_trademark_white-b5f8bd3e21ff6e08d3799e595f23ee917f36d616a76e8f8a46598bb503374a83.svg\" />\n<p>\n<a class='ft-contact-link' href='https://regrid.com/parcel-data-expert'>\nContact Us\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/customer-support'>\nCustomer Support\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/terms/privacy'>\nPrivacy Policy\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/terms'>\nTerms of Use\n</a>\n</p>\n</div>\n<div class='ft-social-icons text-white'>\n<div class='flex-fill'>\n<a href='https://www.linkedin.com/company/regridapp'>\n<i class='fa-brands fa-linkedin fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://www.facebook.com/regridapp'>\n<i class='fab fa-facebook-square fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://twitter.com/regridapp'>\n<i class='fab fa-twitter-square fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://www.youtube.com/channel/UCY6_FliC-rX76wQMYyow-1A'>\n<i class='fab fa-youtube fa-fw' style='color: white'></i>\n</a>\n</div>\n</div>\n<form action='https://app.regrid.com/signups.json' class='margin-top-lg margin-btm-md' id='newsletter-form' method='POST'>\n<p class='margin-btm-xs'>\nSubscribe for email updates\n</p>\n<div class='input-group margin-btm-md' id='newsletter'>\n<input name='list' type='hidden' value='newsletter'>\n<input class='form-control' name='email' placeholder='Enter your email' type='email'>\n<a class='input-group-addon' id='newsletter-submit' role='button' type='submit'>\n<i class='fa fa-envelope'></i>\n</a>\n</div>\n<div aria_live='polite' class='sr-only' id='newsletter-feedback' role='status' tabindex='-1'></div>\n</form>\n</div>\n<div class='col-md-9 col-xs-12 text-white'>\n<div class='row'>\n<!-- Row 1, Col 2 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Company</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/company'>\nAbout Regrid\n</a>\n</li>\n<li>\n<a href='https://regrid.com/careers'>\nCareers\n</a>\n</li>\n<li>\n<a href='https://regrid.com/press'>\nPress\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 1, Col 3 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Enterprise Solutions</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/enterprise'>\nU.S. Parcels\n</a>\n</li>\n<li>\n<a href='https://regrid.com/canada'>\nCanada Parcels\n</a>\n</li>\n<li>\n<a href='https://regrid.com/api'>\nParcel &amp; Tiles API\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 2, Col 2 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Resources</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='/store'>\nCoverage Map\n</a>\n</li>\n<li>\n<a href='https://support.regrid.com'>\nSupport Center\n</a>\n</li>\n<li>\n<a href='https://regrid.com/reports'>\nReports\n</a>\n</li>\n<li>\n<a href='https://status.regrid.com' target='_blank'>\nRegrid Status Page\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 2, Col 3 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Self-Serve Solutions</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/property-app'>\nRegrid Property App\n</a>\n</li>\n<li>\n<a href='/store'>\nShop the Data Store\n</a>\n</li>\n<li>\n<a href='https://app.regrid.com/api/plans'>\nAPI Monthly Plans\n</a>\n</li>\n</ul>\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</section>\n<script>\n  $(document).ready(function() {\n    // Intercept the click event on the submit button\n    $('#newsletter-submit').click(function(e) {\n      $('#newsletter-form').submit();\n      return false;\n    });\n      \n    $('#newsletter-form').submit(function(e) {\n      e.preventDefault();\n  \n      // Hijack the submit event to make it ajaxy\n      var $form = $(this);\n      var url = $(this).attr('action');\n      var email = $('input[name=email]', $form).val();\n      var list = $('input[name=list]', $form).val();\n      \n      if(!email || email.length < 4) {\n        showMessage('Please enter a valid email address.', 'error');\n        return;\n      }\n  \n      var formData = { \n        signup: {\n          email: email,\n          list: list\n        } \n      };\n      \n      $.post(url, formData)\n        .done(function(resp) {\n          // Show success message\n          showMessage(resp.message, \"success\");\n          $form[0].reset();\n        })\n        .fail(function() {\n          // Show error message\n          showMessage(\"Sorry, we couldn't save your signup right now!\", \"error\");\n        });\n  \n      function showMessage(msg, type) {\n        var $feedback = $('#newsletter-feedback');\n        $feedback\n          .removeClass()\n          .attr('tabindex', '-1')\n          .addClass(type === 'error' ? 'alert alert-danger small' : 'alert alert-success small')\n          .text(msg);\n  \n        // Shift focus to the feedback container so screen readers announce it.\n        $feedback.focus();\n      }\n    });\n  });\n</script>\n</footer>\n\n\n<div hidden='1' id='pjax-metadata'>\n<meta content='Sign in - Regrid' name='title'>\n<meta content='parcels properties detroit city tax foreclosure advocates blight surveys vacancy blexting blext real land use estate mobile motor city mapping open data database' name='keywords'>\n<meta content='Regrid.com is dedicated to putting America online parcel by parcel. We work with governments, developers, neighborhood groups, and passionate individuals to gather and present information about property in clear, actionable ways. In Detroit our community missions include arming people with information to battle a plague of tax foreclosures and running an ongoing survey of property conditions to help fight blight.' name='description'>\n<meta content='A5CD5975BFD5109FCFC2157E7EEE1B2A' name='msvalidate.01'>\n<meta content='2901636,620415163' property='fb:admins'>\n<meta content='Sign in - Regrid' property='og:title'>\n<meta content='https://app.regrid.com/users/sign_in' property='og:url'>\n<meta content='Regrid' property='og:site_name'>\n<meta content='website' property='og:type'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='og:image'>\n<meta content='summary_large_image' property='twitter:card'>\n<meta content='Regrid' property='twitter:title'>\n<meta content='@regridapp' property='twitter:creator'>\n<meta content='https://app.regrid.com/users/sign_in' property='twitter:url'>\n<meta content='Nationwide property data and mapping tools for everyone. Surf 160 million land parcels on our map or license them for yours.' property='twitter:description'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='twitter:image'>\n<meta property='map.name'>\n<meta property='map.slug'>\n<meta property='map.auction'>\n<meta property='group.name'>\n<meta property='group.slug'>\n<meta property='page_type'>\n<meta name=\"csrf-param\" content=\"authenticity_token\" />\n<meta name=\"csrf-token\" content=\"75MeURWjlc1m7kD43lH4Pb8aayB4ZuVu9ltje8xEo4FbavP8OW+0a63Z+tmkbXliRjwRQQkqCg/5nBhr/3MipQ==\" />\n</div>\n</div>\n</div>\n<script src='https://status.regrid.com/embed/script.js'></script>\n</body>\n</html>\n<script>\n  $(document).ready(function() {\n    if ($('#coverage-modal').exists()) {\n      $('#coverage-modal').modal('show');\n    } \n  });\n</script>\n",
+                      "headers": {
+                        "cache-control": "max-age=0, private, must-revalidate",
+                        "content-type": "text/html; charset=utf-8",
+                        "date": "Sun, 31 May 2026 07:46:33 GMT",
+                        "etag": "W/\"6ce7d17fc5a6b3f8e1cc8a2362f39de9\"",
+                        "referrer-policy": "strict-origin-when-cross-origin",
+                        "server": "nginx/1.18.0 + Phusion Passenger(R)",
+                        "set-cookie": [
+                          "_session_id=2f1d90ae05f0c181ac33ce851849779e; domain=.regrid.com; path=/; expires=Sun, 07 Jun 2026 07:46:33 GMT; HttpOnly; SameSite=None; Secure"
+                        ],
+                        "status": "200 OK",
+                        "vary": "Origin",
+                        "x-content-type-options": "nosniff",
+                        "x-download-options": "noopen",
+                        "x-frame-options": "SAMEORIGIN",
+                        "x-loveland-session": "2f1d90ae05f0c181ac33ce851849779e",
+                        "x-loveland-tag": "1",
+                        "x-permitted-cross-domain-policies": "none",
+                        "x-powered-by": "Phusion Passenger(R)",
+                        "x-rack-cors": "miss; no-origin",
+                        "x-request-id": "04924cfc-ab1e-4ee0-be01-9482db552549",
+                        "x-runtime": "0.017180",
+                        "x-xss-protection": "1; mode=block",
+                        "connection": "close",
+                        "transfer-encoding": "chunked"
+                      },
+                      "statusCode": 200,
+                      "statusMessage": "OK"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Edit Fields2": [
+          {
+            "startTime": 1780213593280,
+            "executionIndex": 2,
+            "source": [
+              {
+                "previousNode": "HTTP Request1",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 6,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "session-cookie": "_session_id=2f1d90ae05f0c181ac33ce851849779e; domain=.regrid.com; path=/; expires=Sun, 07 Jun 2026 07:46:33 GMT; HttpOnly; SameSite=None; Secure",
+                      "html": "<!DOCTYPE html>\n<html lang='en'>\n<head>\n<meta charset='utf-8'>\n<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>\n<title>\nSign in - Regrid\n\n</title>\n<script src=\"//script.crazyegg.com/pages/scripts/0109/1382.js\" async=\"async\"></script>\n<script>\n  var data = {\"popup\":[null,null],\"admin\":null,\"current_user_id\":null,\"dataset\":\"sitecontrol\",\"dimensions_host\":\"https://app.regrid.com\",\"ds\":\"us\",\"ds_names\":[\"us\",\"2019\",\"2018\",\"2017\",\"2016\",\"2015\",\"2014\",\"2013\",\"2012\",\"2011\"],\"ds_lookup\":{\"sitecontrol\":\"us\",\"pig\":\"2019\",\"dog\":\"2018\",\"rooster\":\"2017\",\"monkey\":\"2016\",\"sheep\":\"2015\",\"horse\":\"2014\",\"snake\":\"2013\",\"dragonfly\":\"2012\",\"rabbit\":\"2011\"},\"env\":\"production\",\"esri_basemap_key\":\"AAPK299be3bc75404f02bbe776e20f212e75oX5QWHW4q_AmGhesopDo0ynZefr7cTqo7rny0-QP3YAb3TmtD-hhb0Yi2BKGaBMx\",\"flags\":{\"csv_streaming\":true,\"stripe_ach\":true,\"jwt_mobile\":false,\"self_serve_api\":true,\"hubspot\":true,\"canada_app\":true,\"ap_auth\":true,\"ap_self_serve\":false},\"groups\":[],\"group\":null,\"group_slug\":null,\"group_token\":false,\"has_sitecontrol\":null,\"is_manager\":null,\"host\":\"app.regrid.com\",\"mapbox\":{\"access_token\":\"pk.eyJ1IjoibG92ZWxhbmQiLCJhIjoibHFTSURFNCJ9.titsQDMlSIud_r60hOlmeA\"},\"jwt\":null,\"min_zoom\":11,\"notifications\":[],\"plan_name\":null,\"plan_simple\":null,\"session_id\":{\"public_id\":\"2f1d90ae05f0c181ac33ce851849779e\"},\"show_tips\":null,\"signed_in\":false,\"sitecontrol\":true,\"tileserver\":\"https://tiles.regrid.com\",\"tile_token\":null,\"username\":\"Anonymous\",\"usage_and_limits\":null,\"max_list_count\":5000,\"support_url\":\"https://support.regrid.com\",\"localization\":{\"admin1\":{\"ca\":{\"one\":\"province\",\"other\":\"provinces\"},\"us\":{\"one\":\"state\",\"other\":\"states\"}},\"admin2\":{\"ca\":{\"one\":\"census division\",\"other\":\"census divisions\"},\"us\":{\"one\":\"county\",\"other\":\"counties\"},\"us/pr\":{\"one\":\"municipio\",\"other\":\"municipios\"}},\"admin3\":{\"us\":{\"one\":\"city\",\"other\":\"cities\"},\"ca\":{\"one\":\"census subdivision\",\"other\":\"census subdivisions\"},\"us/pr\":{\"one\":\"barrio\",\"other\":\"barrios\"}}},\"limits\":{\"max_pro_sessions\":2,\"max_pro_bookmarks\":100,\"max_pro_hoods\":10,\"max_hood_sqmi\":80,\"max_free_hoods\":0,\"max_free_bookmarks\":0,\"max_geojson\":8000,\"max_list_count\":5000,\"max_sources\":4,\"antiscrape_anon\":5,\"antiscrape_free\":25,\"antiscrape_pro\":1000,\"antiscrape_team\":2000,\"api\":{\"default_limit\":20,\"max_radius\":32187,\"point_limit\":1000,\"length_limit\":150000,\"area_limit\":1000000000,\"area_limit_miles\":386.1021,\"min_score\":0.5,\"tokens\":5,\"tokens_admin\":10,\"tokens_admin_eval\":1,\"batch_slice_size\":500,\"batch_count_limit\":100000,\"batch_mb_limit\":50,\"batch_max_active\":10}}};\n</script>\n<script src=\"/packs/js/runtime-4b0ddfe046da7a4756d2.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/316-a29400d7488bd1774ffb.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/719-2c67f5a706952013e519.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/application-4422e9277ebe9bbeebf9.js\" defer=\"defer\"></script>\n<script src=\"/assets/application-78b00259f0f2d6df5dc45cc2ba7d61eb664059c13184b90e4eadf52ed57867ba.js\"></script>\n<!-- / Lazy load SDK -->\n<script crossorigin='anonymous' src='https://js.sentry-cdn.com/9434e191ece3499f96dcb3e13b2fc134.min.js'></script>\n<script>\n  Sentry.onLoad(function() {\n    Sentry.init({\n      dsn: 'https://9434e191ece3499f96dcb3e13b2fc134@o68153.ingest.sentry.io/1377081',\n      environment: \"production\",\n      //integrations: [new Integrations.BrowserTracing()],\n      tracesSampleRate: 0.1\n    });\n    if(window.data.signed_in) {\n      Sentry.configureScope(function(scope) {\n        scope.setUser({\n          email: null,\n          id: window.data.current_user_id\n        });\n      });\n    }\n  });\n</script>\n\n\n<script src=\"/assets/components-3f2398f1a4daf11d4e42b8061b862bd2b567729c1c300aebb15ff848a2d67d3a.js\"></script>\n<script>\n  // Initialize + config GA4 as recommended by these migration docs:\n  //   https://support.google.com/analytics/answer/10271001?hl=en#zippy=%2Cin-this-article\n  //   https://support.google.com/analytics/answer/9310895#zippy=%2Cin-this-article\n  // This block is above the GTM container loader so that it will already have user_id present when it inits\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  \n  // Initial user-data variables\n  // - user_id gets read into a GTM variable and passed to the special user_id GA4 var \n  // - we used to pass window.data.plan_name in a custom dimension too\n  let gtagConfig = {};\n  if(window.data.current_user_id) {\n    // Leave property missing/undefined if we have these null\n    // They also seem to want a string property vs numeric\n    gtagConfig.user_id = _.toString(window.data.current_user_id);\n  }\n  if(window.data.group) {\n    gtagConfig.group_id = _.toString(window.data.group.id);\n  }\n  dataLayer.push(gtagConfig);\n  gtag('config', 'G-NGWML8455J');\n</script>\n<script>\n  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n  })(window,document,'script','dataLayer','GTM-TQGH3PV');\n</script>\n\n<script>\n  // Limited HubSpot Embed \n  // omits banner functionality, web interactivity, Facebook ad integration, form collection\n  \n  // This turns off dynamic loading of all the other HS scripts (see https://github.com/loveland/wdwot/pull/5894)\n  var _hsq = _hsq || [];\n  _hsq.push(['setTrackingGate', 'AnalyticsTracking:BlockEmbeddedScriptReload']);\n  \n  (function(scriptId) {\n    // Check if the script already exists (\"hs-analytics\")\n    if (!document.getElementById(scriptId)) {\n      var newScript = document.createElement(\"script\");\n      newScript.src = \"https://js.hs-analytics.net/analytics/1691517900000/9363140.js\";\n      newScript.type = \"text/javascript\";\n      newScript.id = scriptId; // \"hs-analytics\"\n  \n      var firstScript = document.getElementsByTagName(\"script\")[0];\n      firstScript.parentNode.insertBefore(newScript, firstScript);\n    }\n  })(\"hs-analytics\");\n  \n  // Limited HubSpot Embed - one line\n  // omits banner functionality, web interactivity, Facebook ad integration, form collection\n  // !function(e,t){if(!document.getElementById(e)){var c=document.createElement(\"script\");c.src=\"https://js.hs-analytics.net/analytics/1691517900000/9363140.js\",c.type=\"text/javascript\",c.id=e;var n=document.getElementsByTagName(\"script\")[0];n.parentNode.insertBefore(c,n)}}(\"hs-analytics\");\n  \n  \n  // Full HubSpot Embed \n  // includes banner functionality, web interactivity, Facebook ad integration, form collection\n  // Start of HubSpot Embed Code\n  // var s = document.createElement('script');\n  // s.type = 'text/javascript';\n  // s.async = true;\n  // s.defer = true;\n  // s.src = '//js.hs-scripts.com/9363140.js';\n  // s.id = 'hs-script-loader';\n  // document.getElementsByTagName('head')[0].appendChild(s);\n  // End of HubSpot Embed Code\n</script>\n\n<script>\n  function loadZendesk() {\n    var script = document.createElement('script');\n    script.id = 'ze-snippet';\n    script.src = \"https://static.zdassets.com/ekr/snippet.js?key=5a21b789-89a8-42bc-b298-4e065babad00\";\n    script.async = true;\n    document.head.appendChild(script);\n    script.addEventListener('load', function() {\n      initZendesk();\n    })\n  }\n  \n  function initZendesk() {\n    let zendeskSettings = {\"metadata\":{\"21374011251476\":\"web\"},\"tags\":[\"webapp\"]};\n    // Authenticated identity - https://developer.zendesk.com/api-reference/widget-messaging/web/authentication/\n    if(zendeskSettings.jwt) {\n      zE(\"messenger\", \"loginUser\", function(callback) {\n        callback(zendeskSettings.jwt);\n      });\n    }\n    if(zendeskSettings.metadata) {\n      // https://support.zendesk.com/hc/en-us/articles/5658339908378\n      let fieldArray = Object.entries(zendeskSettings.metadata).map(([id, value]) => {\n        return { id: id, value: value };\n      });\n      zE('messenger:set', 'conversationFields', fieldArray);\n    }\n    if(zendeskSettings.tags) {\n      zE('messenger:set', 'conversationTags', zendeskSettings.tags);\n    }\n  }\n  \n  // Don't show on mobile\n  // https://developer.zendesk.com/documentation/classic-web-widget-sdks/chat-widget/customising-the-widget/hiding-the-chat-widget-on-mobile-devices/\n  (function() {\n    let ua = navigator.userAgent.toLowerCase(), platform = navigator.platform.toLowerCase();\n    let platformName = ua.match(/ip(?:ad|od|hone)/) ? 'ios' : (ua.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || ['other'])[0],\n    isMobile = /ios|android|webos/.test(platformName);\n    if(!isMobile && window.innerWidth > 768) { // use screen width to avoid mobile browsers in desktop mode\n      loadZendesk();\n    }\n  })();\n</script>\n\n<link rel=\"stylesheet\" media=\"all\" href=\"/assets/application-0ddd1494f77808c01f391c3ace7fbdfc3f2c14c427b90d69f32c54d779a2c34c.css\" />\n<meta content='IE=edge' http-equiv='X-UA-Compatible'>\n<meta http-equiv='x-pjax-version'>\n<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"https://app.regrid.com/blog.rss\" />\n<meta content='Sign in - Regrid' name='title'>\n<meta content='parcels properties detroit city tax foreclosure advocates blight surveys vacancy blexting blext real land use estate mobile motor city mapping open data database' name='keywords'>\n<meta content='Regrid.com is dedicated to putting America online parcel by parcel. We work with governments, developers, neighborhood groups, and passionate individuals to gather and present information about property in clear, actionable ways. In Detroit our community missions include arming people with information to battle a plague of tax foreclosures and running an ongoing survey of property conditions to help fight blight.' name='description'>\n<meta content='A5CD5975BFD5109FCFC2157E7EEE1B2A' name='msvalidate.01'>\n<meta content='2901636,620415163' property='fb:admins'>\n<meta content='Sign in - Regrid' property='og:title'>\n<meta content='https://app.regrid.com/users/sign_in' property='og:url'>\n<meta content='Regrid' property='og:site_name'>\n<meta content='website' property='og:type'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='og:image'>\n<meta content='summary_large_image' property='twitter:card'>\n<meta content='Regrid' property='twitter:title'>\n<meta content='@regridapp' property='twitter:creator'>\n<meta content='https://app.regrid.com/users/sign_in' property='twitter:url'>\n<meta content='Nationwide property data and mapping tools for everyone. Surf 160 million land parcels on our map or license them for yours.' property='twitter:description'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='twitter:image'>\n<meta property='map.name'>\n<meta property='map.slug'>\n<meta property='map.auction'>\n<meta property='group.name'>\n<meta property='group.slug'>\n<meta property='page_type'>\n<link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/assets/favicons/apple-touch-icon.png\">\n<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/assets/favicons/favicon-32x32.png\">\n<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/assets/favicons/favicon-16x16.png\">\n<link rel=\"manifest\" href=\"/assets/favicons/site.webmanifest\">\n<link rel=\"shortcut icon\" href=\"/assets/favicons/favicon.ico\">\n<meta name=\"theme-color\" content=\"#ffffff\">\n\n<meta name=\"csrf-param\" content=\"authenticity_token\" />\n<meta name=\"csrf-token\" content=\"/XWhUI/e9OfZLTVcH5f4aL5e/C/co6aeegdLJEvkCn1JjEz9oxLVQRIaj31lq3k3R3iGTq3vSf91wDA0eNOLWQ==\" />\n<meta name=\"action-cable-url\" content=\"/cable\" />\n\n</head>\n<body class='production free minimal not-signed-in plan-free'>\n<noscript>\n<iframe height='0' src='https://www.googletagmanager.com/ns.html?id=GTM-TQGH3PV' style='display:none;visibility:hidden' width='0'></iframe>\n</noscript>\n<div class='all'>\n<div class='modal mobile-only' id='mobile-app'>\n<div class='modal-dialog'>\n<div class='modal-content'>\n<a class='close'>\n<i class='fas fa-times' id='x-button'></i>\n</a>\n<div class='container'>\n<p class='centered bold'>\nGet the Regrid App for a better mobile experience\n</p>\n<div class='centered'>\n<a class='btn btn-primary btn-lg btn-round' href='https://regrid.com/apps' id='app-btn'>\nGet App\n</a>\n</div>\n</div>\n</div>\n</div>\n</div>\n<script>\n  $(document).ready(function() {\n    // Hide modal if it has been closed recently\n    if (localStorage.getItem('app-banner-closed')) {\n      $('#mobile-app.modal').hide();\n    } else {\n      $('#mobile-app #x-button').click(function(e) {\n        $('#mobile-app.modal').hide();\n        localStorage.setItem('app-banner-closed', true);\n      });\n  \n      // Detect OS and modify button href\n      var userAgent = navigator.userAgent || navigator.vendor || window.opera;\n      var $appBtn = $('#app-btn');\n  \n      // Windows Phone must come first because its UA also contains \"Android\"\n      if(userAgent.match(/windows phone/i)) {\n        return;\n      } else if(userAgent.match(/android/i)) {\n        $appBtn.attr('href', 'https://play.google.com/store/apps/details?id=com.loveland.pr');\n      } else if(userAgent.match(/ipad|iphone|ipad/i)) {\n        $appBtn.attr('href', 'https://itunes.apple.com/us/app/loveland-next/id1338927298?mt=8');\n      }\n    }\n  });\n</script>\n\n<div id='pjax-container'>\n<div class='signin-page-wrapper'>\n<div class='signin-page-bg'>\n<picture>\n<source media='(min-width: 992px)' srcset='/assets/backgrounds/rg_signin_bg_desktop-a0d608daebea5d8a3dbc4e10b0a08b2a5f401e94fa1041692edf22083d2feecf.avif' type='image/avif'>\n<source media='(min-width: 992px)' srcset='/assets/backgrounds/rg_signin_bg_desktop_fallback-c2cb6f357f14e46c971219927be09b45e106142a4af94146d2ade44d743e3a74.webp' type='image/webp'>\n<source media='(max-width: 991px)' srcset='/assets/backgrounds/rg_signin_bg_600x800-6f62f45be2b30fe9c03bea7a19520420bd83b8f48576a084201418359deb6adc.webp' type='image/webp'>\n<img alt='' src='/assets/backgrounds/rg_signin_bg_600x800_fallback-16b6676b90fdd19b15594ecf5339cc4cce3f4f0990c278175d5ae7983bb1ed18.jpg'>\n</picture>\n</div>\n<div class='signin-page-content'>\n\n<div class='home-tile padded-lg rounded-lg shadow-gl'>\n<div class='flex-col-center margin-btm-md width-100'>\n<img alt=\"Regrid\" class=\"signin-logo margin-btm-md margin-top-lg\" src=\"/assets/logos/regrid_tm_white-5d8597923c0a3b75a5a9cb694e28e89d5bf74187296fca7ad94d8416012b22a1.svg\" />\n<p class='white museo'>Property data at your fingertips</p>\n</div>\n<p class='hr'></p>\n<div class='home-tile-body'>\n<div class='home-welcome-col padded centered'>\n<p class='lead white'>\nWelcome to the\n<br>\nRegrid Property App!\n</p>\n<p class='white'>\nInvestigate, analyze, and visualize property data across the US and Canada.\n</p>\n<div class='margin-top-lg'>\n<a class=\"btn btn-primary btn-round\" style=\"margin-bottom: 1em;\" href=\"/us\">Jump to the map</a>\n<a class=\"btn btn-primary btn-round\" target=\"_blank\" rel=\"noopener\" style=\"margin-bottom: 1em;\" href=\"https://regrid.com\">Regrid homepage</a>\n</div>\n</div>\n<div class='home-form-col'>\n<div class='signin-container padded rounded-lg shadow-gl'>\n<div class='sign-in-card padded rounded margin-btm-md'>\n<form id=\"signInCard-signIn\" action=\"/users/sign_in\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type=\"hidden\" name=\"authenticity_token\" value=\"b/iSAOAIMsfhEwwsPHsttk1bxMO0JZeeIWCcSPOpdPjbAX+tzMQTYSoktg1GR6zptH2+osVpeP8up+dYwJ713A==\" />\n\n<input type=\"hidden\" name=\"_return_to\" id=\"_return_to\" value=\"/users/sign_in?form=signin\" />\n<div class='row'>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signin_email\" class=\"\">Email address</label>\n<input class=\"form-control\" id=\"signin_email\" autocomplete=\"email\" type=\"email\" name=\"user[email]\" />\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signin_password\" class=\"\">Password</label>\n<div class='password-input-wrapper'>\n<input class=\"form-control\" id=\"signin_password\" autocomplete=\"current-password\" type=\"password\" name=\"user[password]\" />\n<button aria-label='Show password' class='toggle-password' type='button'>\n<i class='fa fa-eye'></i>\n</button>\n</div>\n</div>\n</div>\n<div class='col-xs-12'>\n<p class='small pull-left'><a href=\"/users/password/new\">Forgot your password?</a></p>\n</div>\n</div>\n<div class='form-group'><input type=\"submit\" name=\"commit\" value=\"Sign In\" class=\"btn btn-round btn-block btn-default\" id=\"submit-sign-in\" data-disable-with=\"Sign In\" /></div>\n</form><div class='centered'>\n<a class='signup-flip' href='#'>\nDon't have an account?\n<br>\nCreate one for free.\n</a>\n</div>\n</div>\n<div class='sign-up-card hide padded rounded margin-btm-md'>\n<p class='margin-top-md italic'>\nSign up for a free Regrid Starter account to enjoy an increased daily limit of 25 property lookups.\n</p>\n<form id=\"signInCard-register\" action=\"/users\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type=\"hidden\" name=\"authenticity_token\" value=\"wlVcvDGDPX8Gmjt8CMErIqP0hbWAAIXyVcHtTc7JZp12rLERHU8c2c2tgV1y/ap9WtL/1PFMapNaBpZd/f7nuQ==\" /><input type=\"hidden\" name=\"via\" id=\"via\" value=\"map\" />\n\n\n\n<input type=\"hidden\" name=\"_return_to\" id=\"_return_to\" value=\"/users/sign_in?form=signup\" />\n<div class='row'>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_name\">Name</label>\n<input class=\"form-control registration-user-name\" id=\"signup_name\" autocomplete=\"name\" type=\"text\" name=\"user[name]\" />\n<div class='error small name-error hide'>Please enter a valid name.</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_email\">Email address</label>\n<input class=\"form-control registration-user-email\" id=\"signup_email\" autocomplete=\"email\" type=\"email\" name=\"user[email]\" />\n<div class='error small email-error hide'>Please enter a valid email address.</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_password\">Password</label>\n<div class='password-input-wrapper'>\n<input class=\"form-control registration-user-password\" id=\"signup_password\" autocomplete=\"new-password\" type=\"password\" name=\"user[password]\" />\n<button aria-label='Show password' class='toggle-password' type='button'>\n<i class='fa fa-eye'></i>\n</button>\n</div>\n<div class='error small password-error hide'>Must contain at least one number or symbol and at least 5 or more characters</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12 textcaptcha hide'>\n<div class='form-group'>\n<label for=\"tc_answer\">Prove you&#39;re not a robot, please:</label>\n<p class='tc-question'></p>\n<input type=\"text\" name=\"tc_answer\" id=\"tc_answer\" value=\"\" class=\"form-control\" />\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n\n<div class=\"form-group\">\n  <label for=\"industry\" class=\"small\">What industry do you work in? <span style=\"font-weight: 500;\">(optional)</span></label>\n  <select class=\"form-control\"\n          name=\"user[preferences][profile_answers][industry]\"\n          id=\"industry\">\n    <option value=\"\" selected>Select</option>\n      <option value=\"Academia\">Academia</option>\n      <option value=\"Agriculture\">Agriculture</option>\n      <option value=\"Automotive\">Automotive</option>\n      <option value=\"Construction/Architecture\">Construction/Architecture</option>\n      <option value=\"Education\">Education</option>\n      <option value=\"Environmental Consulting\">Environmental Consulting</option>\n      <option value=\"Engineering\">Engineering</option>\n      <option value=\"Finance &amp; Capital Markets\">Finance &amp; Capital Markets</option>\n      <option value=\"Government - Federal\">Government - Federal</option>\n      <option value=\"Government - Local\">Government - Local</option>\n      <option value=\"Government - State\">Government - State</option>\n      <option value=\"Insurance\">Insurance</option>\n      <option value=\"Legal\">Legal</option>\n      <option value=\"NPO - Telecommunications\">NPO - Telecommunications</option>\n      <option value=\"NPO/NGO - Land Conservancies\">NPO/NGO - Land Conservancies</option>\n      <option value=\"NPO/NGO - Community Orgs\">NPO/NGO - Community Orgs</option>\n      <option value=\"NPO/NGO - Disaster Relief\">NPO/NGO - Disaster Relief</option>\n      <option value=\"Oil/Gas/Mining\">Oil/Gas/Mining</option>\n      <option value=\"Outdoor Recreation\">Outdoor Recreation</option>\n      <option value=\"Real Estate - Residential\">Real Estate - Residential</option>\n      <option value=\"Real Estate - Commercial\">Real Estate - Commercial</option>\n      <option value=\"Renewable Energy\">Renewable Energy</option>\n      <option value=\"Retail\">Retail</option>\n      <option value=\"Technology\">Technology</option>\n      <option value=\"Telecom/Broadband\">Telecom/Broadband</option>\n      <option value=\"Transportation &amp; Logistics\">Transportation &amp; Logistics</option>\n      <option value=\"Utilities\">Utilities</option>\n      <option value=\"Other\">Other</option>\n  </select>\n</div>\n\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='checkbox'>\n<label class='small'>\n<input type=\"checkbox\" name=\"wants_email\" id=\"signup_wants_email\" value=\"1\" checked=\"checked\" />\nReceive account updates and occasional newsletters?\n<span class='italic'>(optional)</span>\n</label>\n</div>\n<div class='checkbox'>\n<label class='small'>\n<input type=\"checkbox\" name=\"terms_agreed\" id=\"terms_agreed\" value=\"1\" required=\"required\" checked=\"checked\" />\nI agree to the Loveland\n<a data-skip-pjax='1' href='/hs/terms' target='agreement'>Terms of Use</a>\nand\n<a data-skip-pjax='1' href='/hs/terms/privacy' target='agreement'>Privacy Policy</a>\n</label>\n</div>\n<div class='alert alert-danger registration-error hide'></div>\n<div class='form-group'><input type=\"submit\" name=\"commit\" value=\"Create Account\" class=\"btn btn-round btn-block btn-default registration-submit\" id=\"submit-create-account-free\" data-disable-with=\"Create Account\" /></div>\n</div>\n</div>\n<script>\n  var submitting = false;\n  \n  $(document).ready(function() {\n    var $nameInput = $('.registration-user-name')\n    var $emailInput = $('.registration-user-email')\n    var $passwordInput = $('.registration-user-password')\n    var $submitBtn = $('.registration-submit')\n    var $registrationError = $('.registration-error')\n    var $registrationForm;\n  \n    if ($('#signup-form').length) {\n      $registrationForm = $('#signup-form');\n    } else if ($('#signInCard-register').length) {\n      $registrationForm = $('#signInCard-register');\n    }\n    \n  \n    function isValidName(name) {\n      return validName(name);\n    }\n  \n    function isValidEmail(email) {\n      return validEmail(email);\n    }\n  \n    function isValidPassword(password) {\n      return validPassword(password);\n    }\n  \n    function toggleError($input, isValid, $error) {\n      if (isValid) {\n        $error.addClass('hide');\n      } else {\n        $error.removeClass('hide');\n      }\n    }\n  \n    // Multiple forms use same named inputs(logo register drop down, timed Modal, old UI)\n    function getLongestValue($inputs) {\n      let longestValue = '';\n      $inputs.each(function () {\n        var value = $(this).val();\n        if (value.length > longestValue.length) {\n          longestValue = value;\n        }\n      });\n      return longestValue;\n    }\n  \n    function allFieldsValid() {\n      const nameValid = isValidName(getLongestValue($nameInput));\n  \n      const emailValid = isValidEmail(getLongestValue($emailInput));\n  \n      const passwordValid = isValidPassword(getLongestValue($passwordInput));\n  \n      return nameValid && emailValid && passwordValid;\n    }\n  \n    function toggleSubmitButton() {\n      const valid = allFieldsValid();\n  \n      if (valid) {\n        $registrationError.addClass('hide');\n      }\n  \n      $submitBtn.prop('disabled', !valid);\n    }\n  \n    $nameInput.on('input', function() {\n      const isValid = isValidName($(this).val());\n      toggleError($(this), isValid, $('.name-error'));\n      toggleSubmitButton();\n    });\n  \n    $emailInput.on('input', function() {\n      const isValid = isValidEmail($(this).val());\n      toggleError($(this), isValid, $('.email-error'));\n      toggleSubmitButton();\n    });\n  \n    $passwordInput.on('input', function() {\n      const isValid = isValidPassword($(this).val());\n      toggleError($(this), isValid, $('.password-error'));\n      toggleSubmitButton();\n    });\n  \n    $registrationForm.submit(function(e) {\n      if (submitting) {\n        e.preventDefault();\n        return false;\n      }\n  \n      if (!allFieldsValid()) {\n        e.preventDefault();\n        $submitBtn.prop('disabled', true);\n        $registrationError.removeClass('hide').text('One or more required fields are missing or invalid.');\n        return false\n      } \n  \n      submitting = true; // Prevent double submission\n    });\n  });\n</script>\n\n</form><div class='centered'><a class=\"signin-flip\" href=\"#\">Already have an account?</a></div>\n</div>\n<script>\n  $(document).ready(function() {\n  \n    $('a.signup-flip, a.signin-flip', '.signin-container').click(function(e) {\n      var toSignup = $(e.currentTarget).hasClass('signup-flip');\n      var toHide = toSignup ? '.sign-in-card' : '.sign-up-card';\n      var toShow = toSignup ? '.sign-up-card' : '.sign-in-card';\n      $(toHide).addClass('hide');\n      $(toShow).removeClass('hide');\n      if (toSignup) {\n        $('.signup-message').removeClass('hide')\n        $('#signup-signin.tab-pane > h3').text('Sign Up');\n      } else {\n        $('.signup-message').addClass('hide')\n        $('#signup-signin.tab-pane > h3').text('Sign In');\n      }\n    });\n  });\n</script>\n</div>\n<script>\n  $(document).ready(function() {\n    function toggleProFieldsForSelect($select) {\n      var value = $select.val();\n      var show = (value === 'Professional' || value === 'Both');\n      var $container = $select.closest('form, .sign-up-card, .sign-in-card, .signin-container');\n      $container.find('.job_title_group').toggle(show);\n      $container.find('.industry_group').toggle(show);\n    }\n    $(document).on('change', '.js-personal-professional', function() {\n      toggleProFieldsForSelect($(this));\n    });\n    $('.js-personal-professional').each(function() {\n      toggleProFieldsForSelect($(this));\n    });\n  });\n  // Password visibility toggle\n  document.querySelectorAll('.toggle-password').forEach(function(btn) {\n    btn.addEventListener('click', function() {\n      var input = btn.closest('.password-input-wrapper').querySelector('input');\n      var isPassword = input.type === 'password';\n      input.type = isPassword ? 'text' : 'password';\n      btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');\n      btn.querySelector('i').classList.toggle('fa-eye', !isPassword);\n      btn.querySelector('i').classList.toggle('fa-eye-slash', isPassword);\n    });\n  });\n</script>\n\n<script>\n  document.getElementById('signin_email').focus(); // Focus email field on page load\n</script>\n</div>\n</div>\n</div>\n</div>\n</div>\n<footer>\n<section>\n<div class='container'>\n<div class='row'>\n<div class='col-md-3 col-xs-12'>\n<div class='contact margin-btm-md'>\n<img class=\"logo margin-btm-lg\" alt=\"Regrid Logo\" src=\"/assets/logos/regrid_registered_trademark_white-b5f8bd3e21ff6e08d3799e595f23ee917f36d616a76e8f8a46598bb503374a83.svg\" />\n<p>\n<a class='ft-contact-link' href='https://regrid.com/parcel-data-expert'>\nContact Us\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/customer-support'>\nCustomer Support\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/terms/privacy'>\nPrivacy Policy\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/terms'>\nTerms of Use\n</a>\n</p>\n</div>\n<div class='ft-social-icons text-white'>\n<div class='flex-fill'>\n<a href='https://www.linkedin.com/company/regridapp'>\n<i class='fa-brands fa-linkedin fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://www.facebook.com/regridapp'>\n<i class='fab fa-facebook-square fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://twitter.com/regridapp'>\n<i class='fab fa-twitter-square fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://www.youtube.com/channel/UCY6_FliC-rX76wQMYyow-1A'>\n<i class='fab fa-youtube fa-fw' style='color: white'></i>\n</a>\n</div>\n</div>\n<form action='https://app.regrid.com/signups.json' class='margin-top-lg margin-btm-md' id='newsletter-form' method='POST'>\n<p class='margin-btm-xs'>\nSubscribe for email updates\n</p>\n<div class='input-group margin-btm-md' id='newsletter'>\n<input name='list' type='hidden' value='newsletter'>\n<input class='form-control' name='email' placeholder='Enter your email' type='email'>\n<a class='input-group-addon' id='newsletter-submit' role='button' type='submit'>\n<i class='fa fa-envelope'></i>\n</a>\n</div>\n<div aria_live='polite' class='sr-only' id='newsletter-feedback' role='status' tabindex='-1'></div>\n</form>\n</div>\n<div class='col-md-9 col-xs-12 text-white'>\n<div class='row'>\n<!-- Row 1, Col 2 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Company</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/company'>\nAbout Regrid\n</a>\n</li>\n<li>\n<a href='https://regrid.com/careers'>\nCareers\n</a>\n</li>\n<li>\n<a href='https://regrid.com/press'>\nPress\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 1, Col 3 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Enterprise Solutions</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/enterprise'>\nU.S. Parcels\n</a>\n</li>\n<li>\n<a href='https://regrid.com/canada'>\nCanada Parcels\n</a>\n</li>\n<li>\n<a href='https://regrid.com/api'>\nParcel &amp; Tiles API\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 2, Col 2 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Resources</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='/store'>\nCoverage Map\n</a>\n</li>\n<li>\n<a href='https://support.regrid.com'>\nSupport Center\n</a>\n</li>\n<li>\n<a href='https://regrid.com/reports'>\nReports\n</a>\n</li>\n<li>\n<a href='https://status.regrid.com' target='_blank'>\nRegrid Status Page\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 2, Col 3 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Self-Serve Solutions</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/property-app'>\nRegrid Property App\n</a>\n</li>\n<li>\n<a href='/store'>\nShop the Data Store\n</a>\n</li>\n<li>\n<a href='https://app.regrid.com/api/plans'>\nAPI Monthly Plans\n</a>\n</li>\n</ul>\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</section>\n<script>\n  $(document).ready(function() {\n    // Intercept the click event on the submit button\n    $('#newsletter-submit').click(function(e) {\n      $('#newsletter-form').submit();\n      return false;\n    });\n      \n    $('#newsletter-form').submit(function(e) {\n      e.preventDefault();\n  \n      // Hijack the submit event to make it ajaxy\n      var $form = $(this);\n      var url = $(this).attr('action');\n      var email = $('input[name=email]', $form).val();\n      var list = $('input[name=list]', $form).val();\n      \n      if(!email || email.length < 4) {\n        showMessage('Please enter a valid email address.', 'error');\n        return;\n      }\n  \n      var formData = { \n        signup: {\n          email: email,\n          list: list\n        } \n      };\n      \n      $.post(url, formData)\n        .done(function(resp) {\n          // Show success message\n          showMessage(resp.message, \"success\");\n          $form[0].reset();\n        })\n        .fail(function() {\n          // Show error message\n          showMessage(\"Sorry, we couldn't save your signup right now!\", \"error\");\n        });\n  \n      function showMessage(msg, type) {\n        var $feedback = $('#newsletter-feedback');\n        $feedback\n          .removeClass()\n          .attr('tabindex', '-1')\n          .addClass(type === 'error' ? 'alert alert-danger small' : 'alert alert-success small')\n          .text(msg);\n  \n        // Shift focus to the feedback container so screen readers announce it.\n        $feedback.focus();\n      }\n    });\n  });\n</script>\n</footer>\n\n\n<div hidden='1' id='pjax-metadata'>\n<meta content='Sign in - Regrid' name='title'>\n<meta content='parcels properties detroit city tax foreclosure advocates blight surveys vacancy blexting blext real land use estate mobile motor city mapping open data database' name='keywords'>\n<meta content='Regrid.com is dedicated to putting America online parcel by parcel. We work with governments, developers, neighborhood groups, and passionate individuals to gather and present information about property in clear, actionable ways. In Detroit our community missions include arming people with information to battle a plague of tax foreclosures and running an ongoing survey of property conditions to help fight blight.' name='description'>\n<meta content='A5CD5975BFD5109FCFC2157E7EEE1B2A' name='msvalidate.01'>\n<meta content='2901636,620415163' property='fb:admins'>\n<meta content='Sign in - Regrid' property='og:title'>\n<meta content='https://app.regrid.com/users/sign_in' property='og:url'>\n<meta content='Regrid' property='og:site_name'>\n<meta content='website' property='og:type'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='og:image'>\n<meta content='summary_large_image' property='twitter:card'>\n<meta content='Regrid' property='twitter:title'>\n<meta content='@regridapp' property='twitter:creator'>\n<meta content='https://app.regrid.com/users/sign_in' property='twitter:url'>\n<meta content='Nationwide property data and mapping tools for everyone. Surf 160 million land parcels on our map or license them for yours.' property='twitter:description'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='twitter:image'>\n<meta property='map.name'>\n<meta property='map.slug'>\n<meta property='map.auction'>\n<meta property='group.name'>\n<meta property='group.slug'>\n<meta property='page_type'>\n<meta name=\"csrf-param\" content=\"authenticity_token\" />\n<meta name=\"csrf-token\" content=\"75MeURWjlc1m7kD43lH4Pb8aayB4ZuVu9ltje8xEo4FbavP8OW+0a63Z+tmkbXliRjwRQQkqCg/5nBhr/3MipQ==\" />\n</div>\n</div>\n</div>\n<script src='https://status.regrid.com/embed/script.js'></script>\n</body>\n</html>\n<script>\n  $(document).ready(function() {\n    if ($('#coverage-modal').exists()) {\n      $('#coverage-modal').modal('show');\n    } \n  });\n</script>\n"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "HTML": [
+          {
+            "startTime": 1780213593286,
+            "executionIndex": 3,
+            "source": [
+              {
+                "previousNode": "Edit Fields2",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 80,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "authenticity_token": "b/iSAOAIMsfhEwwsPHsttk1bxMO0JZeeIWCcSPOpdPjbAX+tzMQTYSoktg1GR6zptH2+osVpeP8up+dYwJ713A=="
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Edit Fields1": [
+          {
+            "startTime": 1780213593366,
+            "executionIndex": 4,
+            "source": [
+              {
+                "previousNode": "HTML",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 2,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "login-token": "b/iSAOAIMsfhEwwsPHsttk1bxMO0JZeeIWCcSPOpdPjbAX+tzMQTYSoktg1GR6zptH2+osVpeP8up+dYwJ713A==",
+                      "": ""
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "HTTP Request": [
+          {
+            "startTime": 1780213593369,
+            "executionIndex": 5,
+            "source": [
+              {
+                "previousNode": "Edit Fields1",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 476,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "data": "<!DOCTYPE html>\n<html lang='en'>\n<head>\n<meta charset='utf-8'>\n<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>\n<title>\nSign in - Regrid\n\n</title>\n<script src=\"//script.crazyegg.com/pages/scripts/0109/1382.js\" async=\"async\"></script>\n<script>\n  var data = {\"popup\":[null,null],\"admin\":null,\"current_user_id\":null,\"dataset\":\"sitecontrol\",\"dimensions_host\":\"https://app.regrid.com\",\"ds\":\"us\",\"ds_names\":[\"us\",\"2019\",\"2018\",\"2017\",\"2016\",\"2015\",\"2014\",\"2013\",\"2012\",\"2011\"],\"ds_lookup\":{\"sitecontrol\":\"us\",\"pig\":\"2019\",\"dog\":\"2018\",\"rooster\":\"2017\",\"monkey\":\"2016\",\"sheep\":\"2015\",\"horse\":\"2014\",\"snake\":\"2013\",\"dragonfly\":\"2012\",\"rabbit\":\"2011\"},\"env\":\"production\",\"esri_basemap_key\":\"AAPK299be3bc75404f02bbe776e20f212e75oX5QWHW4q_AmGhesopDo0ynZefr7cTqo7rny0-QP3YAb3TmtD-hhb0Yi2BKGaBMx\",\"flags\":{\"csv_streaming\":true,\"stripe_ach\":true,\"jwt_mobile\":false,\"self_serve_api\":true,\"hubspot\":true,\"canada_app\":true,\"ap_auth\":true,\"ap_self_serve\":false},\"groups\":[],\"group\":null,\"group_slug\":null,\"group_token\":false,\"has_sitecontrol\":null,\"is_manager\":null,\"host\":\"app.regrid.com\",\"mapbox\":{\"access_token\":\"pk.eyJ1IjoibG92ZWxhbmQiLCJhIjoibHFTSURFNCJ9.titsQDMlSIud_r60hOlmeA\"},\"jwt\":null,\"min_zoom\":11,\"notifications\":[],\"plan_name\":null,\"plan_simple\":null,\"session_id\":{\"public_id\":\"2f1d90ae05f0c181ac33ce851849779e\"},\"show_tips\":null,\"signed_in\":false,\"sitecontrol\":true,\"tileserver\":\"https://tiles.regrid.com\",\"tile_token\":null,\"username\":\"Anonymous\",\"usage_and_limits\":null,\"max_list_count\":5000,\"support_url\":\"https://support.regrid.com\",\"localization\":{\"admin1\":{\"ca\":{\"one\":\"province\",\"other\":\"provinces\"},\"us\":{\"one\":\"state\",\"other\":\"states\"}},\"admin2\":{\"ca\":{\"one\":\"census division\",\"other\":\"census divisions\"},\"us\":{\"one\":\"county\",\"other\":\"counties\"},\"us/pr\":{\"one\":\"municipio\",\"other\":\"municipios\"}},\"admin3\":{\"us\":{\"one\":\"city\",\"other\":\"cities\"},\"ca\":{\"one\":\"census subdivision\",\"other\":\"census subdivisions\"},\"us/pr\":{\"one\":\"barrio\",\"other\":\"barrios\"}}},\"limits\":{\"max_pro_sessions\":2,\"max_pro_bookmarks\":100,\"max_pro_hoods\":10,\"max_hood_sqmi\":80,\"max_free_hoods\":0,\"max_free_bookmarks\":0,\"max_geojson\":8000,\"max_list_count\":5000,\"max_sources\":4,\"antiscrape_anon\":5,\"antiscrape_free\":25,\"antiscrape_pro\":1000,\"antiscrape_team\":2000,\"api\":{\"default_limit\":20,\"max_radius\":32187,\"point_limit\":1000,\"length_limit\":150000,\"area_limit\":1000000000,\"area_limit_miles\":386.1021,\"min_score\":0.5,\"tokens\":5,\"tokens_admin\":10,\"tokens_admin_eval\":1,\"batch_slice_size\":500,\"batch_count_limit\":100000,\"batch_mb_limit\":50,\"batch_max_active\":10}}};\n</script>\n<script src=\"/packs/js/runtime-4b0ddfe046da7a4756d2.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/316-a29400d7488bd1774ffb.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/719-2c67f5a706952013e519.js\" defer=\"defer\"></script>\n<script src=\"/packs/js/application-4422e9277ebe9bbeebf9.js\" defer=\"defer\"></script>\n<script src=\"/assets/application-78b00259f0f2d6df5dc45cc2ba7d61eb664059c13184b90e4eadf52ed57867ba.js\"></script>\n<!-- / Lazy load SDK -->\n<script crossorigin='anonymous' src='https://js.sentry-cdn.com/9434e191ece3499f96dcb3e13b2fc134.min.js'></script>\n<script>\n  Sentry.onLoad(function() {\n    Sentry.init({\n      dsn: 'https://9434e191ece3499f96dcb3e13b2fc134@o68153.ingest.sentry.io/1377081',\n      environment: \"production\",\n      //integrations: [new Integrations.BrowserTracing()],\n      tracesSampleRate: 0.1\n    });\n    if(window.data.signed_in) {\n      Sentry.configureScope(function(scope) {\n        scope.setUser({\n          email: null,\n          id: window.data.current_user_id\n        });\n      });\n    }\n  });\n</script>\n\n\n<script src=\"/assets/components-3f2398f1a4daf11d4e42b8061b862bd2b567729c1c300aebb15ff848a2d67d3a.js\"></script>\n<script>\n  // Initialize + config GA4 as recommended by these migration docs:\n  //   https://support.google.com/analytics/answer/10271001?hl=en#zippy=%2Cin-this-article\n  //   https://support.google.com/analytics/answer/9310895#zippy=%2Cin-this-article\n  // This block is above the GTM container loader so that it will already have user_id present when it inits\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  \n  // Initial user-data variables\n  // - user_id gets read into a GTM variable and passed to the special user_id GA4 var \n  // - we used to pass window.data.plan_name in a custom dimension too\n  let gtagConfig = {};\n  if(window.data.current_user_id) {\n    // Leave property missing/undefined if we have these null\n    // They also seem to want a string property vs numeric\n    gtagConfig.user_id = _.toString(window.data.current_user_id);\n  }\n  if(window.data.group) {\n    gtagConfig.group_id = _.toString(window.data.group.id);\n  }\n  dataLayer.push(gtagConfig);\n  gtag('config', 'G-NGWML8455J');\n</script>\n<script>\n  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n  })(window,document,'script','dataLayer','GTM-TQGH3PV');\n</script>\n\n<script>\n  // Limited HubSpot Embed \n  // omits banner functionality, web interactivity, Facebook ad integration, form collection\n  \n  // This turns off dynamic loading of all the other HS scripts (see https://github.com/loveland/wdwot/pull/5894)\n  var _hsq = _hsq || [];\n  _hsq.push(['setTrackingGate', 'AnalyticsTracking:BlockEmbeddedScriptReload']);\n  \n  (function(scriptId) {\n    // Check if the script already exists (\"hs-analytics\")\n    if (!document.getElementById(scriptId)) {\n      var newScript = document.createElement(\"script\");\n      newScript.src = \"https://js.hs-analytics.net/analytics/1691517900000/9363140.js\";\n      newScript.type = \"text/javascript\";\n      newScript.id = scriptId; // \"hs-analytics\"\n  \n      var firstScript = document.getElementsByTagName(\"script\")[0];\n      firstScript.parentNode.insertBefore(newScript, firstScript);\n    }\n  })(\"hs-analytics\");\n  \n  // Limited HubSpot Embed - one line\n  // omits banner functionality, web interactivity, Facebook ad integration, form collection\n  // !function(e,t){if(!document.getElementById(e)){var c=document.createElement(\"script\");c.src=\"https://js.hs-analytics.net/analytics/1691517900000/9363140.js\",c.type=\"text/javascript\",c.id=e;var n=document.getElementsByTagName(\"script\")[0];n.parentNode.insertBefore(c,n)}}(\"hs-analytics\");\n  \n  \n  // Full HubSpot Embed \n  // includes banner functionality, web interactivity, Facebook ad integration, form collection\n  // Start of HubSpot Embed Code\n  // var s = document.createElement('script');\n  // s.type = 'text/javascript';\n  // s.async = true;\n  // s.defer = true;\n  // s.src = '//js.hs-scripts.com/9363140.js';\n  // s.id = 'hs-script-loader';\n  // document.getElementsByTagName('head')[0].appendChild(s);\n  // End of HubSpot Embed Code\n</script>\n\n<script>\n  function loadZendesk() {\n    var script = document.createElement('script');\n    script.id = 'ze-snippet';\n    script.src = \"https://static.zdassets.com/ekr/snippet.js?key=5a21b789-89a8-42bc-b298-4e065babad00\";\n    script.async = true;\n    document.head.appendChild(script);\n    script.addEventListener('load', function() {\n      initZendesk();\n    })\n  }\n  \n  function initZendesk() {\n    let zendeskSettings = {\"metadata\":{\"21374011251476\":\"web\"},\"tags\":[\"webapp\"]};\n    // Authenticated identity - https://developer.zendesk.com/api-reference/widget-messaging/web/authentication/\n    if(zendeskSettings.jwt) {\n      zE(\"messenger\", \"loginUser\", function(callback) {\n        callback(zendeskSettings.jwt);\n      });\n    }\n    if(zendeskSettings.metadata) {\n      // https://support.zendesk.com/hc/en-us/articles/5658339908378\n      let fieldArray = Object.entries(zendeskSettings.metadata).map(([id, value]) => {\n        return { id: id, value: value };\n      });\n      zE('messenger:set', 'conversationFields', fieldArray);\n    }\n    if(zendeskSettings.tags) {\n      zE('messenger:set', 'conversationTags', zendeskSettings.tags);\n    }\n  }\n  \n  // Don't show on mobile\n  // https://developer.zendesk.com/documentation/classic-web-widget-sdks/chat-widget/customising-the-widget/hiding-the-chat-widget-on-mobile-devices/\n  (function() {\n    let ua = navigator.userAgent.toLowerCase(), platform = navigator.platform.toLowerCase();\n    let platformName = ua.match(/ip(?:ad|od|hone)/) ? 'ios' : (ua.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || ['other'])[0],\n    isMobile = /ios|android|webos/.test(platformName);\n    if(!isMobile && window.innerWidth > 768) { // use screen width to avoid mobile browsers in desktop mode\n      loadZendesk();\n    }\n  })();\n</script>\n\n<link rel=\"stylesheet\" media=\"all\" href=\"/assets/application-0ddd1494f77808c01f391c3ace7fbdfc3f2c14c427b90d69f32c54d779a2c34c.css\" />\n<meta content='IE=edge' http-equiv='X-UA-Compatible'>\n<meta http-equiv='x-pjax-version'>\n<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"https://app.regrid.com/blog.rss\" />\n<meta content='Sign in - Regrid' name='title'>\n<meta content='parcels properties detroit city tax foreclosure advocates blight surveys vacancy blexting blext real land use estate mobile motor city mapping open data database' name='keywords'>\n<meta content='Regrid.com is dedicated to putting America online parcel by parcel. We work with governments, developers, neighborhood groups, and passionate individuals to gather and present information about property in clear, actionable ways. In Detroit our community missions include arming people with information to battle a plague of tax foreclosures and running an ongoing survey of property conditions to help fight blight.' name='description'>\n<meta content='A5CD5975BFD5109FCFC2157E7EEE1B2A' name='msvalidate.01'>\n<meta content='2901636,620415163' property='fb:admins'>\n<meta content='Sign in - Regrid' property='og:title'>\n<meta content='https://app.regrid.com/users/sign_in' property='og:url'>\n<meta content='Regrid' property='og:site_name'>\n<meta content='website' property='og:type'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='og:image'>\n<meta content='summary_large_image' property='twitter:card'>\n<meta content='Regrid' property='twitter:title'>\n<meta content='@regridapp' property='twitter:creator'>\n<meta content='https://app.regrid.com/users/sign_in' property='twitter:url'>\n<meta content='Nationwide property data and mapping tools for everyone. Surf 160 million land parcels on our map or license them for yours.' property='twitter:description'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='twitter:image'>\n<meta property='map.name'>\n<meta property='map.slug'>\n<meta property='map.auction'>\n<meta property='group.name'>\n<meta property='group.slug'>\n<meta property='page_type'>\n<link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/assets/favicons/apple-touch-icon.png\">\n<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/assets/favicons/favicon-32x32.png\">\n<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/assets/favicons/favicon-16x16.png\">\n<link rel=\"manifest\" href=\"/assets/favicons/site.webmanifest\">\n<link rel=\"shortcut icon\" href=\"/assets/favicons/favicon.ico\">\n<meta name=\"theme-color\" content=\"#ffffff\">\n\n<meta name=\"csrf-param\" content=\"authenticity_token\" />\n<meta name=\"csrf-token\" content=\"ZEtDDZGMYySv57DPIn1RBtC4dm/ADVqjijBuPyfXpFzQsq6gvUBCgmTQCu5YQdBZKZ4MDrFBtcKF9xUvFOAleA==\" />\n<meta name=\"action-cable-url\" content=\"/cable\" />\n\n</head>\n<body class='production free minimal not-signed-in plan-free'>\n<noscript>\n<iframe height='0' src='https://www.googletagmanager.com/ns.html?id=GTM-TQGH3PV' style='display:none;visibility:hidden' width='0'></iframe>\n</noscript>\n<div class='all'>\n<div class='modal mobile-only' id='mobile-app'>\n<div class='modal-dialog'>\n<div class='modal-content'>\n<a class='close'>\n<i class='fas fa-times' id='x-button'></i>\n</a>\n<div class='container'>\n<p class='centered bold'>\nGet the Regrid App for a better mobile experience\n</p>\n<div class='centered'>\n<a class='btn btn-primary btn-lg btn-round' href='https://regrid.com/apps' id='app-btn'>\nGet App\n</a>\n</div>\n</div>\n</div>\n</div>\n</div>\n<script>\n  $(document).ready(function() {\n    // Hide modal if it has been closed recently\n    if (localStorage.getItem('app-banner-closed')) {\n      $('#mobile-app.modal').hide();\n    } else {\n      $('#mobile-app #x-button').click(function(e) {\n        $('#mobile-app.modal').hide();\n        localStorage.setItem('app-banner-closed', true);\n      });\n  \n      // Detect OS and modify button href\n      var userAgent = navigator.userAgent || navigator.vendor || window.opera;\n      var $appBtn = $('#app-btn');\n  \n      // Windows Phone must come first because its UA also contains \"Android\"\n      if(userAgent.match(/windows phone/i)) {\n        return;\n      } else if(userAgent.match(/android/i)) {\n        $appBtn.attr('href', 'https://play.google.com/store/apps/details?id=com.loveland.pr');\n      } else if(userAgent.match(/ipad|iphone|ipad/i)) {\n        $appBtn.attr('href', 'https://itunes.apple.com/us/app/loveland-next/id1338927298?mt=8');\n      }\n    }\n  });\n</script>\n\n<div id='pjax-container'>\n<div class='signin-page-wrapper'>\n<div class='signin-page-bg'>\n<picture>\n<source media='(min-width: 992px)' srcset='/assets/backgrounds/rg_signin_bg_desktop-a0d608daebea5d8a3dbc4e10b0a08b2a5f401e94fa1041692edf22083d2feecf.avif' type='image/avif'>\n<source media='(min-width: 992px)' srcset='/assets/backgrounds/rg_signin_bg_desktop_fallback-c2cb6f357f14e46c971219927be09b45e106142a4af94146d2ade44d743e3a74.webp' type='image/webp'>\n<source media='(max-width: 991px)' srcset='/assets/backgrounds/rg_signin_bg_600x800-6f62f45be2b30fe9c03bea7a19520420bd83b8f48576a084201418359deb6adc.webp' type='image/webp'>\n<img alt='' src='/assets/backgrounds/rg_signin_bg_600x800_fallback-16b6676b90fdd19b15594ecf5339cc4cce3f4f0990c278175d5ae7983bb1ed18.jpg'>\n</picture>\n</div>\n<div class='signin-page-content'>\n<div class='alert alert-warning'>\n<button class='close' data-dismiss='alert' type='button'>&times;</button>\nInvalid email or password.\n</div>\n\n<div class='home-tile padded-lg rounded-lg shadow-gl'>\n<div class='flex-col-center margin-btm-md width-100'>\n<img alt=\"Regrid\" class=\"signin-logo margin-btm-md margin-top-lg\" src=\"/assets/logos/regrid_tm_white-5d8597923c0a3b75a5a9cb694e28e89d5bf74187296fca7ad94d8416012b22a1.svg\" />\n<p class='white museo'>Property data at your fingertips</p>\n</div>\n<p class='hr'></p>\n<div class='home-tile-body'>\n<div class='home-welcome-col padded centered'>\n<p class='lead white'>\nWelcome to the\n<br>\nRegrid Property App!\n</p>\n<p class='white'>\nInvestigate, analyze, and visualize property data across the US and Canada.\n</p>\n<div class='margin-top-lg'>\n<a class=\"btn btn-primary btn-round\" style=\"margin-bottom: 1em;\" href=\"/us\">Jump to the map</a>\n<a class=\"btn btn-primary btn-round\" target=\"_blank\" rel=\"noopener\" style=\"margin-bottom: 1em;\" href=\"https://regrid.com\">Regrid homepage</a>\n</div>\n</div>\n<div class='home-form-col'>\n<div class='signin-container padded rounded-lg shadow-gl'>\n<div class='sign-in-card padded rounded margin-btm-md'>\n<form id=\"signInCard-signIn\" action=\"/users/sign_in\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type=\"hidden\" name=\"authenticity_token\" value=\"bpyRxmkcEcIO3T9k4rMelaf+OhlmK14Xcx4irIll1YLaZXxrRdAwZMXqhUWYj5/KXthAeBdnsXZ82Vm8ulJUpg==\" />\n\n<input type=\"hidden\" name=\"_return_to\" id=\"_return_to\" value=\"/users/sign_in?form=signin\" />\n<div class='row'>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signin_email\" class=\"\">Email address</label>\n<input class=\"form-control\" id=\"signin_email\" autocomplete=\"email\" type=\"email\" name=\"user[email]\" />\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signin_password\" class=\"\">Password</label>\n<div class='password-input-wrapper'>\n<input class=\"form-control\" id=\"signin_password\" autocomplete=\"current-password\" type=\"password\" name=\"user[password]\" />\n<button aria-label='Show password' class='toggle-password' type='button'>\n<i class='fa fa-eye'></i>\n</button>\n</div>\n</div>\n</div>\n<div class='col-xs-12'>\n<p class='small pull-left'><a href=\"/users/password/new\">Forgot your password?</a></p>\n</div>\n</div>\n<div class='form-group'><input type=\"submit\" name=\"commit\" value=\"Sign In\" class=\"btn btn-round btn-block btn-default\" id=\"submit-sign-in\" data-disable-with=\"Sign In\" /></div>\n</form><div class='centered'>\n<a class='signup-flip' href='#'>\nDon't have an account?\n<br>\nCreate one for free.\n</a>\n</div>\n</div>\n<div class='sign-up-card hide padded rounded margin-btm-md'>\n<p class='margin-top-md italic'>\nSign up for a free Regrid Starter account to enjoy an increased daily limit of 25 property lookups.\n</p>\n<form id=\"signInCard-register\" action=\"/users\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type=\"hidden\" name=\"authenticity_token\" value=\"8AhkV2N28QLrbpebxzn7tv/1yKNPfPGCJXCnfVsnVgNE8Yn6T7rQpCBZLbq9BXrpBtOywj4wHuMqt9xtaBDXJw==\" /><input type=\"hidden\" name=\"via\" id=\"via\" value=\"map\" />\n\n\n\n<input type=\"hidden\" name=\"_return_to\" id=\"_return_to\" value=\"/users/sign_in?form=signup\" />\n<div class='row'>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_name\">Name</label>\n<input class=\"form-control registration-user-name\" id=\"signup_name\" autocomplete=\"name\" type=\"text\" name=\"user[name]\" />\n<div class='error small name-error hide'>Please enter a valid name.</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_email\">Email address</label>\n<input class=\"form-control registration-user-email\" id=\"signup_email\" autocomplete=\"email\" type=\"email\" name=\"user[email]\" />\n<div class='error small email-error hide'>Please enter a valid email address.</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='form-group'>\n<label for=\"signup_password\">Password</label>\n<div class='password-input-wrapper'>\n<input class=\"form-control registration-user-password\" id=\"signup_password\" autocomplete=\"new-password\" type=\"password\" name=\"user[password]\" />\n<button aria-label='Show password' class='toggle-password' type='button'>\n<i class='fa fa-eye'></i>\n</button>\n</div>\n<div class='error small password-error hide'>Must contain at least one number or symbol and at least 5 or more characters</div>\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12 textcaptcha hide'>\n<div class='form-group'>\n<label for=\"tc_answer\">Prove you&#39;re not a robot, please:</label>\n<p class='tc-question'></p>\n<input type=\"text\" name=\"tc_answer\" id=\"tc_answer\" value=\"\" class=\"form-control\" />\n</div>\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n\n<div class=\"form-group\">\n  <label for=\"industry\" class=\"small\">What industry do you work in? <span style=\"font-weight: 500;\">(optional)</span></label>\n  <select class=\"form-control\"\n          name=\"user[preferences][profile_answers][industry]\"\n          id=\"industry\">\n    <option value=\"\" selected>Select</option>\n      <option value=\"Academia\">Academia</option>\n      <option value=\"Agriculture\">Agriculture</option>\n      <option value=\"Automotive\">Automotive</option>\n      <option value=\"Construction/Architecture\">Construction/Architecture</option>\n      <option value=\"Education\">Education</option>\n      <option value=\"Environmental Consulting\">Environmental Consulting</option>\n      <option value=\"Engineering\">Engineering</option>\n      <option value=\"Finance &amp; Capital Markets\">Finance &amp; Capital Markets</option>\n      <option value=\"Government - Federal\">Government - Federal</option>\n      <option value=\"Government - Local\">Government - Local</option>\n      <option value=\"Government - State\">Government - State</option>\n      <option value=\"Insurance\">Insurance</option>\n      <option value=\"Legal\">Legal</option>\n      <option value=\"NPO - Telecommunications\">NPO - Telecommunications</option>\n      <option value=\"NPO/NGO - Land Conservancies\">NPO/NGO - Land Conservancies</option>\n      <option value=\"NPO/NGO - Community Orgs\">NPO/NGO - Community Orgs</option>\n      <option value=\"NPO/NGO - Disaster Relief\">NPO/NGO - Disaster Relief</option>\n      <option value=\"Oil/Gas/Mining\">Oil/Gas/Mining</option>\n      <option value=\"Outdoor Recreation\">Outdoor Recreation</option>\n      <option value=\"Real Estate - Residential\">Real Estate - Residential</option>\n      <option value=\"Real Estate - Commercial\">Real Estate - Commercial</option>\n      <option value=\"Renewable Energy\">Renewable Energy</option>\n      <option value=\"Retail\">Retail</option>\n      <option value=\"Technology\">Technology</option>\n      <option value=\"Telecom/Broadband\">Telecom/Broadband</option>\n      <option value=\"Transportation &amp; Logistics\">Transportation &amp; Logistics</option>\n      <option value=\"Utilities\">Utilities</option>\n      <option value=\"Other\">Other</option>\n  </select>\n</div>\n\n</div>\n<div class='col-xs-12 col-sm-12 col-md-12'>\n<div class='checkbox'>\n<label class='small'>\n<input type=\"checkbox\" name=\"wants_email\" id=\"signup_wants_email\" value=\"1\" checked=\"checked\" />\nReceive account updates and occasional newsletters?\n<span class='italic'>(optional)</span>\n</label>\n</div>\n<div class='checkbox'>\n<label class='small'>\n<input type=\"checkbox\" name=\"terms_agreed\" id=\"terms_agreed\" value=\"1\" required=\"required\" checked=\"checked\" />\nI agree to the Loveland\n<a data-skip-pjax='1' href='/hs/terms' target='agreement'>Terms of Use</a>\nand\n<a data-skip-pjax='1' href='/hs/terms/privacy' target='agreement'>Privacy Policy</a>\n</label>\n</div>\n<div class='alert alert-danger registration-error hide'></div>\n<div class='form-group'><input type=\"submit\" name=\"commit\" value=\"Create Account\" class=\"btn btn-round btn-block btn-default registration-submit\" id=\"submit-create-account-free\" data-disable-with=\"Create Account\" /></div>\n</div>\n</div>\n<script>\n  var submitting = false;\n  \n  $(document).ready(function() {\n    var $nameInput = $('.registration-user-name')\n    var $emailInput = $('.registration-user-email')\n    var $passwordInput = $('.registration-user-password')\n    var $submitBtn = $('.registration-submit')\n    var $registrationError = $('.registration-error')\n    var $registrationForm;\n  \n    if ($('#signup-form').length) {\n      $registrationForm = $('#signup-form');\n    } else if ($('#signInCard-register').length) {\n      $registrationForm = $('#signInCard-register');\n    }\n    \n  \n    function isValidName(name) {\n      return validName(name);\n    }\n  \n    function isValidEmail(email) {\n      return validEmail(email);\n    }\n  \n    function isValidPassword(password) {\n      return validPassword(password);\n    }\n  \n    function toggleError($input, isValid, $error) {\n      if (isValid) {\n        $error.addClass('hide');\n      } else {\n        $error.removeClass('hide');\n      }\n    }\n  \n    // Multiple forms use same named inputs(logo register drop down, timed Modal, old UI)\n    function getLongestValue($inputs) {\n      let longestValue = '';\n      $inputs.each(function () {\n        var value = $(this).val();\n        if (value.length > longestValue.length) {\n          longestValue = value;\n        }\n      });\n      return longestValue;\n    }\n  \n    function allFieldsValid() {\n      const nameValid = isValidName(getLongestValue($nameInput));\n  \n      const emailValid = isValidEmail(getLongestValue($emailInput));\n  \n      const passwordValid = isValidPassword(getLongestValue($passwordInput));\n  \n      return nameValid && emailValid && passwordValid;\n    }\n  \n    function toggleSubmitButton() {\n      const valid = allFieldsValid();\n  \n      if (valid) {\n        $registrationError.addClass('hide');\n      }\n  \n      $submitBtn.prop('disabled', !valid);\n    }\n  \n    $nameInput.on('input', function() {\n      const isValid = isValidName($(this).val());\n      toggleError($(this), isValid, $('.name-error'));\n      toggleSubmitButton();\n    });\n  \n    $emailInput.on('input', function() {\n      const isValid = isValidEmail($(this).val());\n      toggleError($(this), isValid, $('.email-error'));\n      toggleSubmitButton();\n    });\n  \n    $passwordInput.on('input', function() {\n      const isValid = isValidPassword($(this).val());\n      toggleError($(this), isValid, $('.password-error'));\n      toggleSubmitButton();\n    });\n  \n    $registrationForm.submit(function(e) {\n      if (submitting) {\n        e.preventDefault();\n        return false;\n      }\n  \n      if (!allFieldsValid()) {\n        e.preventDefault();\n        $submitBtn.prop('disabled', true);\n        $registrationError.removeClass('hide').text('One or more required fields are missing or invalid.');\n        return false\n      } \n  \n      submitting = true; // Prevent double submission\n    });\n  });\n</script>\n\n</form><div class='centered'><a class=\"signin-flip\" href=\"#\">Already have an account?</a></div>\n</div>\n<script>\n  $(document).ready(function() {\n  \n    $('a.signup-flip, a.signin-flip', '.signin-container').click(function(e) {\n      var toSignup = $(e.currentTarget).hasClass('signup-flip');\n      var toHide = toSignup ? '.sign-in-card' : '.sign-up-card';\n      var toShow = toSignup ? '.sign-up-card' : '.sign-in-card';\n      $(toHide).addClass('hide');\n      $(toShow).removeClass('hide');\n      if (toSignup) {\n        $('.signup-message').removeClass('hide')\n        $('#signup-signin.tab-pane > h3').text('Sign Up');\n      } else {\n        $('.signup-message').addClass('hide')\n        $('#signup-signin.tab-pane > h3').text('Sign In');\n      }\n    });\n  });\n</script>\n</div>\n<script>\n  $(document).ready(function() {\n    function toggleProFieldsForSelect($select) {\n      var value = $select.val();\n      var show = (value === 'Professional' || value === 'Both');\n      var $container = $select.closest('form, .sign-up-card, .sign-in-card, .signin-container');\n      $container.find('.job_title_group').toggle(show);\n      $container.find('.industry_group').toggle(show);\n    }\n    $(document).on('change', '.js-personal-professional', function() {\n      toggleProFieldsForSelect($(this));\n    });\n    $('.js-personal-professional').each(function() {\n      toggleProFieldsForSelect($(this));\n    });\n  });\n  // Password visibility toggle\n  document.querySelectorAll('.toggle-password').forEach(function(btn) {\n    btn.addEventListener('click', function() {\n      var input = btn.closest('.password-input-wrapper').querySelector('input');\n      var isPassword = input.type === 'password';\n      input.type = isPassword ? 'text' : 'password';\n      btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');\n      btn.querySelector('i').classList.toggle('fa-eye', !isPassword);\n      btn.querySelector('i').classList.toggle('fa-eye-slash', isPassword);\n    });\n  });\n</script>\n\n<script>\n  document.getElementById('signin_email').focus(); // Focus email field on page load\n</script>\n</div>\n</div>\n</div>\n</div>\n</div>\n<footer>\n<section>\n<div class='container'>\n<div class='row'>\n<div class='col-md-3 col-xs-12'>\n<div class='contact margin-btm-md'>\n<img class=\"logo margin-btm-lg\" alt=\"Regrid Logo\" src=\"/assets/logos/regrid_registered_trademark_white-b5f8bd3e21ff6e08d3799e595f23ee917f36d616a76e8f8a46598bb503374a83.svg\" />\n<p>\n<a class='ft-contact-link' href='https://regrid.com/parcel-data-expert'>\nContact Us\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/customer-support'>\nCustomer Support\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/terms/privacy'>\nPrivacy Policy\n</a>\n</p>\n<p>\n<a class='ft-contact-link' href='https://regrid.com/terms'>\nTerms of Use\n</a>\n</p>\n</div>\n<div class='ft-social-icons text-white'>\n<div class='flex-fill'>\n<a href='https://www.linkedin.com/company/regridapp'>\n<i class='fa-brands fa-linkedin fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://www.facebook.com/regridapp'>\n<i class='fab fa-facebook-square fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://twitter.com/regridapp'>\n<i class='fab fa-twitter-square fa-fw' style='color: white'></i>\n</a>\n</div>\n<div class='flex-fill'>\n<a href='https://www.youtube.com/channel/UCY6_FliC-rX76wQMYyow-1A'>\n<i class='fab fa-youtube fa-fw' style='color: white'></i>\n</a>\n</div>\n</div>\n<form action='https://app.regrid.com/signups.json' class='margin-top-lg margin-btm-md' id='newsletter-form' method='POST'>\n<p class='margin-btm-xs'>\nSubscribe for email updates\n</p>\n<div class='input-group margin-btm-md' id='newsletter'>\n<input name='list' type='hidden' value='newsletter'>\n<input class='form-control' name='email' placeholder='Enter your email' type='email'>\n<a class='input-group-addon' id='newsletter-submit' role='button' type='submit'>\n<i class='fa fa-envelope'></i>\n</a>\n</div>\n<div aria_live='polite' class='sr-only' id='newsletter-feedback' role='status' tabindex='-1'></div>\n</form>\n</div>\n<div class='col-md-9 col-xs-12 text-white'>\n<div class='row'>\n<!-- Row 1, Col 2 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Company</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/company'>\nAbout Regrid\n</a>\n</li>\n<li>\n<a href='https://regrid.com/careers'>\nCareers\n</a>\n</li>\n<li>\n<a href='https://regrid.com/press'>\nPress\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 1, Col 3 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Enterprise Solutions</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/enterprise'>\nU.S. Parcels\n</a>\n</li>\n<li>\n<a href='https://regrid.com/canada'>\nCanada Parcels\n</a>\n</li>\n<li>\n<a href='https://regrid.com/api'>\nParcel &amp; Tiles API\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 2, Col 2 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Resources</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='/store'>\nCoverage Map\n</a>\n</li>\n<li>\n<a href='https://support.regrid.com'>\nSupport Center\n</a>\n</li>\n<li>\n<a href='https://regrid.com/reports'>\nReports\n</a>\n</li>\n<li>\n<a href='https://status.regrid.com' target='_blank'>\nRegrid Status Page\n</a>\n</li>\n</ul>\n</div>\n</div>\n<!-- Row 2, Col 3 -->\n<div class='col-xs-12 col-md-6'>\n<div class='widget-links'>\n<h3 class='widget-title'>Self-Serve Solutions</h3>\n<ul class='list-unstyled'>\n<li>\n<a href='https://regrid.com/property-app'>\nRegrid Property App\n</a>\n</li>\n<li>\n<a href='/store'>\nShop the Data Store\n</a>\n</li>\n<li>\n<a href='https://app.regrid.com/api/plans'>\nAPI Monthly Plans\n</a>\n</li>\n</ul>\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</section>\n<script>\n  $(document).ready(function() {\n    // Intercept the click event on the submit button\n    $('#newsletter-submit').click(function(e) {\n      $('#newsletter-form').submit();\n      return false;\n    });\n      \n    $('#newsletter-form').submit(function(e) {\n      e.preventDefault();\n  \n      // Hijack the submit event to make it ajaxy\n      var $form = $(this);\n      var url = $(this).attr('action');\n      var email = $('input[name=email]', $form).val();\n      var list = $('input[name=list]', $form).val();\n      \n      if(!email || email.length < 4) {\n        showMessage('Please enter a valid email address.', 'error');\n        return;\n      }\n  \n      var formData = { \n        signup: {\n          email: email,\n          list: list\n        } \n      };\n      \n      $.post(url, formData)\n        .done(function(resp) {\n          // Show success message\n          showMessage(resp.message, \"success\");\n          $form[0].reset();\n        })\n        .fail(function() {\n          // Show error message\n          showMessage(\"Sorry, we couldn't save your signup right now!\", \"error\");\n        });\n  \n      function showMessage(msg, type) {\n        var $feedback = $('#newsletter-feedback');\n        $feedback\n          .removeClass()\n          .attr('tabindex', '-1')\n          .addClass(type === 'error' ? 'alert alert-danger small' : 'alert alert-success small')\n          .text(msg);\n  \n        // Shift focus to the feedback container so screen readers announce it.\n        $feedback.focus();\n      }\n    });\n  });\n</script>\n</footer>\n\n\n<div hidden='1' id='pjax-metadata'>\n<meta content='Sign in - Regrid' name='title'>\n<meta content='parcels properties detroit city tax foreclosure advocates blight surveys vacancy blexting blext real land use estate mobile motor city mapping open data database' name='keywords'>\n<meta content='Regrid.com is dedicated to putting America online parcel by parcel. We work with governments, developers, neighborhood groups, and passionate individuals to gather and present information about property in clear, actionable ways. In Detroit our community missions include arming people with information to battle a plague of tax foreclosures and running an ongoing survey of property conditions to help fight blight.' name='description'>\n<meta content='A5CD5975BFD5109FCFC2157E7EEE1B2A' name='msvalidate.01'>\n<meta content='2901636,620415163' property='fb:admins'>\n<meta content='Sign in - Regrid' property='og:title'>\n<meta content='https://app.regrid.com/users/sign_in' property='og:url'>\n<meta content='Regrid' property='og:site_name'>\n<meta content='website' property='og:type'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='og:image'>\n<meta content='summary_large_image' property='twitter:card'>\n<meta content='Regrid' property='twitter:title'>\n<meta content='@regridapp' property='twitter:creator'>\n<meta content='https://app.regrid.com/users/sign_in' property='twitter:url'>\n<meta content='Nationwide property data and mapping tools for everyone. Surf 160 million land parcels on our map or license them for yours.' property='twitter:description'>\n<meta content='https://app.regrid.com/assets/coverage-map.jpg' property='twitter:image'>\n<meta property='map.name'>\n<meta property='map.slug'>\n<meta property='map.auction'>\n<meta property='group.name'>\n<meta property='group.slug'>\n<meta property='page_type'>\n<meta name=\"csrf-param\" content=\"authenticity_token\" />\n<meta name=\"csrf-token\" content=\"QpZl9j/EDxsPTCvqP22tJhuCrzE7dOiePjpApWNMfTz2b4hbEwguvcR7kctFUSx54qTVUEo4B/8x/Tu1UHv8GA==\" />\n</div>\n</div>\n</div>\n<script src='https://status.regrid.com/embed/script.js'></script>\n</body>\n</html>\n<script>\n  $(document).ready(function() {\n    if ($('#coverage-modal').exists()) {\n      $('#coverage-modal').modal('show');\n    } \n  });\n</script>\n",
+                      "headers": {
+                        "access-control-allow-credentials": "true",
+                        "access-control-allow-methods": "GET, PUT, POST, OPTIONS",
+                        "access-control-allow-origin": "https://app.regrid.com",
+                        "access-control-max-age": "7200",
+                        "cache-control": "max-age=0, private, must-revalidate",
+                        "content-type": "text/html; charset=utf-8",
+                        "date": "Sun, 31 May 2026 07:46:33 GMT",
+                        "etag": "W/\"5e8f86dde94a1ba8a08b53480610f87b\"",
+                        "referrer-policy": "strict-origin-when-cross-origin",
+                        "server": "nginx/1.18.0 + Phusion Passenger(R)",
+                        "set-cookie": [
+                          "_session_id=2f1d90ae05f0c181ac33ce851849779e; domain=.regrid.com; path=/; expires=Sun, 07 Jun 2026 07:46:33 GMT; HttpOnly; SameSite=None; Secure"
+                        ],
+                        "status": "200 OK",
+                        "vary": "Origin",
+                        "x-content-type-options": "nosniff",
+                        "x-download-options": "noopen",
+                        "x-frame-options": "SAMEORIGIN",
+                        "x-loveland-session": "2f1d90ae05f0c181ac33ce851849779e",
+                        "x-loveland-tag": "1",
+                        "x-permitted-cross-domain-policies": "none",
+                        "x-powered-by": "Phusion Passenger(R)",
+                        "x-rack-cors": "hit",
+                        "x-request-id": "9cac289e-4a5e-4b88-8e9c-27f65ee67308",
+                        "x-runtime": "0.123812",
+                        "x-xss-protection": "1; mode=block",
+                        "connection": "close",
+                        "transfer-encoding": "chunked"
+                      },
+                      "statusCode": 200,
+                      "statusMessage": "OK"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Edit Fields": [
+          {
+            "startTime": 1780213593846,
+            "executionIndex": 6,
+            "source": [
+              {
+                "previousNode": "HTTP Request",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 3,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "user_id_cookie": "_session_id=2f1d90ae05f0c181ac33ce851849779e",
+                      "user_expires_cookie": null,
+                      "session_id_cookie": null
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "HTTP Request2": [
+          {
+            "startTime": 1780213593850,
+            "executionIndex": 7,
+            "source": [
+              {
+                "previousNode": "Edit Fields",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 329,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "body": {
+                        "allowed": false,
+                        "remaining": -6,
+                        "used": 11,
+                        "total": 5,
+                        "metered": true,
+                        "need": "upgrade"
+                      },
+                      "headers": {
+                        "cache-control": "max-age=0, private, must-revalidate",
+                        "content-type": "application/json; charset=utf-8",
+                        "date": "Sun, 31 May 2026 07:46:34 GMT",
+                        "etag": "W/\"e9af60731348001deb11b44b60eba72d\"",
+                        "referrer-policy": "strict-origin-when-cross-origin",
+                        "server": "nginx/1.18.0 + Phusion Passenger(R)",
+                        "set-cookie": [
+                          "_session_id=2f1d90ae05f0c181ac33ce851849779e; domain=.regrid.com; path=/; expires=Sun, 07 Jun 2026 07:46:34 GMT; HttpOnly; SameSite=None; Secure"
+                        ],
+                        "status": "200 OK",
+                        "vary": "Origin",
+                        "x-content-type-options": "nosniff",
+                        "x-download-options": "noopen",
+                        "x-frame-options": "SAMEORIGIN",
+                        "x-loveland-session": "2f1d90ae05f0c181ac33ce851849779e",
+                        "x-loveland-tag": "1",
+                        "x-permitted-cross-domain-policies": "none",
+                        "x-powered-by": "Phusion Passenger(R)",
+                        "x-rack-cors": "miss; no-origin",
+                        "x-request-id": "73dd7bfe-4da7-453a-909e-a1561ad4a9d8",
+                        "x-runtime": "0.009031",
+                        "x-xss-protection": "1; mode=block",
+                        "connection": "close",
+                        "transfer-encoding": "chunked"
+                      },
+                      "statusCode": 200,
+                      "statusMessage": "OK"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Respond to Webhook": [
+          {
+            "startTime": 1780213594180,
+            "executionIndex": 8,
+            "source": [
+              {
+                "previousNode": "HTTP Request2",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 4,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "body": {
+                        "allowed": false,
+                        "remaining": -6,
+                        "used": 11,
+                        "total": 5,
+                        "metered": true,
+                        "need": "upgrade"
+                      },
+                      "headers": {
+                        "cache-control": "max-age=0, private, must-revalidate",
+                        "content-type": "application/json; charset=utf-8",
+                        "date": "Sun, 31 May 2026 07:46:34 GMT",
+                        "etag": "W/\"e9af60731348001deb11b44b60eba72d\"",
+                        "referrer-policy": "strict-origin-when-cross-origin",
+                        "server": "nginx/1.18.0 + Phusion Passenger(R)",
+                        "set-cookie": [
+                          "_session_id=2f1d90ae05f0c181ac33ce851849779e; domain=.regrid.com; path=/; expires=Sun, 07 Jun 2026 07:46:34 GMT; HttpOnly; SameSite=None; Secure"
+                        ],
+                        "status": "200 OK",
+                        "vary": "Origin",
+                        "x-content-type-options": "nosniff",
+                        "x-download-options": "noopen",
+                        "x-frame-options": "SAMEORIGIN",
+                        "x-loveland-session": "2f1d90ae05f0c181ac33ce851849779e",
+                        "x-loveland-tag": "1",
+                        "x-permitted-cross-domain-policies": "none",
+                        "x-powered-by": "Phusion Passenger(R)",
+                        "x-rack-cors": "miss; no-origin",
+                        "x-request-id": "73dd7bfe-4da7-453a-909e-a1561ad4a9d8",
+                        "x-runtime": "0.009031",
+                        "x-xss-protection": "1; mode=block",
+                        "connection": "close",
+                        "transfer-encoding": "chunked"
+                      },
+                      "statusCode": 200,
+                      "statusMessage": "OK"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "lastNodeExecuted": "Respond to Webhook"
+    },
+    "executionData": {
+      "contextData": {},
+      "nodeExecutionStack": [],
+      "metadata": {},
+      "waitingExecution": {},
+      "waitingExecutionSource": {},
+      "runtimeData": {
+        "version": 1,
+        "establishedAt": 1780213592644,
+        "source": "webhook",
+        "redaction": {
+          "version": 1,
+          "policy": "none"
+        },
+        "triggerNode": {
+          "name": "Webhook",
+          "type": "n8n-nodes-base.webhook"
+        }
+      }
+    },
+    "resumeToken": "b865b789c9e09439ff62b4c0b323ee24ce59cbc2e7ffb133d0cc99499b61c5ca"
+  },
+  "workflowData": {
+    "id": "sTOjWDor1GgzoCCt",
+    "name": "cookie",
+    "active": true,
+    "activeVersionId": "ee4d40b5-449d-4e18-a830-5d28122f96bc",
+    "isArchived": false,
+    "createdAt": "2025-10-29T09:05:38.516Z",
+    "updatedAt": "2026-05-26T08:31:33.253Z",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "extractHtmlContent",
+          "sourceData": "json",
+          "dataPropertyName": "html",
+          "extractionValues": {
+            "values": [
+              {
+                "key": "authenticity_token",
+                "cssSelector": "input[name=\"authenticity_token\"]",
+                "returnValue": "attribute",
+                "attribute": "value",
+                "returnArray": false
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.html",
+        "typeVersion": 1.2,
+        "position": [
+          736,
+          0
+        ],
+        "id": "462dc124-85d2-4d72-afea-92f98097086b",
+        "name": "HTML"
+      },
+      {
+        "parameters": {
+          "curlImport": "",
+          "method": "POST",
+          "url": "https://app.regrid.com/users/sign_in",
+          "authentication": "none",
+          "provideSslCertificates": false,
+          "sendQuery": false,
+          "sendHeaders": true,
+          "specifyHeaders": "keypair",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+              },
+              {
+                "name": "accept-language",
+                "value": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"
+              },
+              {
+                "name": "cache-control",
+                "value": "no-cache"
+              },
+              {
+                "name": "origin",
+                "value": "https://app.regrid.com"
+              },
+              {
+                "name": "pragma",
+                "value": "no-cache"
+              },
+              {
+                "name": "priority",
+                "value": "u=0, i"
+              },
+              {
+                "name": "referer",
+                "value": "https://app.regrid.com/users/sign_in"
+              },
+              {
+                "name": "sec-ch-ua",
+                "value": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\""
+              },
+              {
+                "name": "sec-ch-ua-mobile",
+                "value": "?0"
+              },
+              {
+                "name": "sec-ch-ua-platform",
+                "value": "\"Windows\""
+              },
+              {
+                "name": "sec-fetch-dest",
+                "value": "document"
+              },
+              {
+                "name": "sec-fetch-mode",
+                "value": "navigate"
+              },
+              {
+                "name": "sec-fetch-site",
+                "value": "same-origin"
+              },
+              {
+                "name": "sec-fetch-user",
+                "value": "?1"
+              },
+              {
+                "name": "upgrade-insecure-requests",
+                "value": "1"
+              },
+              {
+                "name": "user-agent",
+                "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+              },
+              {
+                "name": "cookie",
+                "value": "={{ $('Edit Fields2').item.json['session-cookie'] }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "specifyBody": "keypair",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "utf8",
+                "value": "✓"
+              },
+              {
+                "name": "authenticity_token",
+                "value": "={{ $json['login-token'] }}"
+              },
+              {
+                "name": "flow",
+                "value": ""
+              },
+              {
+                "name": "redirect",
+                "value": ""
+              },
+              {
+                "name": "user[email]",
+                "value": "ditchallaway@gmail.com"
+              },
+              {
+                "name": "user[password]",
+                "value": "Et26K#TYwyFsGi7"
+              },
+              {
+                "name": "commit",
+                "value": "Sign in"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {
+                "followRedirects": false
+              }
+            },
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "neverError": true,
+                "responseFormat": "autodetect"
+              }
+            }
+          },
+          "infoMessage": ""
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1184,
+          0
+        ],
+        "id": "4ce9fcb7-ddc0-48f6-9473-430da9722103",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "curlImport": "",
+          "method": "GET",
+          "url": "https://app.regrid.com/users/sign_in",
+          "authentication": "none",
+          "provideSslCertificates": false,
+          "sendQuery": false,
+          "sendHeaders": false,
+          "sendBody": false,
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "neverError": false,
+                "responseFormat": "autodetect"
+              }
+            }
+          },
+          "infoMessage": ""
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          288,
+          0
+        ],
+        "id": "cf86cbd4-d74c-435a-80ac-e1d37c27deb8",
+        "name": "HTTP Request1"
+      },
+      {
+        "parameters": {
+          "mode": "manual",
+          "duplicateItem": false,
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ca0bb726-0869-4539-b9d6-b2a6bdedbc31",
+                "name": "login-token",
+                "value": "={{ $json.authenticity_token }}",
+                "type": "string"
+              },
+              {
+                "id": "e51a873d-9098-40d1-bb4b-03ca1d9a0b66",
+                "name": "",
+                "value": "",
+                "type": "string"
+              }
+            ]
+          },
+          "includeOtherFields": false,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          960,
+          0
+        ],
+        "id": "598e0360-7caa-42c0-9e10-7098e424e332",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "mode": "manual",
+          "duplicateItem": false,
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cb927ac6-d349-45b4-9f3b-f50022616929",
+                "name": "session-cookie",
+                "value": "={{ $json.headers['set-cookie'][0] }}",
+                "type": "string"
+              },
+              {
+                "id": "e77b4d3f-3da0-4477-905a-177bcb7fcaa4",
+                "name": "html",
+                "value": "={{ $json.data }}",
+                "type": "string"
+              }
+            ]
+          },
+          "includeOtherFields": false,
+          "options": {
+            "dotNotation": true
+          }
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          512,
+          0
+        ],
+        "id": "d314f115-03d6-4f6d-a992-6623560465e9",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "mode": "manual",
+          "duplicateItem": false,
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3d411902-a481-48c1-bd0f-99d3793aa72e",
+                "name": "user_id_cookie",
+                "value": "={{ $json.headers[\"set-cookie\"][0].split(';')[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "7f564e97-4d19-4485-9c31-bf66d7df843c",
+                "name": "user_expires_cookie",
+                "value": "={{ $json.headers[\"set-cookie\"][1].split(';')[0] }}",
+                "type": "string"
+              },
+              {
+                "id": "36ca191c-4bc3-4d22-9634-43ba84d9f72a",
+                "name": "session_id_cookie",
+                "value": "={{ $json.headers[\"set-cookie\"][2].split(';')[0] }}",
+                "type": "string"
+              }
+            ]
+          },
+          "includeOtherFields": false,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1408,
+          0
+        ],
+        "id": "8fbe9e54-8552-426e-9945-f0fdffb75f32",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "curlImport": "",
+          "method": "GET",
+          "url": "https://app.regrid.com/users/lookup_limits.json",
+          "authentication": "none",
+          "provideSslCertificates": false,
+          "sendQuery": false,
+          "sendHeaders": true,
+          "specifyHeaders": "keypair",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Cookie",
+                "value": "={{ \"_cfuvid=7csKHP6W85bYjnpNno4N5We0HcNXTtXuzZWT2cKDkOY-1761520842173-0.0.1.1-604800000; cebs=1; _ce.clock_data=456%2C38.165.151.88%2C1%2C2204ee63bef2f351470a66ffe1bb020e%2CChrome%2CUS; _CEFT=Q%3D%3D%3D; _gid=GA1.2.1154851228.1761520845; _gcl_au=1.1.1029524293.1761532477; _uetsid=ce1d5570b2bb11f0a575b7a04624eda4; _uetvid=e1adc100b1f011f097690d5f95f8f890; __hstc=243024157.ab6268d4e9adaecba9c646cb085cf2f3.1761532478420.1761532478420.1761532478420.1; hubspotutk=ab6268d4e9adaecba9c646cb085cf2f3; __hssrc=1; __hssc=243024157.1.1761532478420; __hs_notify_banner_dismiss=true; \" + $node[\"Edit Fields\"].json[\"user_id_cookie\"] + \"; \" + $node[\"Edit Fields\"].json[\"session_id_cookie\"] + \"; __cf_bm=bdjD_r0cDMok2upNxRFpUSdgQXkM7CErwAvoliuWqXI-1761533972-1.0.1.1-Kg8e8VJlpb7DQwK8FNWcxsM5WPyuvlH41E0O9LzlJ80foVBIlKU6s3OFrolaE.Y13hGreCX8NTj9TaKuJ12A8DcKj4nMTTJFNjIG5OfffTs; cebsp_=8; _ga=GA1.1.1792884763.1761520845; _ga_NGWML8455J=GS2.1.s1761532471$o6$g1$t1761533994$j37$l0$h0; \" + $node[\"Edit Fields\"].json[\"user_expires_cookie\"] + \"; _ce.s=v~7b4d565b6255ca58619f4de16e64c95f09992778~lcw~1761534128256~vir~returning~lva~1761533973882~vpv~0~v11ls~7863ac40-b2dd-11f0-833d-a57a9309c672~gtrk.la~mh8jxsaw~v11.cs~392098~v11.s~7863ac40-b2dd-11f0-833d-a57a9309c672~v11.vs~7b4d565b6255ca58619f4de16e64c95f09992778~v11.fsvd~eyJ1cmwiOiJhcHAucmVncmlkLmNvbSIsInJlZiI6IiIsInV0bSI6W119~v11.sla~1761532472582~lcw~1761534128264\" }}"
+              },
+              {
+                "name": "User-Agent",
+                "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+              },
+              {
+                "name": "sec-ch-ua",
+                "value": "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Google Chrome\";v=\"134\""
+              },
+              {
+                "name": "sec-ch-ua-platform",
+                "value": "\"Windows\""
+              },
+              {
+                "name": "Referer",
+                "value": "https://app.regrid.com/us"
+              },
+              {
+                "name": "Accept",
+                "value": "*/*"
+              }
+            ]
+          },
+          "sendBody": false,
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "neverError": false,
+                "responseFormat": "autodetect"
+              }
+            }
+          },
+          "infoMessage": ""
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1632,
+          0
+        ],
+        "id": "f49f9c95-dcd6-4d5a-a0c4-a2688b124d91",
+        "name": "HTTP Request2"
+      },
+      {
+        "parameters": {
+          "multipleMethods": false,
+          "httpMethod": "GET",
+          "path": "cookie",
+          "authentication": "none",
+          "responseMode": "responseNode",
+          "webhookNotice": "",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          64,
+          0
+        ],
+        "id": "066d7052-05d7-4cd8-9b59-61ee86802805",
+        "name": "Webhook",
+        "webhookId": "53d029f0-fb5c-4c94-a519-f1637b6e3bd2"
+      },
+      {
+        "parameters": {
+          "enableResponseOutput": false,
+          "generalNotice": "",
+          "respondWith": "json",
+          "webhookNotice": "",
+          "responseBody": "={\n  \"auth_success\": true,\n  \"remaining\": {{ $json.body.remaining }},\n  \"cookie_header_string\": \"{{ \"_cfuvid=7csKHP6W85bYjnpNno4N5We0HcNXTtXuzZWT2cKDkOY-1761520842173-0.0.1.1-604800000; cebs=1; _ce.clock_data=456%2C38.165.151.88%2C1%2C2204ee63bef2f351470a66ffe1bb020e%2CChrome%2CUS; _CEFT=Q%3D%3D%3D; _gid=GA1.2.1154851228.1761520845; _gcl_au=1.1.1029524293.1761532477; _uetsid=ce1d5570b2bb11f0a575b7a04624eda4; _uetvid=e1adc100b1f011f097690d5f95f8f890; __hstc=243024157.ab6268d4e9adaecba9c646cb085cf2f3.1761532478420.1761532478420.1761532478420.1; hubspotutk=ab6268d4e9adaecba9c646cb085cf2f3; __hssrc=1; __hssc=243024157.1.1761532478420; __hs_notify_banner_dismiss=true; \" + $node[\"Edit Fields\"].json[\"user_id_cookie\"] + \"; \" + $node[\"Edit Fields\"].json[\"session_id_cookie\"] + \"; __cf_bm=bdjD_r0cDMok2upNxRFpUSdgQXkM7CErwAvoliuWqXI-1761533972-1.0.1.1-Kg8e8VJlpb7DQwK8FNWcxsM5WPyuvlH41E0O9LzlJ80foVBIlKU6s3OFrolaE.Y13hGreCX8NTj9TaKuJ12A8DcKj4nMTTJFNjIG5OfffTs; cebsp_=8; _ga=GA1.1.1792884763.1761520845; _ga_NGWML8455J=GS2.1.s1761532471$o6$g1$t1761533994$j37$l0$h0; \" + $node[\"Edit Fields\"].json[\"user_expires_cookie\"] + \"; _ce.s=v~7b4d565b6255ca58619f4de16e64c95f09992778~lcw~1761534128256~vir~returning~lva~1761533973882~vpv~0~v11ls~7863ac40-b2dd-11f0-833d-a57a9309c672~gtrk.la~mh8jxsaw~v11.cs~392098~v11.s~7863ac40-b2dd-11f0-833d-a57a9309c672~v11.vs~7b4d565b6255ca58619f4de16e64c95f09992778~v11.fsvd~eyJ1cmwiOiJhcHAucmVncmlkLmNvbSIsInJlZiI6IiIsInV0bSI6W119~v11.sla~1761532472582~lcw~1761534128264\" }} ... ; user.id={{ $('Edit Fields').item.json.user_id_cookie }}; _session_id={{ $node[\"Edit Fields\"].json[\"session_id_cookie\"] }}; __cf_bm=... ; user.expires_at={{ $node[\"Edit Fields\"].json[\"user_expires_cookie\"] }}\"\n}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          1856,
+          0
+        ],
+        "id": "cac5d964-3219-457e-ba66-d07642a5ef5d",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "HTML": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request2": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "callerPolicy": "workflowsFromSameOwner",
+      "availableInMCP": false
+    },
+    "staticData": {},
+    "pinData": {}
+  }
+}

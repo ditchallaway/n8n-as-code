@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : cookie
-// Nodes   : 9  |  Connections: 8
+// Nodes   : 11  |  Connections: 10
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -13,6 +13,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields1                        set
 // EditFields2                        set
 // EditFields                         set
+// CheckLoginStatus                   if
+// RespondWithError                   respondToWebhook
 // HttpRequest2                       httpRequest
 // Webhook                            webhook
 // RespondToWebhook                   respondToWebhook
@@ -26,8 +28,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //          → EditFields1
 //            → HttpRequest
 //              → EditFields
-//                → HttpRequest2
-//                  → RespondToWebhook
+//                → CheckLoginStatus
+//                  → HttpRequest2
+//                    → RespondToWebhook
+//                 .out(1) → RespondWithError
 // </workflow-map>
 
 // =====================================================================
@@ -39,8 +43,12 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'cookie',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
-    settings: { executionOrder: 'v1', callerPolicy: 'workflowsFromSameOwner', availableInMCP: false },
+    settings: {
+        executionOrder: 'v1',
+        callerPolicy: 'workflowsFromSameOwner',
+        availableInMCP: false,
+        binaryMode: 'separate',
+    },
 })
 export class CookieWorkflow {
     // =====================================================================
@@ -166,10 +174,8 @@ export class CookieWorkflow {
                     value: "={{ $json['login-token'] }}",
                 },
                 {
-                    name: 'flow',
-                },
-                {
-                    name: 'redirect',
+                    name: '_return_to',
+                    value: '/users/sign_in?form=signin',
                 },
                 {
                     name: 'user[email]',
@@ -177,11 +183,11 @@ export class CookieWorkflow {
                 },
                 {
                     name: 'user[password]',
-                    value: 'Et26K#TYwyFsGi7',
+                    value: '2AcErDCsBa$in5a',
                 },
                 {
                     name: 'commit',
-                    value: 'Sign in',
+                    value: 'Sign In',
                 },
             ],
         },
@@ -308,6 +314,42 @@ export class CookieWorkflow {
     };
 
     @node({
+        id: 'ab2c9f45-1234-4567-89ab-cdef01234567',
+        name: 'Check Login Status',
+        type: 'n8n-nodes-base.if',
+        version: 1,
+        position: [1520, 0],
+    })
+    CheckLoginStatus = {
+        conditions: {
+            string: [
+                {
+                    value1: '={{ $json.user_expires_cookie }}',
+                    operation: 'isNotEmpty',
+                },
+            ],
+        },
+    };
+
+    @node({
+        id: 'cd3e0f56-2345-5678-90bc-def012345678',
+        name: 'Respond with Error',
+        type: 'n8n-nodes-base.respondToWebhook',
+        version: 1.4,
+        position: [1632, 200],
+    })
+    RespondWithError = {
+        respondWith: 'json',
+        responseBody: `={
+  "success": false,
+  "error": "Login failed. Invalid email or password."
+}`,
+        options: {
+            responseCode: 401,
+        },
+    };
+
+    @node({
         id: 'f49f9c95-dcd6-4d5a-a0c4-a2688b124d91',
         name: 'HTTP Request2',
         type: 'n8n-nodes-base.httpRequest',
@@ -398,7 +440,9 @@ export class CookieWorkflow {
         this.EditFields1.out(0).to(this.HttpRequest.in(0));
         this.EditFields2.out(0).to(this.Html.in(0));
         this.HttpRequest.out(0).to(this.EditFields.in(0));
-        this.EditFields.out(0).to(this.HttpRequest2.in(0));
+        this.EditFields.out(0).to(this.CheckLoginStatus.in(0));
+        this.CheckLoginStatus.out(0).to(this.HttpRequest2.in(0));
+        this.CheckLoginStatus.out(1).to(this.RespondWithError.in(0));
         this.Webhook.out(0).to(this.HttpRequest1.in(0));
         this.HttpRequest2.out(0).to(this.RespondToWebhook.in(0));
     }
