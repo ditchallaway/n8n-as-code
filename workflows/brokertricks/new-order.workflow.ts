@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : new-order
-// Nodes   : 36  |  Connections: 26
+// Nodes   : 36  |  Connections: 24
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -28,9 +28,9 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // DataShaper2                        set
 // StickyNote3                        stickyNote
 // StickyNote4                        stickyNote
-// CallOverheadWorkflow               httpRequest
-// CallSingleWorkflow                 httpRequest
-// CallFullWorkflow                   httpRequest
+// CallOverheadWorkflow               executeWorkflow
+// CallSingleWorkflow                 executeWorkflow
+// CallFullWorkflow                   executeWorkflow
 // StickyNote5                        stickyNote
 // Cookie                             httpRequest
 // CreateKml                          code
@@ -61,17 +61,15 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                          → EditFields
 //                            → Switch_
 //                              → CallOverheadWorkflow
-//                                → DataShaper2
-//                                  → IdempotencyCleanup2
-//                             .out(1) → CallSingleWorkflow
-//                                → DataShaper1
-//                                  → IdempotencyCleanup1
-//                             .out(2) → CallFullWorkflow
 //                                → Wait
 //                                  → CodeInJavascript
 //                                    → UploadAFile
 //                                      → DataShaper
 //                                        → IdempotencyCleanup
+//                             .out(1) → CallSingleWorkflow
+//                                → Wait (↩ loop)
+//                             .out(2) → CallFullWorkflow
+//                                → Wait (↩ loop)
 //           .out(1) → NoOperationDoNothing
 // </workflow-map>
 
@@ -867,64 +865,82 @@ export class NewOrderWorkflow {
     @node({
         id: '2da639fe-4dad-4151-b025-fcab0b2b5728',
         name: 'call overhead workflow',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.3,
+        type: 'n8n-nodes-base.executeWorkflow',
+        version: 1.3,
         position: [1152, 368],
     })
     CallOverheadWorkflow = {
-        url: 'https://auto.brokertricks.com/webhook/overhead',
-        sendBody: true,
-        bodyParameters: {
-            parameters: [
-                {
-                    name: 'payload',
-                    value: '={{$json}}',
-                },
-            ],
+        workflowId: {
+            __rl: true,
+            value: 'fD94owK14KYr97yB',
+            mode: 'list',
+            cachedResultName: 'Overhead-Only',
         },
-        options: {},
+        workflowInputs: {
+            mappingMode: 'defineBelow',
+            value: {},
+            matchingColumns: [],
+            schema: [],
+            attemptToConvertTypes: false,
+            convertFieldsToString: true,
+        },
+        options: {
+            waitForSubWorkflow: true,
+        },
     };
 
     @node({
         id: 'ef1077d5-71fb-460d-8355-12c5fe0554ae',
         name: 'call single workflow',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.3,
+        type: 'n8n-nodes-base.executeWorkflow',
+        version: 1.3,
         position: [1152, 560],
     })
     CallSingleWorkflow = {
-        url: 'https://auto.brokertricks.com/webhook/single',
-        sendBody: true,
-        bodyParameters: {
-            parameters: [
-                {
-                    name: 'payload',
-                    value: '={{$json}}',
-                },
-            ],
+        workflowId: {
+            __rl: true,
+            value: 'Tqh6g1yqvcfi5qeF',
+            mode: 'list',
+            cachedResultName: 'Overhead-North',
         },
-        options: {},
+        workflowInputs: {
+            mappingMode: 'defineBelow',
+            value: {},
+            matchingColumns: [],
+            schema: [],
+            attemptToConvertTypes: false,
+            convertFieldsToString: true,
+        },
+        options: {
+            waitForSubWorkflow: true,
+        },
     };
 
     @node({
         id: 'bb06c8b8-cd67-4b91-b3b2-12ebf8e75ea3',
         name: 'call full workflow',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.3,
+        type: 'n8n-nodes-base.executeWorkflow',
+        version: 1.3,
         position: [1152, 768],
     })
     CallFullWorkflow = {
-        url: 'https://auto.brokertricks.com/webhook-test/full',
-        sendBody: true,
-        bodyParameters: {
-            parameters: [
-                {
-                    name: 'payload',
-                    value: '={{$json}}',
-                },
-            ],
+        workflowId: {
+            __rl: true,
+            value: 'eiHeW6leMz4NRikO',
+            mode: 'list',
+            cachedResultName: 'Full',
         },
-        options: {},
+        workflowInputs: {
+            mappingMode: 'defineBelow',
+            value: {},
+            matchingColumns: [],
+            schema: [],
+            attemptToConvertTypes: false,
+            convertFieldsToString: true,
+        },
+        options: {
+            waitForSubWorkflow: true,
+        },
     };
 
     @node({
@@ -1292,10 +1308,8 @@ return $input.all();`,
         this.If_.out(0).to(this.Cookie.in(0));
         this.If_.out(1).to(this.NoOperationDoNothing.in(0));
         this.DataShaper.out(0).to(this.IdempotencyCleanup.in(0));
-        this.DataShaper1.out(0).to(this.IdempotencyCleanup1.in(0));
-        this.DataShaper2.out(0).to(this.IdempotencyCleanup2.in(0));
-        this.CallOverheadWorkflow.out(0).to(this.DataShaper2.in(0));
-        this.CallSingleWorkflow.out(0).to(this.DataShaper1.in(0));
+        this.CallOverheadWorkflow.out(0).to(this.Wait.in(0));
+        this.CallSingleWorkflow.out(0).to(this.Wait.in(0));
         this.CallFullWorkflow.out(0).to(this.Wait.in(0));
         this.Wait.out(0).to(this.CodeInJavascript.in(0));
         this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
