@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 19  |  Connections: 16
+// Nodes   : 21  |  Connections: 18
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -25,6 +25,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // Webhook                            webhook
+// BackupEditorUrl                    httpRequest                [creds]
+// Ntfy                               httpRequest
 // RespondToWebhook                   respondToWebhook
 //
 // ROUTING MAP
@@ -45,7 +47,9 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                            → EditFields3
 //                              → EditFields2
 //                                → AllImagesUrlBuilder
-//                                  → RespondToWebhook
+//                                  → BackupEditorUrl
+//                                    → Ntfy
+//                                      → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -57,7 +61,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Full',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -421,8 +424,7 @@ return items;`,
     UploadAFile = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName:
-            "={{ $('Edit Fields1').item.json.customer_id }}/{{ $('Edit Fields1').item.json.order_id }}/{{ $json.fileName }}",
+        fileName: 'cust_{{ $json.wpuser_id }}/order_{{ $json.order_id }}/{{ $json.fileName }}',
         additionalFields: {},
     };
 
@@ -695,11 +697,76 @@ return [{ json: { pathString: pathString } }];`,
     };
 
     @node({
+        id: '3c8e54c0-abcd-4e00-a111-5b7f1e9c7a2b',
+        name: 'Backup Editor URL',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [600, 176],
+        credentials: { httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' } },
+    })
+    BackupEditorUrl = {
+        method: 'PATCH',
+        url: '=https://api.surecart.com/v1/orders/{{ $json.order_id }}',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+  "metadata": {
+    "photopea_editor_url": "{{ $json.editorUrl }}"
+  }
+}`,
+        options: {},
+    };
+
+    @node({
+        id: '5d9f65d1-bcde-4f11-b222-6c8a2f0d8b3c',
+        name: 'Ntfy',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [800, 176],
+    })
+    Ntfy = {
+        method: 'POST',
+        url: 'https://ntfy.sh/brokertricks_alerts',
+        sendBody: true,
+        specifyBody: 'string',
+        bodyParameters: {
+            parameters: [
+                {
+                    name: 'value',
+                    value: `Render ready for review.
+
+Photopea Link: 
+{{ $json.editorUrl }}
+
+Order Dashboard: 
+https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.order_id }}`,
+                },
+            ],
+        },
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Click',
+                    value: '={{ $json.editorUrl }}',
+                },
+                {
+                    name: 'Markdown',
+                    value: 'yes',
+                },
+            ],
+        },
+        options: {},
+    };
+
+    @node({
         id: '9fc5d717-c41f-43b4-95aa-dd024b1a1a51',
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.5,
-        position: [752, 176],
+        position: [1000, 176],
     })
     RespondToWebhook = {
         respondWith: 'json',
@@ -733,6 +800,8 @@ return [{ json: { pathString: pathString } }];`,
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
         this.Webhook.out(0).to(this.GetElevation.in(0));
-        this.AllImagesUrlBuilder.out(0).to(this.RespondToWebhook.in(0));
+        this.AllImagesUrlBuilder.out(0).to(this.BackupEditorUrl.in(0));
+        this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
+        this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
     }
 }

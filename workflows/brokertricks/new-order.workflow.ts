@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : new-order
-// Nodes   : 35  |  Connections: 27
+// Nodes   : 36  |  Connections: 26
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -40,6 +40,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GetUser                            wordpress                  [creds]
 // SetIdempotencyKey                  set
 // IdempotencyCheck                   executeWorkflow
+// Wait                               wait
 // CodeInJavascript                   code
 // UploadAFile                        s3                         [creds]
 //
@@ -62,16 +63,15 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                              → CallOverheadWorkflow
 //                                → DataShaper2
 //                                  → IdempotencyCleanup2
-//                                    → CodeInJavascript
-//                                      → UploadAFile
 //                             .out(1) → CallSingleWorkflow
 //                                → DataShaper1
 //                                  → IdempotencyCleanup1
-//                                    → CodeInJavascript (↩ loop)
 //                             .out(2) → CallFullWorkflow
-//                                → DataShaper
-//                                  → IdempotencyCleanup
-//                                    → CodeInJavascript (↩ loop)
+//                                → Wait
+//                                  → CodeInJavascript
+//                                    → UploadAFile
+//                                      → DataShaper
+//                                        → IdempotencyCleanup
 //           .out(1) → NoOperationDoNothing
 // </workflow-map>
 
@@ -84,7 +84,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'new-order',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         callerPolicy: 'workflowsFromSameOwner',
@@ -1219,11 +1218,24 @@ return [{ json: { pathString: pathString } }];`,
     };
 
     @node({
+        id: '2cf32f58-7c85-4841-8631-f111fdb114db',
+        webhookId: '109cbc83-2967-47db-8947-cbac80d1a449',
+        name: 'Wait',
+        type: 'n8n-nodes-base.wait',
+        version: 1,
+        position: [1300, 768],
+    })
+    Wait = {
+        resume: 'webhook',
+        options: {},
+    };
+
+    @node({
         id: 'bef32124-b4a5-41f1-82a0-0420eca638e4',
         name: 'Code in JavaScript',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [1824, 640],
+        position: [1450, 768],
     })
     CodeInJavascript = {
         jsCode: `for (const item of $input.all()) {
@@ -1254,12 +1266,13 @@ return $input.all();`,
         name: 'Upload a file',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [2032, 640],
+        position: [1600, 768],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadAFile = {
         operation: 'upload',
         bucketName: 'btx-store',
+        fileName: 'cust_{{ $json.wpuser_id }}/order_{{ $json.order_id }}/ready.txt',
         additionalFields: {},
     };
 
@@ -1283,7 +1296,10 @@ return $input.all();`,
         this.DataShaper2.out(0).to(this.IdempotencyCleanup2.in(0));
         this.CallOverheadWorkflow.out(0).to(this.DataShaper2.in(0));
         this.CallSingleWorkflow.out(0).to(this.DataShaper1.in(0));
-        this.CallFullWorkflow.out(0).to(this.DataShaper.in(0));
+        this.CallFullWorkflow.out(0).to(this.Wait.in(0));
+        this.Wait.out(0).to(this.CodeInJavascript.in(0));
+        this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
+        this.UploadAFile.out(0).to(this.DataShaper.in(0));
         this.Cookie.out(0).to(this.GeoToPath.in(0));
         this.CreateKml.out(0).to(this.GeometryToStaticMapUrlPath.in(0));
         this.GetCheckout.out(0).to(this.SetIdempotencyKey.in(0));
@@ -1292,9 +1308,5 @@ return $input.all();`,
         this.GetUser.out(0).to(this.EditFields.in(0));
         this.SetIdempotencyKey.out(0).to(this.IdempotencyCheck.in(0));
         this.IdempotencyCheck.out(0).to(this.If_.in(0));
-        this.IdempotencyCleanup2.out(0).to(this.CodeInJavascript.in(0));
-        this.IdempotencyCleanup1.out(0).to(this.CodeInJavascript.in(0));
-        this.IdempotencyCleanup.out(0).to(this.CodeInJavascript.in(0));
-        this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
     }
 }
