@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 21  |  Connections: 18
+// Nodes   : 23  |  Connections: 20
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -11,6 +11,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields                         set
 // EditFields9                        set
 // EditFields1                        set
+// KmlGenerator                       code
+// UploadKmlToS3                      s3                         [creds]
 // DispatchAWorkflowEventAndWaitForCompletion github                     [creds]
 // HttpRequest2                       httpRequest
 // HttpRequest3                       httpRequest                [creds]
@@ -38,18 +40,20 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //          → GeometryToStaticMapUrlPath
 //            → StaticMapUrlBuilder
 //              → EditFields1
-//                → DispatchAWorkflowEventAndWaitForCompletion
-//                  → HttpRequest2
-//                    → HttpRequest3
-//                      → Compression
-//                        → CodeInJavascript
-//                          → UploadAFile
-//                            → EditFields3
-//                              → EditFields2
-//                                → AllImagesUrlBuilder
-//                                  → BackupEditorUrl
-//                                    → Ntfy
-//                                      → RespondToWebhook
+//                → KmlGenerator
+//                  → UploadKmlToS3
+//                    → DispatchAWorkflowEventAndWaitForCompletion
+//                      → HttpRequest2
+//                        → HttpRequest3
+//                          → Compression
+//                            → CodeInJavascript
+//                              → UploadAFile
+//                                → EditFields3
+//                                  → EditFields2
+//                                    → AllImagesUrlBuilder
+//                                      → BackupEditorUrl
+//                                        → Ntfy
+//                                          → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -307,6 +311,61 @@ export class FullWorkflow {
         options: {
             dotNotation: true,
         },
+    };
+
+    @node({
+        id: 'b5c7d03a-3199-4c55-a8cd-6ef5b31f0a2c',
+        name: 'KML Generator',
+        type: 'n8n-nodes-base.code',
+        version: 2,
+        position: [-1450, 176],
+    })
+    KmlGenerator = {
+        jsCode: `for (const item of $input.all()) {
+  const coords = item.json.geometry.coordinates[0];
+  const kmlCoords = coords.map(c => \`\${c[0]},\${c[1]},0\`).join(' ');
+
+  const kmlContent = \`<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Parcel Boundary</name>
+    <Placemark>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>\${kmlCoords}</coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>\`;
+
+  item.binary = item.binary || {};
+  item.binary.kml_data = {
+    data: Buffer.from(kmlContent).toString('base64'),
+    mimeType: 'application/vnd.google-earth.kml+xml',
+    fileName: 'parcel_boundary.kml',
+    fileExtension: 'kml'
+  };
+}
+return $input.all();`,
+    };
+
+    @node({
+        id: 'f83da59a-1912-4c63-b8e3-05b1c55cf83d',
+        name: 'Upload KML to S3',
+        type: 'n8n-nodes-base.s3',
+        version: 1,
+        position: [-1400, 176],
+        credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
+    })
+    UploadKmlToS3 = {
+        operation: 'upload',
+        bucketName: 'btx-store',
+        fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
+        inputDataFieldName: 'kml_data',
+        additionalFields: {},
     };
 
     @node({
@@ -787,7 +846,9 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
     defineRouting() {
         this.EditFields.out(0).to(this.EditFields9.in(0));
         this.EditFields9.out(0).to(this.GeometryToStaticMapUrlPath.in(0));
-        this.EditFields1.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
+        this.EditFields1.out(0).to(this.KmlGenerator.in(0));
+        this.KmlGenerator.out(0).to(this.UploadKmlToS3.in(0));
+        this.UploadKmlToS3.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
         this.DispatchAWorkflowEventAndWaitForCompletion.out(0).to(this.HttpRequest2.in(0));
         this.HttpRequest2.out(0).to(this.HttpRequest3.in(0));
         this.HttpRequest3.out(0).to(this.Compression.in(0));
