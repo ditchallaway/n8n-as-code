@@ -26,10 +26,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // StaticMapUrlBuilder                set
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
-// Webhook                            webhook
 // BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
 // RespondToWebhook                   respondToWebhook
+// Webhook                            executeWorkflowTrigger
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -65,6 +65,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Full',
     active: true,
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -83,7 +84,7 @@ export class FullWorkflow {
         name: 'HTTP Request',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2704, -48],
+        position: [-2864, -48],
     })
     HttpRequest = {
         url: 'https://auto.brokertricks.com/webhook/ungrid',
@@ -95,7 +96,7 @@ export class FullWorkflow {
         name: 'Edit Fields',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-2480, 176],
+        position: [-2416, 176],
     })
     EditFields = {
         assignments: {
@@ -170,7 +171,7 @@ export class FullWorkflow {
         name: 'Edit Fields9',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-2256, 176],
+        position: [-2192, 176],
     })
     EditFields9 = {
         assignments: {
@@ -241,7 +242,7 @@ export class FullWorkflow {
         name: 'Edit Fields1',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1584, 176],
+        position: [-1520, 176],
     })
     EditFields1 = {
         assignments: {
@@ -318,7 +319,7 @@ export class FullWorkflow {
         name: 'KML Generator',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-1450, 176],
+        position: [-1296, 176],
     })
     KmlGenerator = {
         jsCode: `for (const item of $input.all()) {
@@ -357,14 +358,13 @@ return $input.all();`,
         name: 'Upload KML to S3',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [-1400, 176],
+        position: [-1072, 176],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadKmlToS3 = {
         operation: 'upload',
         bucketName: 'btx-store',
         fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
-        inputDataFieldName: 'kml_data',
         additionalFields: {},
     };
 
@@ -374,7 +374,7 @@ return $input.all();`,
         name: 'Dispatch a workflow event and wait for completion',
         type: 'n8n-nodes-base.github',
         version: 1.1,
-        position: [-1360, 176],
+        position: [-848, 176],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     DispatchAWorkflowEventAndWaitForCompletion = {
@@ -414,7 +414,7 @@ return $input.all();`,
         name: 'HTTP Request2',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [-1136, 176],
+        position: [-624, 176],
     })
     HttpRequest2 = {
         url: '=https://api.github.com/repos/ditchallaway/robotic-property-photographer/actions/runs/{{ $json.run_id }}/artifacts',
@@ -426,7 +426,7 @@ return $input.all();`,
         name: 'HTTP Request3',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [-912, 176],
+        position: [-400, 176],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     HttpRequest3 = {
@@ -441,7 +441,7 @@ return $input.all();`,
         name: 'Compression',
         type: 'n8n-nodes-base.compression',
         version: 1.1,
-        position: [-640, 176],
+        position: [-176, 176],
     })
     Compression = {
         outputPrefix: '=',
@@ -452,7 +452,7 @@ return $input.all();`,
         name: 'Code in JavaScript',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-464, 176],
+        position: [48, 176],
     })
     CodeInJavascript = {
         jsCode: `const items = [];
@@ -477,7 +477,7 @@ return items;`,
         name: 'Upload a file',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [-240, 176],
+        position: [272, 176],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadAFile = {
@@ -492,7 +492,7 @@ return items;`,
         name: 'Edit Fields2',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [208, 176],
+        position: [720, 176],
     })
     EditFields2 = {
         assignments: {
@@ -537,7 +537,7 @@ return items;`,
         name: 'Sticky Note2',
         type: 'n8n-nodes-base.stickyNote',
         version: 1,
-        position: [-2752, -160],
+        position: [-2912, -160],
     })
     StickyNote2 = {
         content: `## 🚩Replace Me
@@ -552,7 +552,7 @@ return items;`,
         name: 'Edit Fields3',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-16, 176],
+        position: [496, 176],
     })
     EditFields3 = {
         assignments: {
@@ -573,7 +573,7 @@ return items;`,
         name: 'all images url builder',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [432, 176],
+        position: [944, 176],
     })
     AllImagesUrlBuilder = {
         jsCode: `const items = $input.all();
@@ -677,7 +677,7 @@ return [
         name: 'static map url builder',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1808, 176],
+        position: [-1744, 176],
     })
     StaticMapUrlBuilder = {
         assignments: {
@@ -704,7 +704,7 @@ return [
         name: 'geometry to static map url path',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-2032, 176],
+        position: [-1968, 176],
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
@@ -735,23 +735,10 @@ return [{ json: { pathString: pathString } }];`,
         name: 'get elevation',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2704, 176],
+        position: [-2640, 176],
     })
     GetElevation = {
-        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $json.body.payload.latitude }},{{ $json.body.payload.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
-        options: {},
-    };
-
-    @node({
-        id: 'c18aeb34-3a96-4274-b6ae-49b264a2b156',
-        webhookId: 'df2ee990-7bde-4907-a8c8-8384766d1ffb',
-        name: 'Webhook',
-        type: 'n8n-nodes-base.webhook',
-        version: 2.1,
-        position: [-2928, 176],
-    })
-    Webhook = {
-        path: 'full',
+        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $json.latitude }},{{ $json.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
         options: {},
     };
 
@@ -760,7 +747,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Backup Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [600, 176],
+        position: [1168, 176],
         credentials: { httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' } },
     })
     BackupEditorUrl = {
@@ -783,27 +770,11 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [800, 176],
+        position: [1392, 176],
     })
     Ntfy = {
         method: 'POST',
         url: 'https://ntfy.sh/brokertricks_alerts',
-        sendBody: true,
-        specifyBody: 'string',
-        bodyParameters: {
-            parameters: [
-                {
-                    name: 'value',
-                    value: `Render ready for review.
-
-Photopea Link: 
-{{ $json.editorUrl }}
-
-Order Dashboard: 
-https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.order_id }}`,
-                },
-            ],
-        },
         sendHeaders: true,
         headerParameters: {
             parameters: [
@@ -817,6 +788,8 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
                 },
             ],
         },
+        sendBody: true,
+        specifyBody: 'string',
         options: {},
     };
 
@@ -825,7 +798,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.5,
-        position: [1000, 176],
+        position: [1616, 176],
     })
     RespondToWebhook = {
         respondWith: 'json',
@@ -836,6 +809,17 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
 "editor_url": "{{ $('all images url builder').item.json.editorUrl }}"
 } `,
         options: {},
+    };
+
+    @node({
+        id: '8c834ba2-8d44-439c-836e-268fe96a35e8',
+        name: 'Webhook',
+        type: 'n8n-nodes-base.executeWorkflowTrigger',
+        version: 1.1,
+        position: [-2864, 176],
+    })
+    Webhook = {
+        inputSource: 'passthrough',
     };
 
     // =====================================================================
@@ -860,9 +844,9 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
         this.StaticMapUrlBuilder.out(0).to(this.EditFields1.in(0));
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
-        this.Webhook.out(0).to(this.GetElevation.in(0));
         this.AllImagesUrlBuilder.out(0).to(this.BackupEditorUrl.in(0));
         this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
         this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
+        this.Webhook.out(0).to(this.GetElevation.in(0));
     }
 }
