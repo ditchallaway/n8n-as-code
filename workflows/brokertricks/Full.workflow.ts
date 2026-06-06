@@ -65,7 +65,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Full',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -326,6 +325,32 @@ export class FullWorkflow {
   const coords = item.json.geometry.coordinates[0];
   const kmlCoords = coords.map(c => \`\${c[0]},\${c[1]},0\`).join(' ');
 
+  item.json.boundary = coords.map(c => [Number(c[0]), Number(c[1])]);
+
+  let centroidLon = Number(item.json.lon);
+  let centroidLat = Number(item.json.lat);
+  
+  if (typeof item.json.centroid === 'string' && item.json.centroid.includes(',')) {
+    const parts = item.json.centroid.split(',');
+    if (parts[0] && parts[0].trim() !== '' && parts[1] && parts[1].trim() !== '') {
+      centroidLon = Number(parts[0]);
+      centroidLat = Number(parts[1]);
+    }
+  } else if (Array.isArray(item.json.centroid)) {
+    centroidLon = Number(item.json.centroid[0]);
+    centroidLat = Number(item.json.centroid[1]);
+  } else if (item.json.centroid && typeof item.json.centroid === 'object') {
+    if (item.json.centroid.lon !== undefined) centroidLon = Number(item.json.centroid.lon);
+    if (item.json.centroid.lat !== undefined) centroidLat = Number(item.json.centroid.lat);
+  }
+  
+  if (isNaN(centroidLon) || isNaN(centroidLat)) {
+    centroidLon = Number(item.json.lon);
+    centroidLat = Number(item.json.lat);
+  }
+  
+  item.json.centroid = { lon: centroidLon, lat: centroidLat };
+
   const kmlContent = \`<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
@@ -365,6 +390,7 @@ return $input.all();`,
         operation: 'upload',
         bucketName: 'btx-store',
         fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
+        binaryPropertyName: 'kml_data',
         additionalFields: {},
     };
 
@@ -738,7 +764,7 @@ return [{ json: { pathString: pathString } }];`,
         position: [-2640, 176],
     })
     GetElevation = {
-        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $json.latitude }},{{ $json.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
+        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $json.body.payload.latitude }},{{ $json.body.payload.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
         options: {},
     };
 
@@ -790,6 +816,13 @@ return [{ json: { pathString: pathString } }];`,
         },
         sendBody: true,
         specifyBody: 'string',
+        body: `Render ready for review.
+
+Photopea Link: 
+{{ $json.editorUrl }}
+
+Order Dashboard: 
+https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.order_id }}`,
         options: {},
     };
 

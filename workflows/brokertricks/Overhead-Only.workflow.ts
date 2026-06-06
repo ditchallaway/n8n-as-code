@@ -26,7 +26,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // StaticMapUrlBuilder                set
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
-// Webhook                            webhook
+// Webhook                            executeWorkflowTrigger
 // BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
 // RespondToWebhook                   respondToWebhook
@@ -63,9 +63,14 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 @workflow({
     id: 'fD94owK14KYr97yB',
     name: 'Overhead-Only',
-    active: false,
+    active: true,
     isArchived: false,
-    settings: { executionOrder: 'v1', availableInMCP: false, callerPolicy: 'workflowsFromSameOwner' },
+    settings: {
+        executionOrder: 'v1',
+        availableInMCP: false,
+        callerPolicy: 'workflowsFromSameOwner',
+        binaryMode: 'separate',
+    },
 })
 export class OverheadOnlyWorkflow {
     // =====================================================================
@@ -318,6 +323,32 @@ export class OverheadOnlyWorkflow {
         jsCode: `for (const item of $input.all()) {
   const coords = item.json.geometry.coordinates[0];
   const kmlCoords = coords.map(c => \`\${c[0]},\${c[1]},0\`).join(' ');
+
+  item.json.boundary = coords.map(c => [Number(c[0]), Number(c[1])]);
+
+  let centroidLon = Number(item.json.lon);
+  let centroidLat = Number(item.json.lat);
+  
+  if (typeof item.json.centroid === 'string' && item.json.centroid.includes(',')) {
+    const parts = item.json.centroid.split(',');
+    if (parts[0] && parts[0].trim() !== '' && parts[1] && parts[1].trim() !== '') {
+      centroidLon = Number(parts[0]);
+      centroidLat = Number(parts[1]);
+    }
+  } else if (Array.isArray(item.json.centroid)) {
+    centroidLon = Number(item.json.centroid[0]);
+    centroidLat = Number(item.json.centroid[1]);
+  } else if (item.json.centroid && typeof item.json.centroid === 'object') {
+    if (item.json.centroid.lon !== undefined) centroidLon = Number(item.json.centroid.lon);
+    if (item.json.centroid.lat !== undefined) centroidLat = Number(item.json.centroid.lat);
+  }
+  
+  if (isNaN(centroidLon) || isNaN(centroidLat)) {
+    centroidLon = Number(item.json.lon);
+    centroidLat = Number(item.json.lat);
+  }
+  
+  item.json.centroid = { lon: centroidLon, lat: centroidLat };
 
   const kmlContent = \`<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
@@ -738,15 +769,13 @@ return [{ json: { pathString: pathString } }];`,
 
     @node({
         id: 'c18aeb34-3a96-4274-b6ae-49b264a2b156',
-        webhookId: 'df2ee990-7bde-4907-a8c8-8384766d1ffa',
         name: 'Webhook',
-        type: 'n8n-nodes-base.webhook',
-        version: 2.1,
+        type: 'n8n-nodes-base.executeWorkflowTrigger',
+        version: 1.1,
         position: [-2928, 176],
     })
     Webhook = {
-        path: 'overhead-only',
-        options: {},
+        inputSource: 'passthrough',
     };
 
     @node({
@@ -784,20 +813,13 @@ return [{ json: { pathString: pathString } }];`,
         url: 'https://ntfy.sh/brokertricks_alerts',
         sendBody: true,
         specifyBody: 'string',
-        bodyParameters: {
-            parameters: [
-                {
-                    name: 'value',
-                    value: `Render ready for review.
+        body: `Render ready for review.
 
 Photopea Link: 
 {{ $json.editorUrl }}
 
 Order Dashboard: 
 https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.order_id }}`,
-                },
-            ],
-        },
         sendHeaders: true,
         headerParameters: {
             parameters: [
