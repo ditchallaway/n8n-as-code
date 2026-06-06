@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 23  |  Connections: 20
+// Nodes   : 24  |  Connections: 21
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -30,6 +30,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // Ntfy                               httpRequest
 // RespondToWebhook                   respondToWebhook
 // Webhook                            executeWorkflowTrigger
+// EditFields4                        set
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -42,18 +43,19 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //              → EditFields1
 //                → KmlGenerator
 //                  → UploadKmlToS3
-//                    → DispatchAWorkflowEventAndWaitForCompletion
-//                      → HttpRequest2
-//                        → HttpRequest3
-//                          → Compression
-//                            → CodeInJavascript
-//                              → UploadAFile
-//                                → EditFields3
-//                                  → EditFields2
-//                                    → AllImagesUrlBuilder
-//                                      → BackupEditorUrl
-//                                        → Ntfy
-//                                          → RespondToWebhook
+//                    → EditFields4
+//                      → DispatchAWorkflowEventAndWaitForCompletion
+//                        → HttpRequest2
+//                          → HttpRequest3
+//                            → Compression
+//                              → CodeInJavascript
+//                                → UploadAFile
+//                                  → EditFields3
+//                                    → EditFields2
+//                                      → AllImagesUrlBuilder
+//                                        → BackupEditorUrl
+//                                          → Ntfy
+//                                            → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -65,6 +67,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Full',
     active: true,
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -400,7 +403,7 @@ return $input.all();`,
         name: 'Dispatch a workflow event and wait for completion',
         type: 'n8n-nodes-base.github',
         version: 1.1,
-        position: [-848, 176],
+        position: [-400, 176],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     DispatchAWorkflowEventAndWaitForCompletion = {
@@ -432,7 +435,15 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: '={{ JSON.stringify({ job_json: JSON.stringify($json) }) }}',
+        inputs: `={{
+  {
+    "job_json": JSON.stringify({
+      "lat": parseFloat($('Webhook').item.json.body.payload.latitude),
+      "lon": parseFloat($('Webhook').item.json.body.payload.longitude),
+      "boundary": $('Webhook').item.json.body.payload.geometry
+    })
+  }
+}}`,
     };
 
     @node({
@@ -440,7 +451,7 @@ return $input.all();`,
         name: 'HTTP Request2',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [-624, 176],
+        position: [-208, 176],
     })
     HttpRequest2 = {
         url: '=https://api.github.com/repos/ditchallaway/robotic-property-photographer/actions/runs/{{ $json.run_id }}/artifacts',
@@ -452,7 +463,7 @@ return $input.all();`,
         name: 'HTTP Request3',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [-400, 176],
+        position: [16, 176],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     HttpRequest3 = {
@@ -467,7 +478,7 @@ return $input.all();`,
         name: 'Compression',
         type: 'n8n-nodes-base.compression',
         version: 1.1,
-        position: [-176, 176],
+        position: [240, 176],
     })
     Compression = {
         outputPrefix: '=',
@@ -478,7 +489,7 @@ return $input.all();`,
         name: 'Code in JavaScript',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [48, 176],
+        position: [464, 176],
     })
     CodeInJavascript = {
         jsCode: `const items = [];
@@ -503,7 +514,7 @@ return items;`,
         name: 'Upload a file',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [272, 176],
+        position: [688, 176],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadAFile = {
@@ -518,7 +529,7 @@ return items;`,
         name: 'Edit Fields2',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [720, 176],
+        position: [1136, 176],
     })
     EditFields2 = {
         assignments: {
@@ -578,7 +589,7 @@ return items;`,
         name: 'Edit Fields3',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [496, 176],
+        position: [912, 176],
     })
     EditFields3 = {
         assignments: {
@@ -599,7 +610,7 @@ return items;`,
         name: 'all images url builder',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [944, 176],
+        position: [1360, 176],
     })
     AllImagesUrlBuilder = {
         jsCode: `const items = $input.all();
@@ -773,7 +784,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Backup Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [1168, 176],
+        position: [1584, 176],
         credentials: { httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' } },
     })
     BackupEditorUrl = {
@@ -796,7 +807,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [1392, 176],
+        position: [1808, 176],
     })
     Ntfy = {
         method: 'POST',
@@ -831,7 +842,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.5,
-        position: [1616, 176],
+        position: [2032, 176],
     })
     RespondToWebhook = {
         respondWith: 'json',
@@ -855,6 +866,33 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
         inputSource: 'passthrough',
     };
 
+    @node({
+        id: '8d93c293-3315-4253-94d9-9258025d36ff',
+        name: 'Edit Fields4',
+        type: 'n8n-nodes-base.set',
+        version: 3.4,
+        position: [-864, 176],
+    })
+    EditFields4 = {
+        assignments: {
+            assignments: [
+                {
+                    id: '2ef215e0-b03e-4633-8bb3-f50868a1f235',
+                    name: 'geometry',
+                    value: "={{ $('Webhook').item.json.geometry }}",
+                    type: 'object',
+                },
+                {
+                    id: 'bc3bcc7b-f963-427e-8735-8fc551287b4a',
+                    name: 'centroid',
+                    value: "={{ $('Webhook').item.json.centroid }}",
+                    type: 'number',
+                },
+            ],
+        },
+        options: {},
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -865,7 +903,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
         this.EditFields9.out(0).to(this.GeometryToStaticMapUrlPath.in(0));
         this.EditFields1.out(0).to(this.KmlGenerator.in(0));
         this.KmlGenerator.out(0).to(this.UploadKmlToS3.in(0));
-        this.UploadKmlToS3.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
+        this.UploadKmlToS3.out(0).to(this.EditFields4.in(0));
         this.DispatchAWorkflowEventAndWaitForCompletion.out(0).to(this.HttpRequest2.in(0));
         this.HttpRequest2.out(0).to(this.HttpRequest3.in(0));
         this.HttpRequest3.out(0).to(this.Compression.in(0));
@@ -881,5 +919,6 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
         this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
         this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
         this.Webhook.out(0).to(this.GetElevation.in(0));
+        this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
     }
 }
