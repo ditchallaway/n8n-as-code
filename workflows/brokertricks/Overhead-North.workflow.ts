@@ -65,6 +65,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Overhead-North',
     active: true,
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
@@ -431,7 +432,7 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ JSON.stringify({
+        inputs: `={{ {
   "job_json": JSON.stringify({
     "lat": parseFloat($('Webhook').item.json.body.payload.latitude),
     "lon": parseFloat($('Webhook').item.json.body.payload.longitude),
@@ -445,7 +446,7 @@ return $input.all();`,
   }),
   "snapshot_mode": "overhead_north",
   "resumeUrl": $resumeUrl
-}) }}`,
+} }}`,
     };
 
     @node({

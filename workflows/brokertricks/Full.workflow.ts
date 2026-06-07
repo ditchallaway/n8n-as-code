@@ -159,7 +159,13 @@ export class FullWorkflow {
                 {
                     id: '9c19d833-5884-4467-bb5f-ab1f7a435c5f',
                     name: 'order_id',
-                    value: "order_{{ $('Webhook').item.json.body.payload.order_id }}",
+                    value: "={{ $('Webhook').item.json.order_id }}",
+                    type: 'string',
+                },
+                {
+                    id: '5d2953b1-dd6f-4aad-818a-78154f77609a',
+                    name: 'path',
+                    value: "=/cust_{{ $('Webhook').item.json.body.payload.wpuser_id }}/order_{{ $('Webhook').item.json.order_id }}/",
                     type: 'string',
                 },
             ],
@@ -790,18 +796,21 @@ return [{ json: { pathString: pathString } }];`,
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
         position: [1584, 176],
-        credentials: { httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' } },
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
     })
     BackupEditorUrl = {
         method: 'PATCH',
-        url: '=https://api.surecart.com/v1/orders/{{ $json.order_id }}',
+        url: '=https://api.surecart.com/v1/notes/326395a5-fe65-4d97-b229-98679071a6fd',
         authentication: 'genericCredentialType',
         genericAuthType: 'httpBearerAuth',
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
-  "metadata": {
-    "photopea_editor_url": "{{ $json.editorUrl }}"
+  "note": {
+    "body": "{{ $json.editorUrl }}"
   }
 }`,
         options: {},
@@ -891,7 +900,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
                     id: 'bc3bcc7b-f963-427e-8735-8fc551287b4a',
                     name: 'centroid',
                     value: "={{ $('Webhook').item.json.centroid }}",
-                    type: 'number',
+                    type: 'string',
                 },
             ],
         },
