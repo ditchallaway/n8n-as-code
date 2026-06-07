@@ -431,7 +431,7 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ {
+        inputs: `={{ JSON.stringify({
   "job_json": JSON.stringify({
     "lat": parseFloat($('Webhook').item.json.body.payload.latitude),
     "lon": parseFloat($('Webhook').item.json.body.payload.longitude),
@@ -445,7 +445,7 @@ return $input.all();`,
   }),
   "snapshot_mode": "overhead_only",
   "resumeUrl": $resumeUrl
-} }}`,
+}) }}`,
     };
 
     @node({
