@@ -395,7 +395,7 @@ return $input.all();`,
 
     @node({
         id: 'fd158265-2008-4ef4-8ea4-f58a2436c993',
-        webhookId: 'd4974609-6a46-45bc-8230-d5fc3fdb580c',
+        webhookId: 'f57fa959-7e09-444d-9ade-e4052e7307d9',
         name: 'Dispatch a workflow event and wait for completion',
         type: 'n8n-nodes-base.github',
         version: 1.1,
