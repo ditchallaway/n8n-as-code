@@ -431,7 +431,21 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: '={{ JSON.stringify({ job_json: JSON.stringify($json), snapshot_mode: "overhead_only" }) }}',
+        inputs: `={{ {
+  "job_json": JSON.stringify({
+    "lat": parseFloat($('Webhook').item.json.body.payload.latitude),
+    "lon": parseFloat($('Webhook').item.json.body.payload.longitude),
+    "boundary": $('Webhook').item.json.body.payload.geometry,
+    "acres": parseFloat($('Webhook').item.json.body.payload.acres),
+    "county": $('Webhook').item.json.body.payload.county,
+    "elevation": parseFloat($('Edit Fields9').item.json.elevation),
+    "customer_id": $('Edit Fields9').item.json.customer_id,
+    "order_id": $('Edit Fields9').item.json.order_id,
+    "owner": $('Edit Fields9').item.json.owner
+  }),
+  "snapshot_mode": "overhead_only",
+  "resumeUrl": $resumeUrl
+} }}`,
     };
 
     @node({
