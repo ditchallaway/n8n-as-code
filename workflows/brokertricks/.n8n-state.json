@@ -43,7 +43,7 @@
     "VL9ZeeRE8Be0Wxvb": {
       "lastSyncedHash": "afa2bc3a1ab10fb2bb7562821e7a4bbe244f08df7c0e13958cd2ea7d7a7b38d3",
       "lastSyncedAt": "2026-05-29T08:53:49.825Z",
-      "filename": "MigrateDB_VL9ZeeRE.workflow.ts"
+      "filename": "MigrateDB.workflow.ts"
     }
   }
 }
