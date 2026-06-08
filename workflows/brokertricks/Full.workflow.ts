@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 24  |  Connections: 21
+// Nodes   : 25  |  Connections: 22
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -26,6 +26,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // StaticMapUrlBuilder                set
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
+// GetExpandedOrder                   httpRequest                [creds]
 // BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
 // RespondToWebhook                   respondToWebhook
@@ -35,27 +36,28 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
 // Webhook
-//    → GetElevation
-//      → EditFields
-//        → EditFields9
-//          → GeometryToStaticMapUrlPath
-//            → StaticMapUrlBuilder
-//              → EditFields1
-//                → KmlGenerator
-//                  → UploadKmlToS3
-//                    → EditFields4
-//                      → DispatchAWorkflowEventAndWaitForCompletion
-//                        → HttpRequest2
-//                          → HttpRequest3
-//                            → Compression
-//                              → CodeInJavascript
-//                                → UploadAFile
-//                                  → EditFields3
-//                                    → EditFields2
-//                                      → AllImagesUrlBuilder
-//                                        → BackupEditorUrl
-//                                          → Ntfy
-//                                            → RespondToWebhook
+//    → GetExpandedOrder
+//      → GetElevation
+//        → EditFields
+//          → EditFields9
+//            → GeometryToStaticMapUrlPath
+//              → StaticMapUrlBuilder
+//                → EditFields1
+//                  → KmlGenerator
+//                    → UploadKmlToS3
+//                      → EditFields4
+//                        → DispatchAWorkflowEventAndWaitForCompletion
+//                          → HttpRequest2
+//                            → HttpRequest3
+//                              → Compression
+//                                → CodeInJavascript
+//                                  → UploadAFile
+//                                    → EditFields3
+//                                      → EditFields2
+//                                        → AllImagesUrlBuilder
+//                                          → BackupEditorUrl
+//                                            → Ntfy
+//                                              → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -637,6 +639,13 @@ try {
     acreage = input.acreage || 0;
 }
 
+let fulfillment_id = '';
+try {
+    fulfillment_id = $('Get Expanded Order').first().json.fulfillments?.[0]?.id || '';
+} catch(e) {
+    // fallback if not available
+}
+
 // Dynamically build files array from all incoming items
 // Include reference images for the human editor
 const timestamp = Date.now();
@@ -685,7 +694,7 @@ if (app.documents.length === expectedFiles) {
       textLayer.textItem.position = [100, 200];
     }
   }
-}\\n\`.trim();
+}\`.trim();
 
 const payload = {
     files: files,
@@ -705,6 +714,9 @@ const params = [
   \`direction=full\`,
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
+if (fulfillment_id) {
+  params.push(\`fulfillment_id=\${encodeURIComponent(fulfillment_id)}\`);
+}
 const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
 
 // We only need to output a single item containing the combined URL
@@ -786,7 +798,26 @@ return [{ json: { pathString: pathString } }];`,
         position: [-2640, 176],
     })
     GetElevation = {
-        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $json.body.payload.latitude }},{{ $json.body.payload.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
+        url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $("Webhook").item.json.body.payload.latitude }},{{ $("Webhook").item.json.body.payload.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
+        options: {},
+    };
+
+    @node({
+        id: '2a1d2b3c-4e5f-6a7b-8c9d-0e1f2a3b4c5d',
+        name: 'Get Expanded Order',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [-2752, 320],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    GetExpandedOrder = {
+        method: 'GET',
+        url: '=https://api.surecart.com/v1/orders/{{ $("Webhook").item.json.order_id || $("Webhook").item.json.body.payload.order_id }}?expand=fulfillments',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
         options: {},
     };
 
@@ -932,7 +963,8 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.ord
         this.AllImagesUrlBuilder.out(0).to(this.BackupEditorUrl.in(0));
         this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
         this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
-        this.Webhook.out(0).to(this.GetElevation.in(0));
+        this.Webhook.out(0).to(this.GetExpandedOrder.in(0));
+        this.GetExpandedOrder.out(0).to(this.GetElevation.in(0));
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
     }
 }

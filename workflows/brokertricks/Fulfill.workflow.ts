@@ -1,17 +1,37 @@
 import { workflow, node, links } from '@n8n-as-code/transformer';
 
+// <workflow-map>
+// Workflow : Fulfill
+// Nodes   : 2  |  Connections: 1
+//
+// NODE INDEX
+// ──────────────────────────────────────────────────────────────────
+// Property name                    Node type (short)         Flags
+// Webhook                            webhook
+// FulfillInSurecart                  httpRequest                [creds]
+//
+// ROUTING MAP
+// ──────────────────────────────────────────────────────────────────
+// Webhook
+//    → FulfillInSurecart
+// </workflow-map>
+
+// =====================================================================
+// METADATA DU WORKFLOW
+// =====================================================================
+
 @workflow({
-    id: 'fD94owK14KYr97yF',
+    id: 'HbDy7lPJR0bqj3uS',
     name: 'Fulfill',
-    active: true,
+    active: false,
     isArchived: false,
-    settings: {
-        executionOrder: 'v1',
-        callerPolicy: 'workflowsFromSameOwner',
-        availableInMCP: false,
-    },
+    settings: { executionOrder: 'v1', availableInMCP: false, callerPolicy: 'workflowsFromSameOwner' },
 })
 export class FulfillWorkflow {
+    // =====================================================================
+    // CONFIGURATION DES NOEUDS
+    // =====================================================================
+
     @node({
         id: '2022c937-1d99-481f-8e6a-2ce76e85e822',
         webhookId: '1ccdd082-8344-4377-9f4e-55d03d5029b9',
@@ -38,23 +58,25 @@ export class FulfillWorkflow {
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
         },
     })
-    FulfillInSureCart = {
-        method: 'POST',
-        url: 'https://api.surecart.com/v1/fulfillments',
+    FulfillInSurecart = {
+        method: 'PATCH',
+        url: 'https://api.surecart.com/v1/fulfillments/{{ $json.body.fulfillment_id }}',
         authentication: 'genericCredentialType',
         genericAuthType: 'httpBearerAuth',
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
-  "fulfillment": {
-    "order": "{{ $json.body.order_id }}"
-  }
+  "status": "fulfilled"
 }`,
         options: {},
     };
 
+    // =====================================================================
+    // ROUTAGE ET CONNEXIONS
+    // =====================================================================
+
     @links()
     defineRouting() {
-        this.Webhook.out(0).to(this.FulfillInSureCart.in(0));
+        this.Webhook.out(0).to(this.FulfillInSurecart.in(0));
     }
 }
