@@ -860,13 +860,31 @@ return [{ json: { pathString: pathString } }];`,
         sendHeaders: true,
         headerParameters: {
             parameters: [
-                { name: 'Tags', value: 'camera,world_map,art' },
-                { name: 'Title', value: '📸 [Full] Render Ready: {{ $("all images url builder").item.json.acreage }} Acres ({{ $("Edit Fields9").item.json.county }})' },
-                { name: 'Priority', value: 'high' },
-                { name: 'Actions', value: 'view, Open Photopea, {{ $("all images url builder").item.json.editorUrl }}; view, WordPress Order, https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all images url builder").item.json.order_id }}' },
-                { name: 'Attach', value: '{{ $("all images url builder").item.json.photopeaPayload.files[0] }}' },
-                { name: 'Markdown', value: 'yes' }
-            ]
+                {
+                    name: 'Tags',
+                    value: 'camera,world_map,art',
+                },
+                {
+                    name: 'Title',
+                    value: '📸 [Full] Render Ready: {{ $("all images url builder").item.json.acreage }} Acres ({{ $("Edit Fields9").item.json.county }})',
+                },
+                {
+                    name: 'Priority',
+                    value: 'high',
+                },
+                {
+                    name: 'Actions',
+                    value: 'view, Open Photopea, {{ $("all images url builder").item.json.editorUrl }}; view, WordPress Order, https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all images url builder").item.json.order_id }}',
+                },
+                {
+                    name: 'Attach',
+                    value: '{{ $("all images url builder").item.json.photopeaPayload.files[0] }}',
+                },
+                {
+                    name: 'Markdown',
+                    value: 'yes',
+                },
+            ],
         },
         sendBody: true,
         specifyBody: 'string',
