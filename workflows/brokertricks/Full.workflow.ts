@@ -860,25 +860,24 @@ return [{ json: { pathString: pathString } }];`,
         sendHeaders: true,
         headerParameters: {
             parameters: [
-                {
-                    name: 'Click',
-                    value: '={{ $json.editorUrl }}',
-                },
-                {
-                    name: 'Markdown',
-                    value: 'yes',
-                },
-            ],
+                { name: 'Tags', value: 'camera,world_map,art' },
+                { name: 'Title', value: '📸 [Full] Render Ready: {{ $("all images url builder").item.json.acreage }} Acres ({{ $("Edit Fields9").item.json.county }})' },
+                { name: 'Priority', value: 'high' },
+                { name: 'Actions', value: 'view, Open Photopea, {{ $("all images url builder").item.json.editorUrl }}; view, WordPress Order, https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all images url builder").item.json.order_id }}' },
+                { name: 'Attach', value: '{{ $("all images url builder").item.json.photopeaPayload.files[0] }}' },
+                { name: 'Markdown', value: 'yes' }
+            ]
         },
         sendBody: true,
         specifyBody: 'string',
-        body: `Render ready for review.
-
-Photopea Link: 
-{{ $json.editorUrl }}
-
-Order Dashboard: 
-https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $json.order_id }}`,
+        body: `**Product:** Full
+**Size:** {{ $("all images url builder").item.json.acreage }} Acres
+**Location:**
+- **County:** {{ $("Edit Fields9").item.json.county }}
+- **Coordinates:** {{ $("Edit Fields9").item.json.lat }}, {{ $("Edit Fields9").item.json.lon }}
+- **Elevation:** {{ $("Edit Fields9").item.json.elevation }} ft
+**Owner:** {{ $("Edit Fields9").item.json.owner }}
+**Rendered Files:** {{ $("all images url builder").item.json.photopeaPayload.files.length }}`,
         options: {},
     };
 
