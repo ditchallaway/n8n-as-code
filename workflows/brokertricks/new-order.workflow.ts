@@ -214,7 +214,7 @@ export class NewOrderWorkflow {
                 {
                     id: 'bb94a86b-3f59-4497-b3ea-4a838a74da70',
                     name: 'order_id',
-                    value: "={{ $('get checkout').item.json.id }}",
+                    value: "={{ $('Webhook').item.json.body.data.object.id }}",
                     type: 'string',
                 },
                 {
@@ -577,7 +577,7 @@ export class NewOrderWorkflow {
                 {
                     id: '4992e8ce-dc02-4800-96eb-49717f1bcc03',
                     name: 'idempotency_key',
-                    value: "={{ $('Webhook').item.json.body.order_id }}",
+                    value: "={{ $('Webhook').item.json.body.data.object.id }}",
                     type: 'string',
                 },
             ],
