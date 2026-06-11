@@ -916,16 +916,9 @@ return [{ json: { pathString: pathString } }];`,
         },
     })
     CheckForNotes = {
-        url: '=https://api.surecart.com/v1/notes',
+        url: '=https://api.surecart.com/v1/notes?notable_id={{ $("all images url builder").item.json.order_id }}&notable_type=order',
         authentication: 'genericCredentialType',
         genericAuthType: 'httpBearerAuth',
-        sendBody: true,
-        specifyBody: 'json',
-        jsonBody: `={
-  "note": {
-    "body": "{{ $json.shortLink }}"
-  }
-}`,
         options: {},
     };
 
@@ -986,12 +979,13 @@ return [{ json: { pathString: pathString } }];`,
             conditions: [
                 {
                     id: '52eae219-b7fe-47c3-b5a0-eb1e7282e1ba',
-                    leftValue: '',
+                    leftValue:
+                        '={{ !($json.data || []).some(n => (n.metadata && n.metadata["Editor URL"]) || (n.body && n.body.includes("link.brokertricks.com"))) }}',
                     rightValue: '',
                     operator: {
-                        type: 'string',
-                        operation: 'equals',
-                        name: 'filter.operator.equals',
+                        type: 'boolean',
+                        operation: 'true',
+                        singleValue: true,
                     },
                 },
             ],
@@ -1013,7 +1007,7 @@ return [{ json: { pathString: pathString } }];`,
     })
     HttpRequest1 = {
         method: 'PATCH',
-        url: 'https://api.surecart.com/v1/notes/{id}',
+        url: '=https://api.surecart.com/v1/notes/{{ ($json.data || []).find(n => (n.metadata && n.metadata["Editor URL"]) || (n.body && n.body.includes("link.brokertricks.com")))?.id }}',
         authentication: 'genericCredentialType',
         genericAuthType: 'httpBearerAuth',
         sendHeaders: true,
