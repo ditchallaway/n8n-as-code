@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 25  |  Connections: 22
+// Nodes   : 29  |  Connections: 27
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -27,11 +27,15 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // GetExpandedOrder                   httpRequest                [creds]
-// BackupEditorUrl                    httpRequest                [creds]
-// Ntfy                               httpRequest
+// ShortenEditorUrl                   httpRequest
 // RespondToWebhook                   respondToWebhook
 // Webhook                            executeWorkflowTrigger
 // EditFields4                        set
+// CheckForNotes                      httpRequest                [creds]
+// CreateANote                        httpRequest                [creds]
+// If_                                if
+// HttpRequest1                       httpRequest                [creds]
+// NtfySend                           ntfySend                   [creds]
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -55,9 +59,14 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                    → EditFields3
 //                                      → EditFields2
 //                                        → AllImagesUrlBuilder
-//                                          → BackupEditorUrl
-//                                            → Ntfy
-//                                              → RespondToWebhook
+//                                          → ShortenEditorUrl
+//                                            → CheckForNotes
+//                                              → If_
+//                                                → CreateANote
+//                                                  → NtfySend
+//                                                    → RespondToWebhook
+//                                               .out(1) → HttpRequest1
+//                                                  → NtfySend (↩ loop)
 // </workflow-map>
 
 // =====================================================================
@@ -69,7 +78,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Full',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -813,80 +821,30 @@ return [{ json: { pathString: pathString } }];`,
     };
 
     @node({
-        id: '3c8e54c0-abcd-4e00-a111-5b7f1e9c7a2b',
-        name: 'Backup Editor URL',
+        id: 'ab3c7a2b-4e5f-6a7b-8c9d-0e1f2a3b4c5d',
+        name: 'Shorten Editor URL',
         type: 'n8n-nodes-base.httpRequest',
-        version: 4.3,
+        version: 4.4,
         position: [1616, 176],
-        credentials: {
-            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
-            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
-        },
     })
-    BackupEditorUrl = {
-        method: 'PATCH',
-        url: '=https://api.surecart.com/v1/notes/326395a5-fe65-4d97-b229-98679071a6fd',
-        authentication: 'genericCredentialType',
-        genericAuthType: 'httpBearerAuth',
-        sendBody: true,
-        specifyBody: 'json',
-        jsonBody: `={
-  "note": {
-    "body": "{{ $json.editorUrl }}"
-  }
-}`,
-        options: {},
-    };
-
-    @node({
-        id: '5d9f65d1-bcde-4f11-b222-6c8a2f0d8b3c',
-        name: 'Ntfy',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.3,
-        position: [1840, 176],
-    })
-    Ntfy = {
+    ShortenEditorUrl = {
         method: 'POST',
-        url: 'https://ntfy.sh/brokertricks_alerts',
+        url: 'https://link.brokertricks.com/api/link/create',
         sendHeaders: true,
         headerParameters: {
             parameters: [
                 {
-                    name: 'Tags',
-                    value: 'camera,world_map,art',
-                },
-                {
-                    name: 'Title',
-                    value: '📸 [Full] Render Ready: {{ $("all images url builder").item.json.acreage }} Acres ({{ $("Edit Fields9").item.json.county }})',
-                },
-                {
-                    name: 'Priority',
-                    value: 'high',
-                },
-                {
-                    name: 'Actions',
-                    value: 'view, Open Photopea, {{ $("all images url builder").item.json.editorUrl }}; view, WordPress Order, https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all images url builder").item.json.order_id }}',
-                },
-                {
-                    name: 'Attach',
-                    value: '{{ $("all images url builder").item.json.photopeaPayload.files[0] }}',
-                },
-                {
-                    name: 'Markdown',
-                    value: 'yes',
+                    name: 'Authorization',
+                    value: '=Bearer {{ $env.NUXT_SITE_TOKEN }}',
                 },
             ],
         },
         sendBody: true,
-        specifyBody: 'string',
-        body: `**Product:** Full
-**Size:** {{ $("all images url builder").item.json.acreage }} Acres
-**Location:**
-- **County:** {{ $("Edit Fields9").item.json.county }}
-- **Coordinates:** {{ $("Edit Fields9").item.json.lat }}, {{ $("Edit Fields9").item.json.lon }}
-- **Elevation:** {{ $("Edit Fields9").item.json.elevation }} ft
-**Owner:** {{ $("Edit Fields9").item.json.owner }}
-**Rendered Files:** {{ $("all images url builder").item.json.photopeaPayload.files.length }}`,
+        specifyBody: 'json',
+        jsonBody: `={
+  "url": "{{ $json.editorUrl }}",
+  "comment": "Editor URL for order_{{ $json.order_id }}"
+}`,
         options: {},
     };
 
@@ -895,7 +853,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.5,
-        position: [2064, 176],
+        position: [2848, 192],
     })
     RespondToWebhook = {
         respondWith: 'json',
@@ -903,7 +861,7 @@ return [{ json: { pathString: pathString } }];`,
   "status": "success",
   "order": "order_{{ $('Webhook').item.json.body.payload.order_id }}",
 "wp_user": "{{ $('Webhook').item.json.body.payload.wpuser_id }}",
-"editor_url": "{{ $('all images url builder').item.json.editorUrl }}"
+"editor_url": "{{ $('Shorten Editor URL').item.json.shortLink }}"
 } `,
         options: {},
     };
@@ -946,6 +904,154 @@ return [{ json: { pathString: pathString } }];`,
         options: {},
     };
 
+    @node({
+        id: '3c8e54c0-abcd-4e00-a111-5b7f1e9c7a2b',
+        name: 'check for notes',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [1840, 176],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    CheckForNotes = {
+        url: '=https://api.surecart.com/v1/notes',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+  "note": {
+    "body": "{{ $json.shortLink }}"
+  }
+}`,
+        options: {},
+    };
+
+    @node({
+        id: 'c8fcdb81-25de-4c3a-b58e-f9a3a4906128',
+        name: 'create a note',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [2272, 32],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    CreateANote = {
+        method: 'POST',
+        url: '=https://api.surecart.com/v1/notes',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Content-Type',
+                    value: 'application/json',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+    "note": {
+      "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
+      "notable_id": {{ JSON.stringify( $('all images url builder').item.json.order_id) }},
+      "notable_type": "order",
+      "metadata": {"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
+            }
+}
+`,
+        options: {},
+    };
+
+    @node({
+        id: 'e5c53eef-6422-4178-bb05-23eed3a742f7',
+        name: 'If',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [2048, 176],
+    })
+    If_ = {
+        conditions: {
+            options: {
+                caseSensitive: true,
+                leftValue: '',
+                typeValidation: 'strict',
+                version: 3,
+            },
+            conditions: [
+                {
+                    id: '52eae219-b7fe-47c3-b5a0-eb1e7282e1ba',
+                    leftValue: '',
+                    rightValue: '',
+                    operator: {
+                        type: 'string',
+                        operation: 'equals',
+                        name: 'filter.operator.equals',
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
+    };
+
+    @node({
+        id: '710aa1b1-d8d5-422e-9a0b-c407194bddce',
+        name: 'HTTP Request1',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [2304, 304],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    HttpRequest1 = {
+        method: 'PATCH',
+        url: 'https://api.surecart.com/v1/notes/{id}',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Content-Type',
+                    value: 'application/json',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `{
+    "note": {
+      "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
+      "notable_id": {{ JSON.stringify( $('all images url builder').item.json.order_id) }},
+      "notable_type": "order",
+      "metadata": {"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
+            }
+}
+`,
+        options: {},
+    };
+
+    @node({
+        id: '9465ff3b-3e79-4af8-bd31-a39fb13d9cc8',
+        name: 'Ntfy Send',
+        type: 'n8n-nodes-ntfy-client.ntfySend',
+        version: 1,
+        position: [2592, 192],
+        credentials: { ntfyApi: { id: 'W2xKUTn1PP43EdnG', name: 'ntfy account' } },
+    })
+    NtfySend = {
+        topic: 'to-human-bt-test',
+        message: "={{ $('Get Expanded Order').item.json.portal_url }}",
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -968,11 +1074,16 @@ return [{ json: { pathString: pathString } }];`,
         this.StaticMapUrlBuilder.out(0).to(this.EditFields1.in(0));
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
-        this.AllImagesUrlBuilder.out(0).to(this.BackupEditorUrl.in(0));
-        this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
-        this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
+        this.AllImagesUrlBuilder.out(0).to(this.ShortenEditorUrl.in(0));
         this.Webhook.out(0).to(this.GetExpandedOrder.in(0));
         this.GetExpandedOrder.out(0).to(this.GetElevation.in(0));
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
+        this.ShortenEditorUrl.out(0).to(this.CheckForNotes.in(0));
+        this.CheckForNotes.out(0).to(this.If_.in(0));
+        this.CreateANote.out(0).to(this.NtfySend.in(0));
+        this.If_.out(0).to(this.CreateANote.in(0));
+        this.If_.out(1).to(this.HttpRequest1.in(0));
+        this.HttpRequest1.out(0).to(this.NtfySend.in(0));
+        this.NtfySend.out(0).to(this.RespondToWebhook.in(0));
     }
 }

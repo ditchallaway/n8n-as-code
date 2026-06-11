@@ -1,0 +1,31 @@
+# Tasks: Link Shortener Integration
+
+- [x] Shorten editor URL in `Overhead-North.workflow.ts`
+  - [x] Add `ShortenEditorUrl` node definition
+  - [x] Shift positions of downstream nodes (`BackupEditorUrl`, `Ntfy`, `RespondToWebhook`)
+  - [x] Update `BackupEditorUrl` to use shortened link and update orders path referencing
+  - [x] Update `Ntfy` action to use shortened link
+  - [x] Update `RespondToWebhook` output to use shortened link
+  - [x] Update `defineRouting()` routing connections
+- [x] Shorten editor URL in `Overhead-Only.workflow.ts`
+  - [x] Add `ShortenEditorUrl` node definition
+  - [x] Shift positions of downstream nodes (`BackupEditorUrl`, `Ntfy`, `RespondToWebhook`)
+  - [x] Update `BackupEditorUrl` to use shortened link and update orders path referencing
+  - [x] Update `Ntfy` action to use shortened link
+  - [x] Update `RespondToWebhook` output to use shortened link
+  - [x] Update `defineRouting()` routing connections
+- [x] Shorten editor URL in `Full.workflow.ts`
+  - [x] Add `ShortenEditorUrl` node definition
+  - [x] Shift positions of downstream nodes (`BackupEditorUrl`, `Ntfy`, `RespondToWebhook`)
+  - [x] Update `BackupEditorUrl` note body to use shortened link
+  - [x] Update `Ntfy` action to use shortened link
+  - [x] Update `RespondToWebhook` output to use shortened link
+  - [x] Update `defineRouting()` routing connections
+- [x] Local validation of modified workflows
+  - [x] Validate `Overhead-North.workflow.ts`
+  - [x] Validate `Overhead-Only.workflow.ts`
+  - [x] Validate `Full.workflow.ts`
+- [x] Push workflows to n8n instance and verify
+  - [x] Push `Overhead-North.workflow.ts` with `--verify`
+  - [x] Push `Overhead-Only.workflow.ts` with `--verify`
+  - [x] Push `Full.workflow.ts` with `--verify`

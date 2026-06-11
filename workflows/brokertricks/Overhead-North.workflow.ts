@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Overhead-North
-// Nodes   : 23  |  Connections: 20
+// Nodes   : 24  |  Connections: 21
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -27,6 +27,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // Webhook                            executeWorkflowTrigger
+// ShortenEditorUrl                   httpRequest
 // BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
 // RespondToWebhook                   respondToWebhook
@@ -51,9 +52,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                → EditFields3
 //                                  → EditFields2
 //                                    → AllImagesUrlBuilder
-//                                      → BackupEditorUrl
-//                                        → Ntfy
-//                                          → RespondToWebhook
+//                                      → ShortenEditorUrl
+//                                        → BackupEditorUrl
+//                                          → Ntfy
+//                                            → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -65,7 +67,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Overhead-North',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
@@ -794,23 +795,51 @@ return [{ json: { pathString: pathString } }];`,
     };
 
     @node({
+        id: 'ab3c7a2b-4e5f-6a7b-8c9d-0e1f2a3b4c5d',
+        name: 'Shorten Editor URL',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [600, 176],
+    })
+    ShortenEditorUrl = {
+        method: 'POST',
+        url: 'https://link.brokertricks.com/api/link/create',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Authorization',
+                    value: '=Bearer {{ $env.NUXT_SITE_TOKEN }}',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+  "url": "{{ $json.editorUrl }}",
+  "comment": "Editor URL for order_{{ $json.order_id }}"
+}`,
+        options: {},
+    };
+
+    @node({
         id: '3c8e54c0-abcd-4e00-a111-5b7f1e9c7a2b',
         name: 'Backup Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [600, 176],
+        position: [800, 176],
         credentials: { httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' } },
     })
     BackupEditorUrl = {
         method: 'PATCH',
-        url: '=https://api.surecart.com/v1/orders/{{ $json.order_id }}',
+        url: '=https://api.surecart.com/v1/orders/{{ $("all images url builder").item.json.order_id }}',
         authentication: 'genericCredentialType',
         genericAuthType: 'httpBearerAuth',
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
   "metadata": {
-    "photopea_editor_url": "{{ $json.editorUrl }}"
+    "photopea_editor_url": "{{ $json.shortLink }}"
   }
 }`,
         options: {},
@@ -821,32 +850,33 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [800, 176],
+        position: [1000, 176],
     })
     Ntfy = {
         method: 'POST',
         url: 'https://ntfy.sh/brokertricks_alerts',
+        sendBody: true,
+        specifyBody: 'string',
+        body: `Render ready for review.
+
+Photopea Link: 
+{{ $("Shorten Editor URL").item.json.shortLink }}
+
+Order Dashboard: 
+https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all images url builder").item.json.order_id }}`,
         sendHeaders: true,
         headerParameters: {
             parameters: [
-                { name: 'Tags', value: 'camera,world_map,art' },
-                { name: 'Title', value: '📸 [Overhead-North] Render Ready: {{ $("all images url builder").item.json.acreage }} Acres ({{ $("Edit Fields9").item.json.county }})' },
-                { name: 'Priority', value: 'high' },
-                { name: 'Actions', value: 'view, Open Photopea, {{ $("all images url builder").item.json.editorUrl }}; view, WordPress Order, https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all images url builder").item.json.order_id }}' },
-                { name: 'Attach', value: '{{ $("all images url builder").item.json.photopeaPayload.files[0] }}' },
-                { name: 'Markdown', value: 'yes' }
-            ]
+                {
+                    name: 'Click',
+                    value: '={{ $("Shorten Editor URL").item.json.shortLink }}',
+                },
+                {
+                    name: 'Markdown',
+                    value: 'yes',
+                },
+            ],
         },
-        sendBody: true,
-        specifyBody: 'string',
-        body: `**Product:** Overhead-North
-**Size:** {{ $("all images url builder").item.json.acreage }} Acres
-**Location:**
-- **County:** {{ $("Edit Fields9").item.json.county }}
-- **Coordinates:** {{ $("Edit Fields9").item.json.lat }}, {{ $("Edit Fields9").item.json.lon }}
-- **Elevation:** {{ $("Edit Fields9").item.json.elevation }} ft
-**Owner:** {{ $("Edit Fields9").item.json.owner }}
-**Rendered Files:** {{ $("all images url builder").item.json.photopeaPayload.files.length }}`,
         options: {},
     };
 
@@ -855,7 +885,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.5,
-        position: [1000, 176],
+        position: [1200, 176],
     })
     RespondToWebhook = {
         respondWith: 'json',
@@ -863,7 +893,7 @@ return [{ json: { pathString: pathString } }];`,
   "status": "success",
   "order": "order_{{ $('Webhook').item.json.body.payload.order_id }}",
 "wp_user": "{{ $('Webhook').item.json.body.payload.wpuser_id }}",
-"editor_url": "{{ $('all images url builder').item.json.editorUrl }}"
+"editor_url": "{{ $('Shorten Editor URL').item.json.shortLink }}"
 } `,
         options: {},
     };
@@ -891,7 +921,8 @@ return [{ json: { pathString: pathString } }];`,
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
         this.Webhook.out(0).to(this.GetElevation.in(0));
-        this.AllImagesUrlBuilder.out(0).to(this.BackupEditorUrl.in(0));
+        this.AllImagesUrlBuilder.out(0).to(this.ShortenEditorUrl.in(0));
+        this.ShortenEditorUrl.out(0).to(this.BackupEditorUrl.in(0));
         this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
         this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
     }
