@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 29  |  Connections: 27
+// Nodes   : 30  |  Connections: 28
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -22,7 +22,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields2                        set
 // StickyNote2                        stickyNote
 // EditFields3                        set
-// AllImagesUrlBuilder                code
+// PrepareConfiguration               code
+// StateStorage                       httpRequest
 // StaticMapUrlBuilder                set
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
@@ -58,15 +59,16 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                  → UploadAFile
 //                                    → EditFields3
 //                                      → EditFields2
-//                                        → AllImagesUrlBuilder
-//                                          → ShortenEditorUrl
-//                                            → CheckForNotes
-//                                              → If_
-//                                                → CreateANote
-//                                                  → NtfySend
-//                                                    → RespondToWebhook
-//                                               .out(1) → HttpRequest1
-//                                                  → NtfySend (↩ loop)
+//                                        → PrepareConfiguration
+//                                          → StateStorage
+//                                            → ShortenEditorUrl
+//                                              → CheckForNotes
+//                                                → If_
+//                                                  → CreateANote
+//                                                    → NtfySend
+//                                                      → RespondToWebhook
+//                                                 .out(1) → HttpRequest1
+//                                                    → NtfySend (↩ loop)
 // </workflow-map>
 
 // =====================================================================
@@ -620,12 +622,12 @@ return items;`,
 
     @node({
         id: '86111bf4-e49e-43e8-962d-f759220c0b3c',
-        name: 'all images url builder',
+        name: 'Prepare Configuration',
         type: 'n8n-nodes-base.code',
         version: 2,
         position: [1392, 176],
     })
-    AllImagesUrlBuilder = {
+    PrepareConfiguration = {
         jsCode: `const items = $input.all();
 const input = items[0].json;
 
@@ -705,31 +707,44 @@ const payload = {
     script: script
 };
 
-const encodedConfig = encodeURIComponent(JSON.stringify(payload));
-
-// Add query params for the dashboard UI, and the hash for Photopea
-const params = [
-  \`customer_id=\${encodeURIComponent(customer_id)}\`,
-  \`order_id=\${encodeURIComponent(order_id)}\`,
-  \`direction=full\`,
-  \`acreage=\${encodeURIComponent(acreage)}\`
-];
-if (fulfillment_id) {
-  params.push(\`fulfillment_id=\${encodeURIComponent(fulfillment_id)}\`);
-}
-const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
-
-// We only need to output a single item containing the combined URL
+// We only need to output a single item containing the combined data
 return [
   {
     json: {
       ...input,
-      editorUrl: editorUrl,
       photopeaPayload: payload,
-      filesIncluded: files.length
+      filesIncluded: files.length,
+      fulfillment_id: fulfillment_id
     }
   }
 ];`,
+    };
+
+    @node({
+        id: '2d3c7a2b-4e5f-6a7b-8c9d-0e1f2a3b4c5d',
+        name: 'State Storage',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [1504, 176],
+    })
+    StateStorage = {
+        method: 'POST',
+        url: 'https://api.brokertricks.com/v1/state',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Content-Type',
+                    value: 'application/json',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+  "config": {{ JSON.stringify($json.photopeaPayload) }}
+}`,
+        options: {},
     };
 
     @node({
@@ -842,8 +857,8 @@ return [{ json: { pathString: pathString } }];`,
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
-  "url": "{{ $json.editorUrl }}",
-  "comment": "Editor URL for order_{{ $json.order_id }}"
+  "url": "https://app.brokertricks.com/editor-full.html?customer_id={{ $('Prepare Configuration').item.json.customer_id }}&order_id={{ $('Prepare Configuration').item.json.order_id }}&direction=full&acreage={{ $('Prepare Configuration').item.json.acreage }}&fulfillment_id={{ $('Prepare Configuration').item.json.fulfillment_id || '' }}&config_id={{ $json.config_id }}",
+  "comment": "Editor URL for order_{{ $('Prepare Configuration').item.json.order_id }}"
 }`,
         options: {},
     };
@@ -916,7 +931,7 @@ return [{ json: { pathString: pathString } }];`,
         },
     })
     CheckForNotes = {
-        url: '=https://api.surecart.com/v1/notes?notable_id={{ $("all images url builder").item.json.order_id }}&notable_type=order',
+        url: '=https://api.surecart.com/v1/notes?notable_id={{ $("Prepare Configuration").item.json.order_id }}&notable_type=order',
         authentication: 'genericCredentialType',
         genericAuthType: 'httpBearerAuth',
         options: {},
@@ -952,7 +967,7 @@ return [{ json: { pathString: pathString } }];`,
         jsonBody: `={
     "note": {
       "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
-      "notable_id": {{ JSON.stringify( $('all images url builder').item.json.order_id) }},
+      "notable_id": {{ JSON.stringify( $('Prepare Configuration').item.json.order_id) }},
       "notable_type": "order",
       "metadata": {"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
             }
@@ -1024,7 +1039,7 @@ return [{ json: { pathString: pathString } }];`,
         jsonBody: `{
     "note": {
       "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
-      "notable_id": {{ JSON.stringify( $('all images url builder').item.json.order_id) }},
+      "notable_id": {{ JSON.stringify( $('Prepare Configuration').item.json.order_id) }},
       "notable_type": "order",
       "metadata": {"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
             }
@@ -1063,12 +1078,13 @@ return [{ json: { pathString: pathString } }];`,
         this.Compression.out(0).to(this.CodeInJavascript.in(0));
         this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
         this.UploadAFile.out(0).to(this.EditFields3.in(0));
-        this.EditFields2.out(0).to(this.AllImagesUrlBuilder.in(0));
+        this.EditFields2.out(0).to(this.PrepareConfiguration.in(0));
         this.EditFields3.out(0).to(this.EditFields2.in(0));
         this.StaticMapUrlBuilder.out(0).to(this.EditFields1.in(0));
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
-        this.AllImagesUrlBuilder.out(0).to(this.ShortenEditorUrl.in(0));
+        this.PrepareConfiguration.out(0).to(this.StateStorage.in(0));
+        this.StateStorage.out(0).to(this.ShortenEditorUrl.in(0));
         this.Webhook.out(0).to(this.GetExpandedOrder.in(0));
         this.GetExpandedOrder.out(0).to(this.GetElevation.in(0));
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
