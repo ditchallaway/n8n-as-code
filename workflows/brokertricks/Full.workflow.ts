@@ -28,7 +28,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // GetExpandedOrder                   httpRequest                [creds]
-// ShortenEditorUrl                   httpRequest
+// ShortenEditorUrl                   httpRequest                [creds]
 // RespondToWebhook                   respondToWebhook
 // Webhook                            executeWorkflowTrigger
 // EditFields4                        set
@@ -110,7 +110,7 @@ export class FullWorkflow {
         name: 'Edit Fields',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-2192, 176],
+        position: [-2192, 272],
     })
     EditFields = {
         assignments: {
@@ -191,7 +191,7 @@ export class FullWorkflow {
         name: 'Edit Fields9',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1968, 176],
+        position: [-1968, 272],
     })
     EditFields9 = {
         assignments: {
@@ -256,7 +256,7 @@ export class FullWorkflow {
         name: 'Edit Fields1',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1296, 176],
+        position: [-1296, 272],
     })
     EditFields1 = {
         assignments: {
@@ -327,7 +327,7 @@ export class FullWorkflow {
         name: 'KML Generator',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-1072, 176],
+        position: [-1072, 272],
     })
     KmlGenerator = {
         jsCode: `for (const item of $input.all()) {
@@ -392,7 +392,7 @@ return $input.all();`,
         name: 'Upload KML to S3',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [-848, 176],
+        position: [-848, 272],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadKmlToS3 = {
@@ -409,7 +409,7 @@ return $input.all();`,
         name: 'Dispatch a workflow event and wait for completion',
         type: 'n8n-nodes-base.github',
         version: 1.1,
-        position: [-400, 176],
+        position: [-400, 272],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     DispatchAWorkflowEventAndWaitForCompletion = {
@@ -466,7 +466,7 @@ JSON.stringify(
         name: 'HTTP Request2',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [-176, 176],
+        position: [-176, 272],
     })
     HttpRequest2 = {
         url: '=https://api.github.com/repos/ditchallaway/robotic-property-photographer/actions/runs/{{ $json.run_id }}/artifacts',
@@ -478,7 +478,7 @@ JSON.stringify(
         name: 'HTTP Request3',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [48, 176],
+        position: [48, 272],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     HttpRequest3 = {
@@ -493,7 +493,7 @@ JSON.stringify(
         name: 'Compression',
         type: 'n8n-nodes-base.compression',
         version: 1.1,
-        position: [272, 176],
+        position: [272, 272],
     })
     Compression = {
         outputPrefix: '=',
@@ -504,7 +504,7 @@ JSON.stringify(
         name: 'Code in JavaScript',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [496, 176],
+        position: [496, 272],
     })
     CodeInJavascript = {
         jsCode: `const items = [];
@@ -529,13 +529,14 @@ return items;`,
         name: 'Upload a file',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [720, 176],
+        position: [720, 272],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadAFile = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: 'cust_{{ $json.wpuser_id }}/order_{{ $json.order_id }}/{{ $json.fileName }}',
+        fileName:
+            "=cust_{{ $('Webhook').item.json.wpuser_id }}/order_{{ $('Webhook').item.json.order_id }}/{{ $json.fileName }}",
         additionalFields: {},
     };
 
@@ -544,7 +545,7 @@ return items;`,
         name: 'Edit Fields2',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [1168, 176],
+        position: [1168, 272],
     })
     EditFields2 = {
         assignments: {
@@ -604,7 +605,7 @@ return items;`,
         name: 'Edit Fields3',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [944, 176],
+        position: [944, 272],
     })
     EditFields3 = {
         assignments: {
@@ -612,7 +613,7 @@ return items;`,
                 {
                     id: 'd596049d-c49b-4128-a169-e36e268497ce',
                     name: 'imageUrl',
-                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/{{ $('Edit Fields9').item.json.order_id }}/{{ $('Code in JavaScript').item.json.fileName }}",
+                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/order_{{ $('Edit Fields9').item.json.order_id }}/{{ $('Code in JavaScript').item.json.fileName }}",
                     type: 'string',
                 },
             ],
@@ -625,7 +626,7 @@ return items;`,
         name: 'Prepare Configuration',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [1392, 176],
+        position: [1392, 272],
     })
     PrepareConfiguration = {
         jsCode: `const items = $input.all();
@@ -725,17 +726,21 @@ return [
         name: 'State Storage',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1504, 176],
+        position: [1616, 272],
     })
     StateStorage = {
         method: 'POST',
-        url: 'https://api.brokertricks.com/v1/state',
+        url: 'https://link.brokertricks.com/api/v1/state',
         sendHeaders: true,
         headerParameters: {
             parameters: [
                 {
                     name: 'Content-Type',
                     value: 'application/json',
+                },
+                {
+                    name: 'Authorization',
+                    value: '=Bearer {{ $env.NUXT_SITE_TOKEN }}',
                 },
             ],
         },
@@ -752,7 +757,7 @@ return [
         name: 'static map url builder',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1520, 176],
+        position: [-1520, 272],
     })
     StaticMapUrlBuilder = {
         assignments: {
@@ -779,7 +784,7 @@ return [
         name: 'geometry to static map url path',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-1744, 176],
+        position: [-1744, 272],
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
@@ -810,7 +815,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'get elevation',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2416, 176],
+        position: [-2416, 272],
     })
     GetElevation = {
         url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $("Webhook").item.json.latitude }},{{ $("Webhook").item.json.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
@@ -822,7 +827,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Get Expanded Order',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2640, 176],
+        position: [-2640, 272],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -840,11 +845,14 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Shorten Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1616, 176],
+        position: [1840, 272],
+        credentials: { httpBearerAuth: { id: 'Hy4bWHoBR2fWc0wj', name: 'Short link bearer' } },
     })
     ShortenEditorUrl = {
         method: 'POST',
         url: 'https://link.brokertricks.com/api/link/create',
+        authentication: 'predefinedCredentialType',
+        nodeCredentialType: 'httpBearerAuth',
         sendHeaders: true,
         headerParameters: {
             parameters: [
@@ -868,7 +876,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.5,
-        position: [2848, 192],
+        position: [2960, 272],
     })
     RespondToWebhook = {
         respondWith: 'json',
@@ -886,7 +894,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Webhook',
         type: 'n8n-nodes-base.executeWorkflowTrigger',
         version: 1.1,
-        position: [-2864, 176],
+        position: [-2864, 272],
     })
     Webhook = {
         inputSource: 'passthrough',
@@ -897,7 +905,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Edit Fields4',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-624, 176],
+        position: [-624, 272],
     })
     EditFields4 = {
         assignments: {
@@ -924,7 +932,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'check for notes',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [1840, 176],
+        position: [2064, 272],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -942,7 +950,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'create a note',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2272, 32],
+        position: [2512, 176],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -981,7 +989,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'If',
         type: 'n8n-nodes-base.if',
         version: 2.3,
-        position: [2048, 176],
+        position: [2288, 272],
     })
     If_ = {
         conditions: {
@@ -1014,7 +1022,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'HTTP Request1',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [2304, 304],
+        position: [2512, 368],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1053,12 +1061,13 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy Send',
         type: 'n8n-nodes-ntfy-client.ntfySend',
         version: 1,
-        position: [2592, 192],
+        position: [2736, 272],
         credentials: { ntfyApi: { id: 'W2xKUTn1PP43EdnG', name: 'ntfy account' } },
     })
     NtfySend = {
         topic: 'to-human-bt-test',
-        message: "={{ $('Get Expanded Order').item.json.portal_url }}",
+        message: `={{ $('Get Expanded Order').item.json.portal_url }}
+{{ $('create a note').item.json.body }}`,
     };
 
     // =====================================================================
