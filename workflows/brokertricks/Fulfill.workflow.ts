@@ -23,7 +23,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 @workflow({
     id: 'HbDy7lPJR0bqj3uS',
     name: 'Fulfill',
-    active: false,
+    active: true,
     isArchived: false,
     settings: { executionOrder: 'v1', availableInMCP: false, callerPolicy: 'workflowsFromSameOwner' },
 })
