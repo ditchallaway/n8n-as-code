@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 31  |  Connections: 29
+// Nodes   : 30  |  Connections: 28
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -23,14 +23,13 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // StickyNote2                        stickyNote
 // EditFields3                        set
 // PrepareConfiguration               code
-// StateStorage                       httpRequest
+// StateStorage                       httpRequest                [creds]
 // StaticMapUrlBuilder                set
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // GetExpandedOrder                   httpRequest                [creds]
 // GetFulfillments                    httpRequest                [creds]
 // ShortenEditorUrl                   httpRequest                [creds]
-// RespondToWebhook                   respondToWebhook
 // Webhook                            executeWorkflowTrigger
 // EditFields4                        set
 // CheckForNotes                      httpRequest                [creds]
@@ -68,7 +67,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                                  → If_
 //                                                    → CreateANote
 //                                                      → NtfySend
-//                                                        → RespondToWebhook
 //                                                   .out(1) → HttpRequest1
 //                                                      → NtfySend (↩ loop)
 // </workflow-map>
@@ -100,7 +98,7 @@ export class FullWorkflow {
         name: 'HTTP Request',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2864, -48],
+        position: [-3088, -48],
     })
     HttpRequest = {
         url: 'https://auto.brokertricks.com/webhook/ungrid',
@@ -592,7 +590,7 @@ return items;`,
         name: 'Sticky Note2',
         type: 'n8n-nodes-base.stickyNote',
         version: 1,
-        position: [-2912, -160],
+        position: [-3136, -160],
     })
     StickyNote2 = {
         content: `## 🚩Replace Me
@@ -730,11 +728,14 @@ return [
         name: 'State Storage',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1504, 272],
+        position: [1616, 272],
+        credentials: { httpBearerAuth: { id: 'Hy4bWHoBR2fWc0wj', name: 'Short link bearer' } },
     })
     StateStorage = {
         method: 'POST',
-        url: 'https://api.brokertricks.com/v1/state',
+        url: 'https://link.brokertricks.com/v1/state',
+        authentication: 'predefinedCredentialType',
+        nodeCredentialType: 'httpBearerAuth',
         sendHeaders: true,
         headerParameters: {
             parameters: [
@@ -863,7 +864,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Shorten Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1616, 272],
+        position: [1840, 272],
         credentials: { httpBearerAuth: { id: 'Hy4bWHoBR2fWc0wj', name: 'Short link bearer' } },
     })
     ShortenEditorUrl = {
@@ -883,27 +884,9 @@ return [{ json: { pathString: pathString } }];`,
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
-  "url": "https://app.brokertricks.com/editor-full.html?customer_id={{ $('Prepare Configuration').item.json.customer_id }}&order_id={{ $('Prepare Configuration').item.json.order_id }}&direction=full&acreage={{ $('Prepare Configuration').item.json.acreage }}&fulfillment_id={{ $('Prepare Configuration').item.json.fulfillment_id || '' }}&config_id={{ $json.config_id }}",
+  "url": "https://app.brokertricks.com/editor-full.html?customer_id={{ $('Prepare Configuration').item.json.customer_id }}&order_id={{ $('Prepare Configuration').item.json.order_id }}&direction=full&acreage={{ $('Prepare Configuration').item.json.acreage }}&fulfillment_id={{ $('Prepare Configuration').item.json.fulfillment_id || '' }}&config_id={{ $json.id }}",
   "comment": "Editor URL for order_{{ $('Prepare Configuration').item.json.order_id }}"
 }`,
-        options: {},
-    };
-
-    @node({
-        id: '9fc5d717-c41f-43b4-95aa-dd024b1a1a51',
-        name: 'Respond to Webhook',
-        type: 'n8n-nodes-base.respondToWebhook',
-        version: 1.5,
-        position: [2736, 272],
-    })
-    RespondToWebhook = {
-        respondWith: 'json',
-        responseBody: `={
-  "status": "success",
-  "order": "order_{{ $('Webhook').item.json.body.payload.order_id }}",
-"wp_user": "{{ $('Webhook').item.json.body.payload.wpuser_id }}",
-"editor_url": "{{ $('Shorten Editor URL').item.json.shortLink }}"
-} `,
         options: {},
     };
 
@@ -950,7 +933,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'check for notes',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [1840, 272],
+        position: [2064, 272],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -968,7 +951,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'create a note',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2288, 176],
+        position: [2512, 176],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1007,7 +990,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'If',
         type: 'n8n-nodes-base.if',
         version: 2.3,
-        position: [2064, 272],
+        position: [2288, 272],
     })
     If_ = {
         conditions: {
@@ -1040,7 +1023,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'HTTP Request1',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [2288, 368],
+        position: [2512, 368],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1079,7 +1062,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy Send',
         type: 'n8n-nodes-ntfy-client.ntfySend',
         version: 1,
-        position: [2512, 272],
+        position: [2736, 272],
         credentials: { ntfyApi: { id: 'W2xKUTn1PP43EdnG', name: 'ntfy account' } },
     })
     NtfySend = {
@@ -1123,6 +1106,5 @@ return [{ json: { pathString: pathString } }];`,
         this.If_.out(0).to(this.CreateANote.in(0));
         this.If_.out(1).to(this.HttpRequest1.in(0));
         this.HttpRequest1.out(0).to(this.NtfySend.in(0));
-        this.NtfySend.out(0).to(this.RespondToWebhook.in(0));
     }
 }
