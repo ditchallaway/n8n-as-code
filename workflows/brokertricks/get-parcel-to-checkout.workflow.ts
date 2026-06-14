@@ -27,7 +27,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'get-parcel-to-checkout',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: { executionOrder: 'v1', binaryMode: 'separate' },
 })
 export class GetParcelToCheckoutWorkflow {
