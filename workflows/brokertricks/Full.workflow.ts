@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 30  |  Connections: 28
+// Nodes   : 31  |  Connections: 29
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -28,6 +28,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // GetExpandedOrder                   httpRequest                [creds]
+// GetFulfillments                    httpRequest                [creds]
 // ShortenEditorUrl                   httpRequest                [creds]
 // RespondToWebhook                   respondToWebhook
 // Webhook                            executeWorkflowTrigger
@@ -42,33 +43,34 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ──────────────────────────────────────────────────────────────────
 // Webhook
 //    → GetExpandedOrder
-//      → GetElevation
-//        → EditFields
-//          → EditFields9
-//            → GeometryToStaticMapUrlPath
-//              → StaticMapUrlBuilder
-//                → EditFields1
-//                  → KmlGenerator
-//                    → UploadKmlToS3
-//                      → EditFields4
-//                        → DispatchAWorkflowEventAndWaitForCompletion
-//                          → HttpRequest2
-//                            → HttpRequest3
-//                              → Compression
-//                                → CodeInJavascript
-//                                  → UploadAFile
-//                                    → EditFields3
-//                                      → EditFields2
-//                                        → PrepareConfiguration
-//                                          → StateStorage
-//                                            → ShortenEditorUrl
-//                                              → CheckForNotes
-//                                                → If_
-//                                                  → CreateANote
-//                                                    → NtfySend
-//                                                      → RespondToWebhook
-//                                                 .out(1) → HttpRequest1
-//                                                    → NtfySend (↩ loop)
+//      → GetFulfillments
+//        → GetElevation
+//          → EditFields
+//            → EditFields9
+//              → GeometryToStaticMapUrlPath
+//                → StaticMapUrlBuilder
+//                  → EditFields1
+//                    → KmlGenerator
+//                      → UploadKmlToS3
+//                        → EditFields4
+//                          → DispatchAWorkflowEventAndWaitForCompletion
+//                            → HttpRequest2
+//                              → HttpRequest3
+//                                → Compression
+//                                  → CodeInJavascript
+//                                    → UploadAFile
+//                                      → EditFields3
+//                                        → EditFields2
+//                                          → PrepareConfiguration
+//                                            → StateStorage
+//                                              → ShortenEditorUrl
+//                                                → CheckForNotes
+//                                                  → If_
+//                                                    → CreateANote
+//                                                      → NtfySend
+//                                                        → RespondToWebhook
+//                                                   .out(1) → HttpRequest1
+//                                                      → NtfySend (↩ loop)
 // </workflow-map>
 
 // =====================================================================
@@ -644,7 +646,9 @@ try {
 
 let fulfillment_id = '';
 try {
-    fulfillment_id = $('Get Expanded Order').first().json.fulfillments?.[0]?.id || '';
+    const fulfillmentsNode = $('Get Fulfillments').first().json;
+    const fulfillments = Array.isArray(fulfillmentsNode) ? fulfillmentsNode : (fulfillmentsNode.data || fulfillmentsNode.fulfillments || []);
+    fulfillment_id = fulfillments[0]?.id || '';
 } catch(e) {
     // fallback if not available
 }
@@ -666,38 +670,24 @@ if (files.length === 0) {
 
 const webhookUrl = \`https://auto.brokertricks.com/webhook/bucket?customer_id=\${customer_id}&order_id=\${order_id}&direction=full\`;
 
-// Build ExtendScript that loops over ALL open documents
-// Photopea opens each file as a separate tab — we must iterate
-// through every document to add the acreage text layer to each one.
-const script = \`\\nvar acreageText = "\${acreage} ACRES";
+// Build and minify ExtendScript that loops over ALL open documents
+const script = \`
+var acreageText = "\${acreage} ACRES";
 var expectedFiles = \${files.length};
-
 if (app.documents.length === expectedFiles) {
-  for (var i = 0; i < app.documents.length; i++) {
-    var doc = app.documents[i];
-    
-    var hasLayer = false;
-    for (var j = 0; j < doc.artLayers.length; j++) {
-      if (doc.artLayers[j].kind == LayerKind.TEXT) {
-        hasLayer = true;
-        break;
-      }
-    }
-    
-    if (!hasLayer) {
-      app.activeDocument = doc;
-      var textLayer = doc.artLayers.add();
-      textLayer.kind = LayerKind.TEXT;
-      textLayer.textItem.contents = acreageText;
-      textLayer.textItem.size = 120;
-      
-      var col = new SolidColor();
-      col.rgb.hexValue = "FFFF00";
-      textLayer.textItem.color = col;
-      textLayer.textItem.position = [100, 200];
-    }
+  for (var i = 0; i < expectedFiles; i++) {
+    app.activeDocument = app.documents[i];
+    var t = app.activeDocument.artLayers.add();
+    t.kind = LayerKind.TEXT;
+    t.textItem.contents = acreageText;
+    t.textItem.size = 120;
+    var c = new SolidColor();
+    c.rgb.hexValue = "FFFF00";
+    t.textItem.color = c;
+    t.textItem.position = [100, 200];
   }
-}\`.trim();
+}
+\`.trim().replace(/\\\\s+/g, ' ');
 
 const payload = {
     files: files,
@@ -708,7 +698,21 @@ const payload = {
     script: script
 };
 
-// We only need to output a single item containing the combined data
+const encodedConfig = encodeURIComponent(JSON.stringify(payload));
+
+// Add query params for the dashboard UI, and the hash for Photopea
+const params = [
+  \`customer_id=\${encodeURIComponent(customer_id)}\`,
+  \`order_id=\${encodeURIComponent(order_id)}\`,
+  \`direction=full\`,
+  \`acreage=\${encodeURIComponent(acreage)}\`
+];
+if (fulfillment_id) {
+  params.push(\`fulfillment_id=\${encodeURIComponent(fulfillment_id)}\`);
+}
+const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
+
+// Output the payload to be stored in State Storage
 return [
   {
     json: {
@@ -726,21 +730,17 @@ return [
         name: 'State Storage',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1616, 272],
+        position: [1504, 272],
     })
     StateStorage = {
         method: 'POST',
-        url: 'https://link.brokertricks.com/api/v1/state',
+        url: 'https://api.brokertricks.com/v1/state',
         sendHeaders: true,
         headerParameters: {
             parameters: [
                 {
                     name: 'Content-Type',
                     value: 'application/json',
-                },
-                {
-                    name: 'Authorization',
-                    value: '=Bearer {{ $env.NUXT_SITE_TOKEN }}',
                 },
             ],
         },
@@ -827,7 +827,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Get Expanded Order',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2640, 272],
+        position: [-2864, 272],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -841,11 +841,29 @@ return [{ json: { pathString: pathString } }];`,
     };
 
     @node({
+        id: '236b28b7-6be0-44cb-b44c-00c7e296711d',
+        name: 'Get Fulfillments',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [-2640, 272],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    GetFulfillments = {
+        url: '=https://api.surecart.com/v1/fulfillments?order={{ $("Webhook").item.json.order_id || $("Webhook").item.json.body.payload.order_id }}',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        options: {},
+    };
+
+    @node({
         id: 'ab3c7a2b-4e5f-6a7b-8c9d-0e1f2a3b4c5d',
         name: 'Shorten Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1840, 272],
+        position: [1616, 272],
         credentials: { httpBearerAuth: { id: 'Hy4bWHoBR2fWc0wj', name: 'Short link bearer' } },
     })
     ShortenEditorUrl = {
@@ -876,7 +894,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.5,
-        position: [2960, 272],
+        position: [2736, 272],
     })
     RespondToWebhook = {
         respondWith: 'json',
@@ -894,7 +912,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Webhook',
         type: 'n8n-nodes-base.executeWorkflowTrigger',
         version: 1.1,
-        position: [-2864, 272],
+        position: [-3088, 272],
     })
     Webhook = {
         inputSource: 'passthrough',
@@ -932,7 +950,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'check for notes',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2064, 272],
+        position: [1840, 272],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -950,7 +968,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'create a note',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2512, 176],
+        position: [2288, 176],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -989,7 +1007,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'If',
         type: 'n8n-nodes-base.if',
         version: 2.3,
-        position: [2288, 272],
+        position: [2064, 272],
     })
     If_ = {
         conditions: {
@@ -1022,7 +1040,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'HTTP Request1',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [2512, 368],
+        position: [2288, 368],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1044,15 +1062,15 @@ return [{ json: { pathString: pathString } }];`,
         },
         sendBody: true,
         specifyBody: 'json',
-        jsonBody: `{
+        jsonBody: `={
     "note": {
       "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
       "notable_id": {{ JSON.stringify( $('Prepare Configuration').item.json.order_id) }},
       "notable_type": "order",
-      "metadata": {"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
+      "metadata": {
+"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
             }
-}
-`,
+}`,
         options: {},
     };
 
@@ -1061,13 +1079,14 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy Send',
         type: 'n8n-nodes-ntfy-client.ntfySend',
         version: 1,
-        position: [2736, 272],
+        position: [2512, 272],
         credentials: { ntfyApi: { id: 'W2xKUTn1PP43EdnG', name: 'ntfy account' } },
     })
     NtfySend = {
         topic: 'to-human-bt-test',
-        message: `={{ $('Get Expanded Order').item.json.portal_url }}
-{{ $('create a note').item.json.body }}`,
+        message: '={{$json.body}}',
+        title: 'New-Order',
+        tags: 'new-order',
     };
 
     // =====================================================================
@@ -1095,7 +1114,8 @@ return [{ json: { pathString: pathString } }];`,
         this.PrepareConfiguration.out(0).to(this.StateStorage.in(0));
         this.StateStorage.out(0).to(this.ShortenEditorUrl.in(0));
         this.Webhook.out(0).to(this.GetExpandedOrder.in(0));
-        this.GetExpandedOrder.out(0).to(this.GetElevation.in(0));
+        this.GetExpandedOrder.out(0).to(this.GetFulfillments.in(0));
+        this.GetFulfillments.out(0).to(this.GetElevation.in(0));
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
         this.ShortenEditorUrl.out(0).to(this.CheckForNotes.in(0));
         this.CheckForNotes.out(0).to(this.If_.in(0));

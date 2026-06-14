@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Overhead-Only
-// Nodes   : 24  |  Connections: 21
+// Nodes   : 25  |  Connections: 22
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -22,11 +22,12 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields2                        set
 // StickyNote2                        stickyNote
 // EditFields3                        set
-// AllImagesUrlBuilder                code
+// PrepareConfiguration               code
 // StaticMapUrlBuilder                set
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
 // Webhook                            executeWorkflowTrigger
+// GetFulfillments                    httpRequest                [creds]
 // ShortenEditorUrl                   httpRequest
 // BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
@@ -35,27 +36,28 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
 // Webhook
-//    → GetElevation
-//      → EditFields
-//        → EditFields9
-//          → GeometryToStaticMapUrlPath
-//            → StaticMapUrlBuilder
-//              → EditFields1
-//                → KmlGenerator
-//                  → UploadKmlToS3
-//                    → DispatchAWorkflowEventAndWaitForCompletion
-//                      → HttpRequest2
-//                        → HttpRequest3
-//                          → Compression
-//                            → CodeInJavascript
-//                              → UploadAFile
-//                                → EditFields3
-//                                  → EditFields2
-//                                    → AllImagesUrlBuilder
-//                                      → ShortenEditorUrl
-//                                        → BackupEditorUrl
-//                                          → Ntfy
-//                                            → RespondToWebhook
+//    → GetFulfillments
+//      → GetElevation
+//        → EditFields
+//          → EditFields9
+//            → GeometryToStaticMapUrlPath
+//              → StaticMapUrlBuilder
+//                → EditFields1
+//                  → KmlGenerator
+//                    → UploadKmlToS3
+//                      → DispatchAWorkflowEventAndWaitForCompletion
+//                        → HttpRequest2
+//                          → HttpRequest3
+//                            → Compression
+//                              → CodeInJavascript
+//                                → UploadAFile
+//                                  → EditFields3
+//                                    → EditFields2
+//                                      → PrepareConfiguration
+//                                        → ShortenEditorUrl
+//                                          → BackupEditorUrl
+//                                            → Ntfy
+//                                              → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -611,12 +613,12 @@ return items;`,
 
     @node({
         id: '86111bf4-e49e-43e8-962d-f759220c0b3c',
-        name: 'all images url builder',
+        name: 'Prepare Configuration',
         type: 'n8n-nodes-base.code',
         version: 2,
         position: [432, 176],
     })
-    AllImagesUrlBuilder = {
+    PrepareConfiguration = {
         jsCode: `const items = $input.all();
 const input = items[0].json;
 
@@ -628,6 +630,15 @@ try {
     acreage = $('Edit Fields1').first().json.acres;
 } catch(e) {
     acreage = input.acreage || 0;
+}
+
+let fulfillment_id = '';
+try {
+    const fulfillmentsNode = $('Get Fulfillments').first().json;
+    const fulfillments = Array.isArray(fulfillmentsNode) ? fulfillmentsNode : (fulfillmentsNode.data || fulfillmentsNode.fulfillments || []);
+    fulfillment_id = fulfillments[0]?.id || '';
+} catch(e) {
+    // fallback if not available
 }
 
 // Dynamically build files array from all incoming items
@@ -650,35 +661,23 @@ const webhookUrl = \`https://auto.brokertricks.com/webhook/bucket?customer_id=\$
 // Build ExtendScript that loops over ALL open documents
 // Photopea opens each file as a separate tab — we must iterate
 // through every document to add the acreage text layer to each one.
-const script = \`\\nvar acreageText = "\${acreage} ACRES";
+const script = \`
+var acreageText = "\${acreage} ACRES";
 var expectedFiles = \${files.length};
-
 if (app.documents.length === expectedFiles) {
-  for (var i = 0; i < app.documents.length; i++) {
-    var doc = app.documents[i];
-    
-    var hasLayer = false;
-    for (var j = 0; j < doc.artLayers.length; j++) {
-      if (doc.artLayers[j].kind == LayerKind.TEXT) {
-        hasLayer = true;
-        break;
-      }
-    }
-    
-    if (!hasLayer) {
-      app.activeDocument = doc;
-      var textLayer = doc.artLayers.add();
-      textLayer.kind = LayerKind.TEXT;
-      textLayer.textItem.contents = acreageText;
-      textLayer.textItem.size = 120;
-      
-      var col = new SolidColor();
-      col.rgb.hexValue = "FFFF00";
-      textLayer.textItem.color = col;
-      textLayer.textItem.position = [100, 200];
-    }
+  for (var i = 0; i < expectedFiles; i++) {
+    app.activeDocument = app.documents[i];
+    var t = app.activeDocument.artLayers.add();
+    t.kind = LayerKind.TEXT;
+    t.textItem.contents = acreageText;
+    t.textItem.size = 120;
+    var c = new SolidColor();
+    c.rgb.hexValue = "FFFF00";
+    t.textItem.color = c;
+    t.textItem.position = [100, 200];
   }
-}\\n\`.trim();
+}
+\`.trim().replace(/\\s+/g, ' ');
 
 const payload = {
     files: files,
@@ -698,6 +697,9 @@ const params = [
   \`direction=full\`,
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
+if (fulfillment_id) {
+  params.push(\`fulfillment_id=\${encodeURIComponent(fulfillment_id)}\`);
+}
 const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
 
 // We only need to output a single item containing the combined URL
@@ -707,7 +709,8 @@ return [
       ...input,
       editorUrl: editorUrl,
       photopeaPayload: payload,
-      filesIncluded: files.length
+      filesIncluded: files.length,
+      fulfillment_id: fulfillment_id
     }
   }
 ];`,
@@ -788,10 +791,28 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Webhook',
         type: 'n8n-nodes-base.executeWorkflowTrigger',
         version: 1.1,
-        position: [-2928, 176],
+        position: [-3152, 176],
     })
     Webhook = {
         inputSource: 'passthrough',
+    };
+
+    @node({
+        id: '236b28b7-6be0-44cb-b44c-00c7e296711d',
+        name: 'Get Fulfillments',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [-2928, 176],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    GetFulfillments = {
+        url: '=https://api.surecart.com/v1/fulfillments?order={{ $("Webhook").item.json.order_id || $("Webhook").item.json.body.payload.order_id }}',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        options: {},
     };
 
     @node({
@@ -832,7 +853,7 @@ return [{ json: { pathString: pathString } }];`,
     })
     BackupEditorUrl = {
         method: 'PATCH',
-        url: '=https://api.surecart.com/v1/orders/{{ $("all images url builder").item.json.order_id }}',
+        url: '=https://api.surecart.com/v1/orders/{{ $("Prepare Configuration").item.json.order_id }}',
         authentication: 'genericCredentialType',
         genericAuthType: 'httpBearerAuth',
         sendBody: true,
@@ -863,7 +884,7 @@ Photopea Link:
 {{ $("Shorten Editor URL").item.json.shortLink }}
 
 Order Dashboard: 
-https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all images url builder").item.json.order_id }}`,
+https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepare Configuration").item.json.order_id }}`,
         sendHeaders: true,
         headerParameters: {
             parameters: [
@@ -915,13 +936,14 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("all im
         this.Compression.out(0).to(this.CodeInJavascript.in(0));
         this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
         this.UploadAFile.out(0).to(this.EditFields3.in(0));
-        this.EditFields2.out(0).to(this.AllImagesUrlBuilder.in(0));
+        this.EditFields2.out(0).to(this.PrepareConfiguration.in(0));
         this.EditFields3.out(0).to(this.EditFields2.in(0));
         this.StaticMapUrlBuilder.out(0).to(this.EditFields1.in(0));
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
-        this.Webhook.out(0).to(this.GetElevation.in(0));
-        this.AllImagesUrlBuilder.out(0).to(this.ShortenEditorUrl.in(0));
+        this.Webhook.out(0).to(this.GetFulfillments.in(0));
+        this.GetFulfillments.out(0).to(this.GetElevation.in(0));
+        this.PrepareConfiguration.out(0).to(this.ShortenEditorUrl.in(0));
         this.ShortenEditorUrl.out(0).to(this.BackupEditorUrl.in(0));
         this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
         this.Ntfy.out(0).to(this.RespondToWebhook.in(0));

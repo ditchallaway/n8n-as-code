@@ -22,7 +22,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'MigrateDB',
     active: false,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: { executionOrder: 'v1' },
 })
 export class MigratedbWorkflow {
