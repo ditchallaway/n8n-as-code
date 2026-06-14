@@ -10,7 +10,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // WhenExecutedByAnotherWorkflow      executeWorkflowTrigger
 // Switch_                            switch
 // ExecuteASqlQuery                   postgres                   [creds]
-// CleanupStuckKeys                   postgres                   [creds]
+// InitializeDatabase                 postgres                   [creds]
 // InsertIdempotencyKey               postgres                   [creds]
 // FormatCheckResposne                set
 //
@@ -18,7 +18,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ──────────────────────────────────────────────────────────────────
 // WhenExecutedByAnotherWorkflow
 //    → Switch_
-//      → CleanupStuckKeys
+//      → InitializeDatabase
 //        → InsertIdempotencyKey
 //          → FormatCheckResposne
 //     .out(1) → ExecuteASqlQuery
@@ -125,7 +125,8 @@ export class IdempotencyManageWorkflow {
 SET status = $2 
 WHERE idempotency_key = $1;`,
         options: {
-            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.final_status || 'pending_human_review'] }}",
+            queryReplacement:
+                "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.final_status || 'pending_human_review'] }}",
         },
     };
 
@@ -163,7 +164,8 @@ ADD COLUMN IF NOT EXISTS system_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;`,
 )
 SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
         options: {
-            queryReplacement: "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.surecart_timestamp] }}",
+            queryReplacement:
+                "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.surecart_timestamp] }}",
         },
     };
 
@@ -196,8 +198,8 @@ SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
     defineRouting() {
         this.WhenExecutedByAnotherWorkflow.out(0).to(this.Switch_.in(0));
         this.Switch_.out(0).to(this.InitializeDatabase.in(0));
+        this.Switch_.out(1).to(this.ExecuteASqlQuery.in(0));
         this.InitializeDatabase.out(0).to(this.InsertIdempotencyKey.in(0));
         this.InsertIdempotencyKey.out(0).to(this.FormatCheckResposne.in(0));
-        this.Switch_.out(1).to(this.ExecuteASqlQuery.in(0));
     }
 }
