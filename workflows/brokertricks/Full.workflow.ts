@@ -710,47 +710,18 @@ if (fulfillment_id) {
 }
 const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
 
-// Output the payload to be stored in State Storage
+// We only need to output a single item containing the combined URL
 return [
   {
     json: {
       ...input,
+      editorUrl: editorUrl,
       photopeaPayload: payload,
       filesIncluded: files.length,
       fulfillment_id: fulfillment_id
     }
   }
 ];`,
-    };
-
-    @node({
-        id: '2d3c7a2b-4e5f-6a7b-8c9d-0e1f2a3b4c5d',
-        name: 'State Storage',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.4,
-        position: [1616, 272],
-        credentials: { httpBearerAuth: { id: 'Hy4bWHoBR2fWc0wj', name: 'Short link bearer' } },
-    })
-    StateStorage = {
-        method: 'POST',
-        url: 'https://link.brokertricks.com/v1/state',
-        authentication: 'predefinedCredentialType',
-        nodeCredentialType: 'httpBearerAuth',
-        sendHeaders: true,
-        headerParameters: {
-            parameters: [
-                {
-                    name: 'Content-Type',
-                    value: 'application/json',
-                },
-            ],
-        },
-        sendBody: true,
-        specifyBody: 'json',
-        jsonBody: `={
-  "config": {{ JSON.stringify($json.photopeaPayload) }}
-}`,
-        options: {},
     };
 
     @node({
@@ -884,8 +855,8 @@ return [{ json: { pathString: pathString } }];`,
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
-  "url": "https://app.brokertricks.com/editor-full.html?customer_id={{ $('Prepare Configuration').item.json.customer_id }}&order_id={{ $('Prepare Configuration').item.json.order_id }}&direction=full&acreage={{ $('Prepare Configuration').item.json.acreage }}&fulfillment_id={{ $('Prepare Configuration').item.json.fulfillment_id || '' }}&config_id={{ $json.id }}",
-  "comment": "Editor URL for order_{{ $('Prepare Configuration').item.json.order_id }}"
+  "url": "{{ $json.editorUrl }}",
+  "comment": "Editor URL for order_{{ $json.order_id }}"
 }`,
         options: {},
     };
@@ -1094,8 +1065,7 @@ return [{ json: { pathString: pathString } }];`,
         this.StaticMapUrlBuilder.out(0).to(this.EditFields1.in(0));
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
-        this.PrepareConfiguration.out(0).to(this.StateStorage.in(0));
-        this.StateStorage.out(0).to(this.ShortenEditorUrl.in(0));
+        this.PrepareConfiguration.out(0).to(this.ShortenEditorUrl.in(0));
         this.Webhook.out(0).to(this.GetExpandedOrder.in(0));
         this.GetExpandedOrder.out(0).to(this.GetFulfillments.in(0));
         this.GetFulfillments.out(0).to(this.GetElevation.in(0));
