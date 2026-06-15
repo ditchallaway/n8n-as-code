@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 30  |  Connections: 28
+// Nodes   : 29  |  Connections: 27
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -23,7 +23,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // StickyNote2                        stickyNote
 // EditFields3                        set
 // PrepareConfiguration               code
-// StateStorage                       httpRequest                [creds]
 // StaticMapUrlBuilder                set
 // GeometryToStaticMapUrlPath         code
 // GetElevation                       httpRequest
@@ -61,14 +60,13 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                      → EditFields3
 //                                        → EditFields2
 //                                          → PrepareConfiguration
-//                                            → StateStorage
-//                                              → ShortenEditorUrl
-//                                                → CheckForNotes
-//                                                  → If_
-//                                                    → CreateANote
-//                                                      → NtfySend
-//                                                   .out(1) → HttpRequest1
-//                                                      → NtfySend (↩ loop)
+//                                            → ShortenEditorUrl
+//                                              → CheckForNotes
+//                                                → If_
+//                                                  → CreateANote
+//                                                    → NtfySend
+//                                                 .out(1) → HttpRequest1
+//                                                    → NtfySend (↩ loop)
 // </workflow-map>
 
 // =====================================================================
