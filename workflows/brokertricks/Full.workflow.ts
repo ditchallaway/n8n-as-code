@@ -649,77 +649,30 @@ try {
     // fallback if not available
 }
 
-// Dynamically build files array from all incoming items
-// Include reference images for the human editor
-const timestamp = Date.now();
-const files = [];
-for (const item of items) {
-  if (item.json.imageUrl) {
-    files.push(\`\${item.json.imageUrl}?t=\${timestamp}\`);
-  }
-}
-
-// Fallback in case no imageUrls were passed
-if (files.length === 0) {
-  files.push(\`https://pics.brokertricks.com/\${customer_id}/\${order_id}/property_overhead.png?t=\${timestamp}\`);
-}
-
-const webhookUrl = \`https://auto.brokertricks.com/webhook/bucket?customer_id=\${customer_id}&order_id=\${order_id}&direction=full\`;
-
-// Build and minify ExtendScript that loops over ALL open documents
-const script = \`
-var acreageText = "\${acreage} ACRES";
-var expectedFiles = \${files.length};
-if (app.documents.length === expectedFiles) {
-  for (var i = 0; i < expectedFiles; i++) {
-    app.activeDocument = app.documents[i];
-    var t = app.activeDocument.artLayers.add();
-    t.kind = LayerKind.TEXT;
-    t.textItem.contents = acreageText;
-    t.textItem.size = 120;
-    var c = new SolidColor();
-    c.rgb.hexValue = "FFFF00";
-    t.textItem.color = c;
-    t.textItem.position = [100, 200];
-  }
-}
-\`.trim().replace(/\\\\s+/g, ' ');
-
-const payload = {
-    files: files,
-    server: {
-        url: webhookUrl,
-        formats: ["png"]
-    },
-    script: script
-};
-
-const encodedConfig = encodeURIComponent(JSON.stringify(payload));
-
-// Add query params for the dashboard UI, and the hash for Photopea
+// Build short editor URL — the editor page builds the Photopea config itself
 const params = [
   \`customer_id=\${encodeURIComponent(customer_id)}\`,
   \`order_id=\${encodeURIComponent(order_id)}\`,
-  \`direction=full\`,
+  'pack=full',
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
 if (fulfillment_id) {
   params.push(\`fulfillment_id=\${encodeURIComponent(fulfillment_id)}\`);
 }
-const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
 
-// We only need to output a single item containing the combined URL
-return [
-  {
-    json: {
-      ...input,
-      editorUrl: editorUrl,
-      photopeaPayload: payload,
-      filesIncluded: files.length,
-      fulfillment_id: fulfillment_id
-    }
+const editorUrl = \`https://app.brokertricks.com/editor/?\${params.join('&')}\`;
+
+// Count images for reference
+const files = items.filter(item => item.json.imageUrl).map(item => item.json.imageUrl);
+
+return [{
+  json: {
+    ...input,
+    editorUrl,
+    filesIncluded: files.length,
+    fulfillment_id
   }
-];`,
+}];`,
     };
 
     @node({
