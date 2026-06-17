@@ -15,9 +15,9 @@ graph TD
     NO --> WC[Fetch WordPress User]
     NO --> Switch{Product Switch}
     
-    Switch --> |Full Pack| WF[Full workflow]
-    Switch --> |Overhead North| WN[Overhead-North workflow]
-    Switch --> |Overhead Only| WO[Overhead-Only workflow]
+    Switch --> |Full| WF[Full workflow]
+    Switch --> |Double| WN[Double workflow]
+    Switch --> |Single| WO[Single workflow]
     
     WF & WN & WO --> Shorten[Shorten Editor URL via Sink]
     Shorten --> SCNotes[Update SureCart Order Notes]
