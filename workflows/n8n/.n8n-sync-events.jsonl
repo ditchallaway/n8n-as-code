@@ -1,0 +1,1 @@
+{"op":"workflow.push","status":"rejected","workflowId":"eiHeW6leMz4NRikO","filename":"Full.workflow.ts","remoteChanged":false,"reason":"Push rejected for \"Full.workflow.ts\": The workflow was modified in the n8n UI since your last sync. Please run 'pull' to merge the remote changes first.","v":1,"id":"703f526c-2c87-4415-816b-385d1d26e677","ts":"2026-06-17T11:47:56.023Z"}
