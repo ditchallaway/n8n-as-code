@@ -42,8 +42,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'sTOjWDor1GgzoCCt',
     name: 'cookie',
     active: true,
+    description: 'get a cookie from here before calling the regrid api',
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         callerPolicy: 'workflowsFromSameOwner',
@@ -180,11 +180,11 @@ export class CookieWorkflow {
                 },
                 {
                     name: 'user[email]',
-                    value: 'ditchallaway@gmail.com',
+                    value: '={{ $env.REGRID_EMAIL }}',
                 },
                 {
                     name: 'user[password]',
-                    value: '2AcErDCsBa$in5a',
+                    value: '={{ $env.REGRID_PASSWORD }}',
                 },
                 {
                     name: 'commit',
@@ -239,12 +239,6 @@ export class CookieWorkflow {
                     id: 'ca0bb726-0869-4539-b9d6-b2a6bdedbc31',
                     name: 'login-token',
                     value: '={{ $json.authenticity_token }}',
-                    type: 'string',
-                },
-                {
-                    id: 'e51a873d-9098-40d1-bb4b-03ca1d9a0b66',
-                    name: '',
-                    value: '',
                     type: 'string',
                 },
             ],
@@ -364,7 +358,7 @@ export class CookieWorkflow {
             parameters: [
                 {
                     name: 'Cookie',
-                    value: '={{ "_cfuvid=7csKHP6W85bYjnpNno4N5We0HcNXTtXuzZWT2cKDkOY-1761520842173-0.0.1.1-604800000; cebs=1; _ce.clock_data=456%2C38.165.151.88%2C1%2C2204ee63bef2f351470a66ffe1bb020e%2CChrome%2CUS; _CEFT=Q%3D%3D%3D; _gid=GA1.2.1154851228.1761520845; _gcl_au=1.1.1029524293.1761532477; _uetsid=ce1d5570b2bb11f0a575b7a04624eda4; _uetvid=e1adc100b1f011f097690d5f95f8f890; __hstc=243024157.ab6268d4e9adaecba9c646cb085cf2f3.1761532478420.1761532478420.1761532478420.1; hubspotutk=ab6268d4e9adaecba9c646cb085cf2f3; __hssrc=1; __hssc=243024157.1.1761532478420; __hs_notify_banner_dismiss=true; " + $node["Edit Fields"].json["user_id_cookie"] + "; " + $node["Edit Fields"].json["session_id_cookie"] + "; __cf_bm=bdjD_r0cDMok2upNxRFpUSdgQXkM7CErwAvoliuWqXI-1761533972-1.0.1.1-Kg8e8VJlpb7DQwK8FNWcxsM5WPyuvlH41E0O9LzlJ80foVBIlKU6s3OFrolaE.Y13hGreCX8NTj9TaKuJ12A8DcKj4nMTTJFNjIG5OfffTs; cebsp_=8; _ga=GA1.1.1792884763.1761520845; _ga_NGWML8455J=GS2.1.s1761532471$o6$g1$t1761533994$j37$l0$h0; " + $node["Edit Fields"].json["user_expires_cookie"] + "; _ce.s=v~7b4d565b6255ca58619f4de16e64c95f09992778~lcw~1761534128256~vir~returning~lva~1761533973882~vpv~0~v11ls~7863ac40-b2dd-11f0-833d-a57a9309c672~gtrk.la~mh8jxsaw~v11.cs~392098~v11.s~7863ac40-b2dd-11f0-833d-a57a9309c672~v11.vs~7b4d565b6255ca58619f4de16e64c95f09992778~v11.fsvd~eyJ1cmwiOiJhcHAucmVncmlkLmNvbSIsInJlZiI6IiIsInV0bSI6W119~v11.sla~1761532472582~lcw~1761534128264" }}',
+                    value: '={{ $node["Edit Fields"].json["user_id_cookie"] }}; {{ $node["Edit Fields"].json["session_id_cookie"] }}; {{ $node["Edit Fields"].json["user_expires_cookie"] }}',
                 },
                 {
                     name: 'User-Agent',
@@ -419,11 +413,11 @@ export class CookieWorkflow {
         position: [1856, 0],
     })
     RespondToWebhook = {
-        respondWith: 'json',
         responseBody: `={
   "auth_success": true,
   "remaining": {{ $json.body.remaining }},
-  "cookie_header_string": "{{ "_cfuvid=7csKHP6W85bYjnpNno4N5We0HcNXTtXuzZWT2cKDkOY-1761520842173-0.0.1.1-604800000; cebs=1; _ce.clock_data=456%2C38.165.151.88%2C1%2C2204ee63bef2f351470a66ffe1bb020e%2CChrome%2CUS; _CEFT=Q%3D%3D%3D; _gid=GA1.2.1154851228.1761520845; _gcl_au=1.1.1029524293.1761532477; _uetsid=ce1d5570b2bb11f0a575b7a04624eda4; _uetvid=e1adc100b1f011f097690d5f95f8f890; __hstc=243024157.ab6268d4e9adaecba9c646cb085cf2f3.1761532478420.1761532478420.1761532478420.1; hubspotutk=ab6268d4e9adaecba9c646cb085cf2f3; __hssrc=1; __hssc=243024157.1.1761532478420; __hs_notify_banner_dismiss=true; " + $node["Edit Fields"].json["user_id_cookie"] + "; " + $node["Edit Fields"].json["session_id_cookie"] + "; __cf_bm=bdjD_r0cDMok2upNxRFpUSdgQXkM7CErwAvoliuWqXI-1761533972-1.0.1.1-Kg8e8VJlpb7DQwK8FNWcxsM5WPyuvlH41E0O9LzlJ80foVBIlKU6s3OFrolaE.Y13hGreCX8NTj9TaKuJ12A8DcKj4nMTTJFNjIG5OfffTs; cebsp_=8; _ga=GA1.1.1792884763.1761520845; _ga_NGWML8455J=GS2.1.s1761532471$o6$g1$t1761533994$j37$l0$h0; " + $node["Edit Fields"].json["user_expires_cookie"] + "; _ce.s=v~7b4d565b6255ca58619f4de16e64c95f09992778~lcw~1761534128256~vir~returning~lva~1761533973882~vpv~0~v11ls~7863ac40-b2dd-11f0-833d-a57a9309c672~gtrk.la~mh8jxsaw~v11.cs~392098~v11.s~7863ac40-b2dd-11f0-833d-a57a9309c672~v11.vs~7b4d565b6255ca58619f4de16e64c95f09992778~v11.fsvd~eyJ1cmwiOiJhcHAucmVncmlkLmNvbSIsInJlZiI6IiIsInV0bSI6W119~v11.sla~1761532472582~lcw~1761534128264" }} ... ; user.id={{ $('Edit Fields').item.json.user_id_cookie }}; _session_id={{ $node["Edit Fields"].json["session_id_cookie"] }}; __cf_bm=... ; user.expires_at={{ $node["Edit Fields"].json["user_expires_cookie"] }}"
+  "cookie_header_string": "{{ $node["Edit Fields"].json["user_id_cookie"] }}; {{ $node["Edit Fields"].json["session_id_cookie"] }}; {{ $node["Edit Fields"].json["user_expires_cookie"] }}",
+  "csrf_token": "{{ $('Edit Fields1').item.json['login-token'] }}"
 }`,
         options: {
             responseCode: 200,

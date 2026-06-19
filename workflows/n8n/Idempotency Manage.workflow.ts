@@ -33,7 +33,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Idempotency Manage',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: { executionOrder: 'v1', binaryMode: 'separate' },
 })
 export class IdempotencyManageWorkflow {
@@ -143,7 +142,8 @@ WHERE idempotency_key = $1;`,
         operation: 'executeQuery',
         query: `ALTER TABLE idempotency_keys 
 ADD COLUMN IF NOT EXISTS surecart_timestamp TIMESTAMP,
-ADD COLUMN IF NOT EXISTS system_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;`,
+ADD COLUMN IF NOT EXISTS system_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN IF NOT EXISTS execution_id VARCHAR(255);`,
         options: {},
     };
 
@@ -158,15 +158,15 @@ ADD COLUMN IF NOT EXISTS system_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;`,
     InsertIdempotencyKey = {
         operation: 'executeQuery',
         query: `WITH inserted AS (
-  INSERT INTO idempotency_keys (idempotency_key, status, surecart_timestamp)
-  VALUES ($1, 'received', $2::timestamp)
-  ON CONFLICT (idempotency_key) DO NOTHING
+  INSERT INTO idempotency_keys (idempotency_key, status, surecart_timestamp, execution_id)
+  VALUES ($1, 'received', $2::timestamp, $3)
+  ON CONFLICT (idempotency_key) DO UPDATE SET execution_id = $3
   RETURNING idempotency_key
 )
 SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
         options: {
             queryReplacement:
-                "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.surecart_timestamp] }}",
+                "={{ [$('When Executed by Another Workflow').item.json.idempotency_key, $('When Executed by Another Workflow').item.json.surecart_timestamp, $('When Executed by Another Workflow').item.json.execution_id] }}",
         },
     };
 

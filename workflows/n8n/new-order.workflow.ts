@@ -123,7 +123,7 @@ export class NewOrderWorkflow {
                         },
                         conditions: [
                             {
-                                leftValue: "={{ $('set idempotency key').item.json.pid }}",
+                                leftValue: '={{ $json.pid }}',
                                 rightValue: ' bb3c33ae-36bc-488d-809e-166665ad7fe6',
                                 operator: {
                                     type: 'string',
@@ -210,7 +210,7 @@ export class NewOrderWorkflow {
                 {
                     id: 'f94a3ebb-b2ba-4cf4-8af1-fa68159a59de',
                     name: 'email',
-                    value: "={{ $('get user').item.json.name }}",
+                    value: "={{ $('get user').item.json.email }}",
                     type: 'string',
                 },
                 {
@@ -394,7 +394,7 @@ export class NewOrderWorkflow {
                 },
                 {
                     name: 'x-csrf-token',
-                    value: '8nrHp/RiPDPJJEDnCWrNDe3OskdOjGAaeqWyZz3ZMTAvhtdKuk0pTO3e6zmGzzLLjYaBfwhXN+kgilsZ/dO/cQ==',
+                    value: "={{ $('cookie').item.json.csrf_token }}",
                 },
                 {
                     name: 'x-requested-with',
@@ -476,7 +476,7 @@ export class NewOrderWorkflow {
                 },
                 {
                     name: 'x-csrf-token',
-                    value: '8nrHp/RiPDPJJEDnCWrNDe3OskdOjGAaeqWyZz3ZMTAvhtdKuk0pTO3e6zmGzzLLjYaBfwhXN+kgilsZ/dO/cQ==',
+                    value: "={{ $('cookie').item.json.csrf_token }}",
                 },
                 {
                     name: 'x-requested-with',
@@ -549,7 +549,11 @@ export class NewOrderWorkflow {
         },
         workflowInputs: {
             mappingMode: 'defineBelow',
-            value: {},
+            value: {
+                action: '={{ $json.action }}',
+                idempotency_key: '={{ $json.idempotency_key }}',
+                execution_id: '={{ $executionId }}',
+            },
             matchingColumns: [],
             schema: [],
             attemptToConvertTypes: false,
@@ -606,6 +610,7 @@ export class NewOrderWorkflow {
             mappingMode: 'defineBelow',
             value: {
                 body: '={{ { payload: $json } }}',
+                resumeUrl: '={{ $resumeUrl }}',
             },
             matchingColumns: [],
             schema: [
@@ -789,6 +794,8 @@ export class NewOrderWorkflow {
         content: `## GET RATE LIMITS 
 **GET** request [https://app.regrid.com/users/lookup_limits.json](https://app.regrid.com/users/lookup_limits.json)`,
         height: 304,
+        width: 240,
+        color: 1,
     };
 
     @node({
@@ -812,7 +819,6 @@ export class NewOrderWorkflow {
     })
     CreateKml = {
         jsCode: `const geojsonRaw = $('path-to-data').first().json.geometry;
-const ownerName = $('path-to-data').first().json.fields.owner;
 const parcelNumber = $('geo-to-path').first().json.parcelnumb;
 const acres = $input.first().json.fields.lglacres;
 
@@ -893,7 +899,6 @@ const kmlOutput = \`<?xml version="1.0" encoding="UTF-8"?>
     <Placemark id="property-boundary">
       <name>\${parcelNumber}</name>
       <description><![CDATA[
-        <b>Owner:</b> \${ownerName}<br>
         <b>Acres:</b> \${acres}
       ]]></description>
       <styleUrl>#style</styleUrl>
@@ -962,8 +967,16 @@ return [
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
+const geometry = $('path-to-data').first().json.geometry;
+let coordinates = [];
 
-const coordinates = $('path-to-data').first().json.geometry.coordinates
+if (geometry.type === 'Polygon') {
+  coordinates = geometry.coordinates[0]; // Access the first ring
+} else if (geometry.type === 'MultiPolygon') {
+  coordinates = geometry.coordinates[0][0]; // Access the first ring of the first polygon
+} else {
+  throw new Error('Unsupported geometry type: ' + geometry.type);
+}
 
 const color = "0xffff00ff";
 const weight = 4;
@@ -997,7 +1010,7 @@ return [{ json: { pathString: pathString } }];`,
         operation: 'getAll',
         limit: 1,
         options: {
-            search: "={{ $input['get checkout'].item.json.email }}",
+            search: "={{ $('get checkout').item.json.email }}",
         },
     };
 
@@ -1057,7 +1070,13 @@ return [{ json: { pathString: pathString } }];`,
         },
         workflowInputs: {
             mappingMode: 'defineBelow',
-            value: {},
+            value: {
+                action: '={{ $json.action }}',
+                idempotency_key: '={{ $json.idempotency_key }}',
+                checkout_id: '={{ $json.checkout_id }}',
+                customer: '={{ $json.customer }}',
+                execution_id: '={{ $executionId }}',
+            },
             matchingColumns: [],
             schema: [],
             attemptToConvertTypes: false,
@@ -1189,6 +1208,7 @@ return $input.all();`,
             mappingMode: 'defineBelow',
             value: {
                 body: '={{ { payload: $json } }}',
+                resumeUrl: '={{ $resumeUrl }}',
             },
             matchingColumns: [],
             schema: [],
@@ -1219,6 +1239,7 @@ return $input.all();`,
             mappingMode: 'defineBelow',
             value: {
                 body: '={{ { payload: $json } }}',
+                resumeUrl: '={{ $resumeUrl }}',
             },
             matchingColumns: [],
             schema: [],

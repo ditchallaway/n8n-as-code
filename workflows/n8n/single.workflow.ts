@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : single
-// Nodes   : 25  |  Connections: 22
+// Nodes   : 24  |  Connections: 21
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -31,7 +31,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ShortenEditorUrl                   httpRequest
 // BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
-// RespondToWebhook                   respondToWebhook
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -57,7 +56,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                        → ShortenEditorUrl
 //                                          → BackupEditorUrl
 //                                            → Ntfy
-//                                              → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -68,8 +66,9 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'fD94owK14KYr97yB',
     name: 'single',
     active: true,
+    description:
+        "this workflow produces an overhead view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the image as a fallback.",
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
@@ -222,15 +221,9 @@ export class SingleWorkflow {
                     type: 'object',
                 },
                 {
-                    id: 'fbffd5dc-6e53-4038-a1b1-9d53ccc9986c',
-                    name: 'owner',
-                    value: "={{ $if($input['edit fields'].item.json.owner, $isEmpty(),$('HTTP Request').item.json.fields.primaryownername ) }}",
-                    type: 'string',
-                },
-                {
                     id: 'dd033ec8-237e-4e04-9004-623914baa468',
                     name: 'acres',
-                    value: '=',
+                    value: '={{ $json.acres }}',
                     type: 'number',
                 },
             ],
@@ -255,12 +248,6 @@ export class SingleWorkflow {
                     name: 'acres',
                     value: '={{ $json.acres }}',
                     type: 'number',
-                },
-                {
-                    id: '86c320a1-3e81-4e96-8028-c2b360c911af',
-                    name: 'owner',
-                    value: "={{ $('Edit Fields9').item.json.owner }}",
-                    type: 'string',
                 },
                 {
                     id: '369090e7-3df2-451b-b0df-8a21951a35e1',
@@ -445,11 +432,11 @@ return $input.all();`,
     "county": $('Webhook').item.json.body.payload.county,
     "elevation": parseFloat($('Edit Fields9').item.json.elevation),
     "customer_id": $('Edit Fields9').item.json.customer_id,
-    "order_id": $('Edit Fields9').item.json.order_id,
-    "owner": $('Edit Fields9').item.json.owner
+    "wpuser_id": $('Webhook').item.json.body.payload.wpuser_id,
+    "order_id": $('Edit Fields9').item.json.order_id
   }),
   "snapshot_mode": "overhead_only",
-  "resumeUrl": $resumeUrl
+  "resumeUrl": $('Webhook').item.json.resumeUrl
 } }}`,
     };
 
@@ -527,7 +514,7 @@ return items;`,
     UploadAFile = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: 'cust_{{ $json.wpuser_id }}/order_{{ $json.order_id }}/{{ $json.fileName }}',
+        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/{{ $json.fileName }}',
         additionalFields: {},
     };
 
@@ -753,7 +740,6 @@ return [
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
-const input = items[0].json;
 const coordinates = $input.first().json.geometry.coordinates[0];  // Access the first ring of the Polygon
 
 const color = "0xffff00ff";
@@ -902,24 +888,6 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         options: {},
     };
 
-    @node({
-        id: '9fc5d717-c41f-43b4-95aa-dd024b1a1a51',
-        name: 'Respond to Webhook',
-        type: 'n8n-nodes-base.respondToWebhook',
-        version: 1.5,
-        position: [1200, 176],
-    })
-    RespondToWebhook = {
-        respondWith: 'json',
-        responseBody: `={
-  "status": "success",
-  "order": "order_{{ $('Webhook').item.json.body.payload.order_id }}",
-"wp_user": "{{ $('Webhook').item.json.body.payload.wpuser_id }}",
-"editor_url": "{{ $('Shorten Editor URL').item.json.shortLink }}"
-} `,
-        options: {},
-    };
-
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -947,6 +915,5 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         this.PrepareConfiguration.out(0).to(this.ShortenEditorUrl.in(0));
         this.ShortenEditorUrl.out(0).to(this.BackupEditorUrl.in(0));
         this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
-        this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
     }
 }

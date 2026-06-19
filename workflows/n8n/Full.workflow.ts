@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 29  |  Connections: 27
+// Nodes   : 30  |  Connections: 28
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -36,6 +36,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // If_                                if
 // HttpRequest1                       httpRequest                [creds]
 // NtfySend                           ntfySend                   [creds]
+// CallbackParent                     httpRequest
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -65,6 +66,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                                → If_
 //                                                  → CreateANote
 //                                                    → NtfySend
+//                                                      → CallbackParent
 //                                                 .out(1) → HttpRequest1
 //                                                    → NtfySend (↩ loop)
 // </workflow-map>
@@ -441,24 +443,20 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ 
-JSON.stringify(
-{
+        inputs: `={{ {
   "job_json": JSON.stringify({
-    "lat": $('Edit Fields9').item.json.lat,
-    "lon": $('Edit Fields9').item.json.lon,
+    "lat": parseFloat($('Edit Fields9').item.json.lat),
+    "lon": parseFloat($('Edit Fields9').item.json.lon),
     "boundary": $('Edit Fields9').item.json.geometry,
-    "acres": $('Edit Fields9').item.json.acres,
-    "county": "$('Webhook').item.json.county",
-    "elevation": $('Edit Fields9').item.json.elevation,
-    "customer_id": "$('Edit Fields9').item.json.customer_id",
-    "order_id": "$('Edit Fields9').item.json.order_id}"
-    }),
+    "acres": parseFloat($('Edit Fields9').item.json.acres),
+    "county": $('Edit Fields9').item.json.county,
+    "elevation": parseFloat($('Edit Fields9').item.json.elevation),
+    "customer_id": $('Edit Fields9').item.json.customer_id,
+    "order_id": $('Edit Fields9').item.json.order_id
+  }),
   "snapshot_mode": "all",
-  "resumeUrl": "$resumeUrl"
-}
-)
-}}`,
+  "resumeUrl": $resumeUrl
+} }}`,
     };
 
     @node({
@@ -613,7 +611,7 @@ return items;`,
                 {
                     id: 'd596049d-c49b-4128-a169-e36e268497ce',
                     name: 'imageUrl',
-                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/order_{{ $('Edit Fields9').item.json.order_id }}/{{ $('Code in JavaScript').item.json.fileName }}",
+                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/order_{{ $('Edit Fields9').item.json.order_id.toString().replace('order_', '') }}/{{ $('Code in JavaScript').item.json.fileName }}",
                     type: 'string',
                 },
             ],
@@ -685,7 +683,7 @@ if (app.documents.length === expectedFiles) {
     t.textItem.position = [100, 200];
   }
 }
-\`.trim().replace(/\\\\s+/g, ' ');
+\`.trim().replace(/\\s+/g, ' ');
 
 const payload = {
     files: files,
@@ -760,7 +758,6 @@ return [
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
-const input = items[0].json;
 const coordinates = $input.first().json.geometry.coordinates[0];  // Access the first ring of the Polygon
 
 const color = "0xffff00ff";
@@ -1043,6 +1040,25 @@ return [{ json: { pathString: pathString } }];`,
         tags: 'new-order',
     };
 
+    @node({
+        id: 'a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6',
+        name: 'Callback Parent',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [2960, 272],
+    })
+    CallbackParent = {
+        method: 'POST',
+        url: "={{ $('Webhook').item.json.resumeUrl }}",
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: {
+            wpuser_id: "={{ $('Webhook').item.json.body.payload.wpuser_id }}",
+            order_id: "={{ $('Webhook').item.json.body.payload.order_id }}",
+        },
+        options: {},
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -1076,5 +1092,6 @@ return [{ json: { pathString: pathString } }];`,
         this.If_.out(0).to(this.CreateANote.in(0));
         this.If_.out(1).to(this.HttpRequest1.in(0));
         this.HttpRequest1.out(0).to(this.NtfySend.in(0));
+        this.NtfySend.out(0).to(this.CallbackParent.in(0));
     }
 }
