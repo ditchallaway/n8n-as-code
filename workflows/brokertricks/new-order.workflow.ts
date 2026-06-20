@@ -1185,48 +1185,7 @@ return $input.all();`,
         additionalFields: {},
     };
 
-    @node({
-        id: '35f812e6-e99f-4b59-a2b8-94b05b15c7a7',
-        name: 'If1',
-        type: 'n8n-nodes-base.if',
-        version: 2.3,
-        position: [-816, 1552],
-    })
-    If1 = {
-        conditions: {
-            options: {
-                caseSensitive: true,
-                leftValue: '',
-                typeValidation: 'strict',
-                version: 3,
-            },
-            conditions: [
-                {
-                    id: '73911ba7-0fcf-4b55-840b-8eb8396b0ffd',
-                    leftValue: '={{ $json.remaining }}',
-                    rightValue: 2,
-                    operator: {
-                        type: 'number',
-                        operation: 'gt',
-                    },
-                },
-            ],
-            combinator: 'and',
-        },
-        options: {},
-    };
 
-    @node({
-        id: '7df4b0b8-5484-4c44-baae-727e2fbcf9c2',
-        name: 'HTTP Request1',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.4,
-        position: [-592, 1552],
-    })
-    HttpRequest1 = {
-        url: 'https://auto.brokertricks.com/webhook/ungrid',
-        options: {},
-    };
 
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
@@ -1250,7 +1209,7 @@ return $input.all();`,
         this.Wait.out(0).to(this.CodeInJavascript.in(0));
         this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
         this.UploadAFile.out(0).to(this.DataShaper.in(0));
-        this.Cookie.out(0).to(this.If1.in(0));
+        this.Cookie.out(0).to(this.GeoToPath.in(0));
         this.CreateKml.out(0).to(this.GeometryToStaticMapUrlPath.in(0));
         this.GetCheckout.out(0).to(this.SetIdempotencyKey.in(0));
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
@@ -1258,7 +1217,5 @@ return $input.all();`,
         this.GetUser.out(0).to(this.EditFields.in(0));
         this.SetIdempotencyKey.out(0).to(this.IdempotencyCheck.in(0));
         this.IdempotencyCheck.out(0).to(this.If_.in(0));
-        this.If1.out(0).to(this.GeoToPath.in(0));
-        this.If1.out(1).to(this.HttpRequest1.in(0));
     }
 }

@@ -179,11 +179,11 @@ export class CookieWorkflow {
                 },
                 {
                     name: 'user[email]',
-                    value: 'ditchallaway@gmail.com',
+                    value: "={{ $('LoopCredentials').item.json.email }}",
                 },
                 {
                     name: 'user[password]',
-                    value: '2AcErDCsBa$in5a',
+                    value: "={{ $('LoopCredentials').item.json.password }}",
                 },
                 {
                     name: 'commit',
@@ -328,6 +328,11 @@ export class CookieWorkflow {
                     operation: 'isNotEmpty',
                 },
             ],
+            options: {
+                caseSensitive: true,
+                leftValue: '',
+                typeValidation: 'strict',
+            },
         },
     };
 
@@ -411,6 +416,76 @@ export class CookieWorkflow {
     };
 
     @node({
+        id: '2019b889-1cd2-4e89-8d19-482811a2f2b3',
+        name: 'LoadCredentials',
+        type: 'n8n-nodes-base.code',
+        version: 2,
+        position: [150, 0],
+    })
+    LoadCredentials = {
+        jsCode: `const creds = [];
+let i = 1;
+while ($env["REGRID_EMAIL" + i] && $env["REGRID_PASSWORD" + i]) {
+  creds.push({
+    json: {
+      email: $env["REGRID_EMAIL" + i],
+      password: $env["REGRID_PASSWORD" + i]
+    }
+  });
+  i++;
+}
+
+if (creds.length === 0) {
+  throw new Error("No REGRID_EMAIL1 or REGRID_PASSWORD1 found in environment variables.");
+}
+
+return creds;`,
+    };
+
+    @node({
+        id: '9dfa9a83-a9c8-479c-b17b-232158863f69',
+        name: 'LoopCredentials',
+        type: 'n8n-nodes-base.splitInBatches',
+        version: 1,
+        position: [200, 0],
+    })
+    LoopCredentials = {
+        batchSize: 1,
+        options: {},
+    };
+
+    @node({
+        id: 'a1b2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d',
+        name: 'CheckLimits',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [1750, 0],
+    })
+    CheckLimits = {
+        conditions: {
+            options: {
+                caseSensitive: true,
+                leftValue: '',
+                typeValidation: 'strict',
+                version: 3,
+            },
+            conditions: [
+                {
+                    id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
+                    leftValue: '={{ $json.body.remaining }}',
+                    rightValue: 2,
+                    operator: {
+                        type: 'number',
+                        operation: 'gt',
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
+    };
+
+    @node({
         id: 'cac5d964-3219-457e-ba66-d07642a5ef5d',
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
@@ -442,8 +517,13 @@ export class CookieWorkflow {
         this.HttpRequest.out(0).to(this.EditFields.in(0));
         this.EditFields.out(0).to(this.CheckLoginStatus.in(0));
         this.CheckLoginStatus.out(0).to(this.HttpRequest2.in(0));
-        this.CheckLoginStatus.out(1).to(this.RespondWithError.in(0));
-        this.Webhook.out(0).to(this.HttpRequest1.in(0));
-        this.HttpRequest2.out(0).to(this.RespondToWebhook.in(0));
+        this.CheckLoginStatus.out(1).to(this.LoopCredentials.in(0));
+        this.Webhook.out(0).to(this.LoadCredentials.in(0));
+        this.LoadCredentials.out(0).to(this.LoopCredentials.in(0));
+        this.LoopCredentials.out(0).to(this.HttpRequest1.in(0));
+        this.LoopCredentials.out(1).to(this.RespondWithError.in(0));
+        this.HttpRequest2.out(0).to(this.CheckLimits.in(0));
+        this.CheckLimits.out(0).to(this.RespondToWebhook.in(0));
+        this.CheckLimits.out(1).to(this.LoopCredentials.in(0));
     }
 }
