@@ -18,7 +18,15 @@
       "projectId": "personal",
       "projectName": "Personal",
       "workflowsPath": "workflows/brokertricks",
-      "folderSync": true
+      "folderSync": true,
+      "nativeMcp": {
+        "enabled": true,
+        "url": "https://auto.brokertricks.com/mcp-server/http",
+        "mode": "assist",
+        "allowRemoteExposure": false,
+        "allowExecutionData": false,
+        "requireSyncBack": true
+      }
     }
   ]
 }

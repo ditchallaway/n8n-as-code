@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 29  |  Connections: 27
+// Nodes   : 30  |  Connections: 28
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -36,6 +36,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // If_                                if
 // HttpRequest1                       httpRequest                [creds]
 // NtfySend                           ntfySend                   [creds]
+// CallbackParent                     httpRequest
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -65,6 +66,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                                → If_
 //                                                  → CreateANote
 //                                                    → NtfySend
+//                                                      → CallbackParent
 //                                                 .out(1) → HttpRequest1
 //                                                    → NtfySend (↩ loop)
 // </workflow-map>
@@ -77,13 +79,16 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'eiHeW6leMz4NRikO',
     name: 'Full',
     active: true,
+    description:
+        "this workflow produces an overhead, north, east, west, and south facing view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the images as a fallback.",
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
         timeSavedMode: 'fixed',
         callerPolicy: 'workflowsFromSameOwner',
-        availableInMCP: false,
+        availableInMCP: true,
     },
 })
 export class FullWorkflow {
@@ -439,24 +444,20 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ 
-JSON.stringify(
-{
+        inputs: `={{ {
   "job_json": JSON.stringify({
-    "lat": $('Edit Fields9').item.json.lat,
-    "lon": $('Edit Fields9').item.json.lon,
+    "lat": parseFloat($('Edit Fields9').item.json.lat),
+    "lon": parseFloat($('Edit Fields9').item.json.lon),
     "boundary": $('Edit Fields9').item.json.geometry,
-    "acres": $('Edit Fields9').item.json.acres,
-    "county": "$('Webhook').item.json.county",
-    "elevation": $('Edit Fields9').item.json.elevation,
-    "customer_id": "$('Edit Fields9').item.json.customer_id",
-    "order_id": "$('Edit Fields9').item.json.order_id}"
-    }),
+    "acres": parseFloat($('Edit Fields9').item.json.acres),
+    "county": $('Edit Fields9').item.json.county,
+    "elevation": parseFloat($('Edit Fields9').item.json.elevation),
+    "customer_id": $('Edit Fields9').item.json.customer_id,
+    "order_id": $('Edit Fields9').item.json.order_id
+  }),
   "snapshot_mode": "all",
-  "resumeUrl": "$resumeUrl"
-}
-)
-}}`,
+  "resumeUrl": $resumeUrl
+} }}`,
     };
 
     @node({
@@ -611,7 +612,7 @@ return items;`,
                 {
                     id: 'd596049d-c49b-4128-a169-e36e268497ce',
                     name: 'imageUrl',
-                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/order_{{ $('Edit Fields9').item.json.order_id }}/{{ $('Code in JavaScript').item.json.fileName }}",
+                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/order_{{ $('Edit Fields9').item.json.order_id.toString().replace('order_', '') }}/{{ $('Code in JavaScript').item.json.fileName }}",
                     type: 'string',
                 },
             ],
@@ -649,30 +650,77 @@ try {
     // fallback if not available
 }
 
-// Build short editor URL — the editor page builds the Photopea config itself
+// Dynamically build files array from all incoming items
+// Include reference images for the human editor
+const timestamp = Date.now();
+const files = [];
+for (const item of items) {
+  if (item.json.imageUrl) {
+    files.push(\`\${item.json.imageUrl}?t=\${timestamp}\`);
+  }
+}
+
+// Fallback in case no imageUrls were passed
+if (files.length === 0) {
+  files.push(\`https://pics.brokertricks.com/\${customer_id}/\${order_id}/property_overhead.png?t=\${timestamp}\`);
+}
+
+const webhookUrl = \`https://auto.brokertricks.com/webhook/bucket?customer_id=\${customer_id}&order_id=\${order_id}&direction=full\`;
+
+// Build and minify ExtendScript that loops over ALL open documents
+const script = \`
+var acreageText = "\${acreage} ACRES";
+var expectedFiles = \${files.length};
+if (app.documents.length === expectedFiles) {
+  for (var i = 0; i < expectedFiles; i++) {
+    app.activeDocument = app.documents[i];
+    var t = app.activeDocument.artLayers.add();
+    t.kind = LayerKind.TEXT;
+    t.textItem.contents = acreageText;
+    t.textItem.size = 120;
+    var c = new SolidColor();
+    c.rgb.hexValue = "FFFF00";
+    t.textItem.color = c;
+    t.textItem.position = [100, 200];
+  }
+}
+\`.trim().replace(/\\s+/g, ' ');
+
+const payload = {
+    files: files,
+    server: {
+        url: webhookUrl,
+        formats: ["png"]
+    },
+    script: script
+};
+
+const encodedConfig = encodeURIComponent(JSON.stringify(payload));
+
+// Add query params for the dashboard UI, and the hash for Photopea
 const params = [
   \`customer_id=\${encodeURIComponent(customer_id)}\`,
   \`order_id=\${encodeURIComponent(order_id)}\`,
-  'pack=full',
+  \`direction=full\`,
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
 if (fulfillment_id) {
   params.push(\`fulfillment_id=\${encodeURIComponent(fulfillment_id)}\`);
 }
+const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
 
-const editorUrl = \`https://app.brokertricks.com/editor/?\${params.join('&')}\`;
-
-// Count images for reference
-const files = items.filter(item => item.json.imageUrl).map(item => item.json.imageUrl);
-
-return [{
-  json: {
-    ...input,
-    editorUrl,
-    filesIncluded: files.length,
-    fulfillment_id
+// We only need to output a single item containing the combined URL
+return [
+  {
+    json: {
+      ...input,
+      editorUrl: editorUrl,
+      photopeaPayload: payload,
+      filesIncluded: files.length,
+      fulfillment_id: fulfillment_id
+    }
   }
-}];`,
+];`,
     };
 
     @node({
@@ -711,7 +759,6 @@ return [{
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
-const input = items[0].json;
 const coordinates = $input.first().json.geometry.coordinates[0];  // Access the first ring of the Polygon
 
 const color = "0xffff00ff";
@@ -994,6 +1041,25 @@ return [{ json: { pathString: pathString } }];`,
         tags: 'new-order',
     };
 
+    @node({
+        id: 'a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6',
+        name: 'Callback Parent',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [2960, 272],
+    })
+    CallbackParent = {
+        method: 'POST',
+        url: "={{ $('Webhook').item.json.resumeUrl }}",
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: {
+            wpuser_id: "={{ $('Webhook').item.json.body.payload.wpuser_id }}",
+            order_id: "={{ $('Webhook').item.json.body.payload.order_id }}",
+        },
+        options: {},
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -1027,5 +1093,6 @@ return [{ json: { pathString: pathString } }];`,
         this.If_.out(0).to(this.CreateANote.in(0));
         this.If_.out(1).to(this.HttpRequest1.in(0));
         this.HttpRequest1.out(0).to(this.NtfySend.in(0));
+        this.NtfySend.out(0).to(this.CallbackParent.in(0));
     }
 }
