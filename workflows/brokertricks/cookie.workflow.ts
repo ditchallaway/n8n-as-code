@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : cookie
-// Nodes   : 11  |  Connections: 10
+// Nodes   : 14  |  Connections: 15
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -16,22 +16,30 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // CheckLoginStatus                   if
 // RespondWithError                   respondToWebhook
 // HttpRequest2                       httpRequest
+// Getcookietable                     dataTable
+// Loopcredentials                    splitInBatches
+// Checklimits                        if
 // Webhook                            webhook
 // RespondToWebhook                   respondToWebhook
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
 // Webhook
-//    → HttpRequest1
-//      → EditFields2
-//        → Html
-//          → EditFields1
-//            → HttpRequest
-//              → EditFields
-//                → CheckLoginStatus
-//                  → HttpRequest2
-//                    → RespondToWebhook
-//                 .out(1) → RespondWithError
+//    → Getcookietable
+//      → Loopcredentials
+//        → HttpRequest1
+//          → EditFields2
+//            → Html
+//              → EditFields1
+//                → HttpRequest
+//                  → EditFields
+//                    → CheckLoginStatus
+//                      → HttpRequest2
+//                        → Checklimits
+//                          → RespondToWebhook
+//                         .out(1) → Loopcredentials (↩ loop)
+//                     .out(1) → Loopcredentials (↩ loop)
+//       .out(1) → RespondWithError
 // </workflow-map>
 
 // =====================================================================
@@ -42,6 +50,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'sTOjWDor1GgzoCCt',
     name: 'cookie',
     active: true,
+    description: 'get a cookie from here before calling the regrid api',
     isArchived: false,
     settings: {
         executionOrder: 'v1',
@@ -179,11 +188,11 @@ export class CookieWorkflow {
                 },
                 {
                     name: 'user[email]',
-                    value: "={{ $('LoopCredentials').item.json.email }}",
+                    value: "={{ $('Loopcredentials').item.json.email }}",
                 },
                 {
                     name: 'user[password]',
-                    value: "={{ $('LoopCredentials').item.json.password }}",
+                    value: "={{ $('Loopcredentials').item.json.password }}",
                 },
                 {
                     name: 'commit',
@@ -402,66 +411,42 @@ export class CookieWorkflow {
     };
 
     @node({
-        id: '066d7052-05d7-4cd8-9b59-61ee86802805',
-        webhookId: '53d029f0-fb5c-4c94-a519-f1637b6e3bd2',
-        name: 'Webhook',
-        type: 'n8n-nodes-base.webhook',
-        version: 2.1,
-        position: [64, 0],
-    })
-    Webhook = {
-        path: 'cookie',
-        responseMode: 'responseNode',
-        options: {},
-    };
-
-    @node({
         id: '2019b889-1cd2-4e89-8d19-482811a2f2b3',
-        name: 'LoadCredentials',
-        type: 'n8n-nodes-base.code',
-        version: 2,
+        name: 'GetCookieTable',
+        type: 'n8n-nodes-base.dataTable',
+        version: 1.1,
         position: [150, 0],
     })
-    LoadCredentials = {
-        jsCode: `const creds = [];
-let i = 1;
-while ($env["REGRID_EMAIL" + i] && $env["REGRID_PASSWORD" + i]) {
-  creds.push({
-    json: {
-      email: $env["REGRID_EMAIL" + i],
-      password: $env["REGRID_PASSWORD" + i]
-    }
-  });
-  i++;
-}
-
-if (creds.length === 0) {
-  throw new Error("No REGRID_EMAIL1 or REGRID_PASSWORD1 found in environment variables.");
-}
-
-return creds;`,
+    Getcookietable = {
+        resource: 'row',
+        operation: 'get',
+        dataTableId: {
+            mode: 'list',
+            value: 'ZxIKw9wy4CcVYJBF',
+        },
+        returnAll: true,
     };
 
     @node({
         id: '9dfa9a83-a9c8-479c-b17b-232158863f69',
-        name: 'LoopCredentials',
+        name: 'Loopcredentials',
         type: 'n8n-nodes-base.splitInBatches',
         version: 1,
         position: [200, 0],
     })
-    LoopCredentials = {
+    Loopcredentials = {
         batchSize: 1,
         options: {},
     };
 
     @node({
         id: 'a1b2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d',
-        name: 'CheckLimits',
+        name: 'Checklimits',
         type: 'n8n-nodes-base.if',
         version: 2.3,
         position: [1750, 0],
     })
-    CheckLimits = {
+    Checklimits = {
         conditions: {
             options: {
                 caseSensitive: true,
@@ -482,6 +467,20 @@ return creds;`,
             ],
             combinator: 'and',
         },
+        options: {},
+    };
+
+    @node({
+        id: '066d7052-05d7-4cd8-9b59-61ee86802805',
+        webhookId: '53d029f0-fb5c-4c94-a519-f1637b6e3bd2',
+        name: 'Webhook',
+        type: 'n8n-nodes-base.webhook',
+        version: 2.1,
+        position: [64, 0],
+    })
+    Webhook = {
+        path: 'cookie',
+        responseMode: 'responseNode',
         options: {},
     };
 
@@ -517,13 +516,13 @@ return creds;`,
         this.HttpRequest.out(0).to(this.EditFields.in(0));
         this.EditFields.out(0).to(this.CheckLoginStatus.in(0));
         this.CheckLoginStatus.out(0).to(this.HttpRequest2.in(0));
-        this.CheckLoginStatus.out(1).to(this.LoopCredentials.in(0));
-        this.Webhook.out(0).to(this.LoadCredentials.in(0));
-        this.LoadCredentials.out(0).to(this.LoopCredentials.in(0));
-        this.LoopCredentials.out(0).to(this.HttpRequest1.in(0));
-        this.LoopCredentials.out(1).to(this.RespondWithError.in(0));
-        this.HttpRequest2.out(0).to(this.CheckLimits.in(0));
-        this.CheckLimits.out(0).to(this.RespondToWebhook.in(0));
-        this.CheckLimits.out(1).to(this.LoopCredentials.in(0));
+        this.CheckLoginStatus.out(1).to(this.Loopcredentials.in(0));
+        this.Webhook.out(0).to(this.Getcookietable.in(0));
+        this.Getcookietable.out(0).to(this.Loopcredentials.in(0));
+        this.Loopcredentials.out(0).to(this.HttpRequest1.in(0));
+        this.Loopcredentials.out(1).to(this.RespondWithError.in(0));
+        this.HttpRequest2.out(0).to(this.Checklimits.in(0));
+        this.Checklimits.out(0).to(this.RespondToWebhook.in(0));
+        this.Checklimits.out(1).to(this.Loopcredentials.in(0));
     }
 }

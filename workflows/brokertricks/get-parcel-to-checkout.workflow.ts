@@ -2,20 +2,22 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : get-parcel-to-checkout
-// Nodes   : 3  |  Connections: 2
+// Nodes   : 4  |  Connections: 3
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
 // Property name                    Node type (short)         Flags
 // Webhook                            webhook
 // RespondToWebhook                   respondToWebhook
+// Cookie                             httpRequest
 // GetParcel                          httpRequest                [executeOnce]
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
 // Webhook
-//    → GetParcel
-//      → RespondToWebhook
+//    → Cookie
+//      → GetParcel
+//        → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -26,8 +28,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'DLyxGg3CIEt94Mf9',
     name: 'get-parcel-to-checkout',
     active: true,
+    description:
+        "This is part of the checkout flow. it gets the customers selected property's parcel number and returns it to the checkout form for confirmation.",
     isArchived: false,
-    settings: { executionOrder: 'v1', binaryMode: 'separate' },
+    settings: { executionOrder: 'v1', binaryMode: 'separate', availableInMCP: true },
 })
 export class GetParcelToCheckoutWorkflow {
     // =====================================================================
@@ -105,6 +109,18 @@ export class GetParcelToCheckoutWorkflow {
     };
 
     @node({
+        id: 'e03a00ab-ebee-4c14-9275-f7b01b5eca89',
+        name: 'cookie',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [112, 0],
+    })
+    Cookie = {
+        url: 'https://auto.brokertricks.com/webhook/cookie',
+        options: {},
+    };
+
+    @node({
         id: 'b5340db0-25be-4c56-bbf2-f556b9090fb7',
         name: 'get-parcel',
         type: 'n8n-nodes-base.httpRequest',
@@ -157,7 +173,7 @@ export class GetParcelToCheckoutWorkflow {
                 },
                 {
                     name: 'cookie',
-                    value: '_gcl_au=1.1.1041038130.1678305427; _ga=GA1.2.425307303.1678305428; _CEFT=Q%3D%3D%3D; hubspotutk=97436c6f20b31d9d5a38bcbbd4b34565; intercom-id-iumjbczf=2369487d-fd89-4379-9bd2-df92d17df46d; intercom-device-id-iumjbczf=d3d2e856-aedc-403d-a715-e2cacd12df64; track_uid=b64d1395-2a0f-6081-4909-3a07e3332a3b; intercom-session-iumjbczf=; _gid=GA1.2.1545326082.1680109359; _ce.clock_event=1; _ce.clock_data=140%2C69.59.65.170%2C1; _session_id=f159321d9db3ee3011a173b937b200c8; ln_or=eyIzMzIwMTE0IjoiZCJ9; __cf_bm=dfHa3SCbNel_nfPhCfddTzKnznx_VYiJz0sbbVMQP7w-1680119487-0-AQW9AHq+rJDwDRzEvyLgRyFJYaTz8LUR5C64Suqfv2hgeq53OzWjjGHwm5ATVchgL1nyny2e8n9pMSMjM217i5Q=; __cfruid=4abc0d8245a719c187ab6177233e5a4c78e819ea-1680119487; _gat=1; cebs=1; _ce.s=v~1b617d7c18b746e142f13287416da35de42d270a~vpv~3~v11.rlc~1680119488158; __hstc=243024157.97436c6f20b31d9d5a38bcbbd4b34565.1678305427889.1680109360034.1680119488393.4; __hssrc=1; __hssc=243024157.1.1680119488393; _uetsid=830ddab0ce5311eda6855dfc8a45805c; _uetvid=fedb2f00346911edacc8e1fe01936b93; cebsp_=4',
+                    value: "={{ $('cookie').item.json.cookie_header_string }}",
                 },
                 {
                     name: 'pragma',
@@ -229,7 +245,8 @@ export class GetParcelToCheckoutWorkflow {
 
     @links()
     defineRouting() {
-        this.Webhook.out(0).to(this.GetParcel.in(0));
+        this.Webhook.out(0).to(this.Cookie.in(0));
+        this.Cookie.out(0).to(this.GetParcel.in(0));
         this.GetParcel.out(0).to(this.RespondToWebhook.in(0));
     }
 }

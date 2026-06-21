@@ -24,7 +24,7 @@
         "url": "https://auto.brokertricks.com/mcp-server/http",
         "mode": "assist",
         "allowRemoteExposure": false,
-        "allowExecutionData": false,
+        "allowExecutionData": true,
         "requireSyncBack": true
       }
     }
