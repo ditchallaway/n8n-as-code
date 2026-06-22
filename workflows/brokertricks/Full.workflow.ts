@@ -82,7 +82,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         "this workflow produces an overhead, north, east, west, and south facing view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the images as a fallback.",
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -444,20 +443,20 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: {
-            job_json: `={{ JSON.stringify({
-                lat: parseFloat($('Edit Fields9').item.json.lat),
-                lon: parseFloat($('Edit Fields9').item.json.lon),
-                boundary: $('Edit Fields9').item.json.geometry,
-                acres: parseFloat($('Edit Fields9').item.json.acres),
-                county: $('Edit Fields9').item.json.county,
-                elevation: parseFloat($('Edit Fields9').item.json.elevation),
-                customer_id: $('Edit Fields9').item.json.customer_id,
-                order_id: $('Edit Fields9').item.json.order_id
-            }) }}`,
+        inputs: `={{ {
+            job_json: JSON.stringify({
+                lat: parseFloat($('Edit Fields9').first().json.lat),
+                lon: parseFloat($('Edit Fields9').first().json.lon),
+                boundary: $('Edit Fields9').first().json.geometry,
+                acres: parseFloat($('Edit Fields9').first().json.acres),
+                county: $('Edit Fields9').first().json.county,
+                elevation: parseFloat($('Edit Fields9').first().json.elevation),
+                customer_id: $('Edit Fields9').first().json.customer_id,
+                order_id: $('Edit Fields9').first().json.order_id
+            }),
             snapshot_mode: 'all',
-            resumeUrl: '={{ $resumeUrl }}',
-        },
+            resumeUrl: $resumeUrl
+        } }}`,
     };
 
     @node({
