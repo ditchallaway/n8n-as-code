@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : new-order
-// Nodes   : 26  |  Connections: 26
+// Nodes   : 24  |  Connections: 24
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -31,8 +31,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // Wait                               wait
 // CodeInJavascript                   code
 // UploadAFile                        s3                         [creds]
-// If1                                if
-// HttpRequest1                       httpRequest
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -42,26 +40,24 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //        → IdempotencyCheck
 //          → If_
 //            → Cookie
-//              → If1
-//                → GeoToPath
-//                  → PathToData
-//                    → CreateKml
-//                      → GeometryToStaticMapUrlPath
-//                        → StaticMapUrlBuilder
-//                          → GetUser
-//                            → EditFields
-//                              → Switch_
-//                                → CallOverheadWorkflow
-//                                  → Wait
-//                                    → CodeInJavascript
-//                                      → UploadAFile
-//                                        → DataShaper
-//                                          → IdempotencyCleanup
-//                               .out(1) → CallSingleWorkflow
-//                                  → Wait (↩ loop)
-//                               .out(2) → CallFullWorkflow
-//                                  → Wait (↩ loop)
-//               .out(1) → HttpRequest1
+//              → GeoToPath
+//                → PathToData
+//                  → CreateKml
+//                    → GeometryToStaticMapUrlPath
+//                      → StaticMapUrlBuilder
+//                        → GetUser
+//                          → EditFields
+//                            → Switch_
+//                              → CallOverheadWorkflow
+//                                → Wait
+//                                  → CodeInJavascript
+//                                    → UploadAFile
+//                                      → DataShaper
+//                                        → IdempotencyCleanup
+//                             .out(1) → CallSingleWorkflow
+//                                → Wait (↩ loop)
+//                             .out(2) → CallFullWorkflow
+//                                → Wait (↩ loop)
 //           .out(1) → NoOperationDoNothing
 // </workflow-map>
 
@@ -73,6 +69,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'NxcEiPloqLn1EJ87',
     name: 'new-order',
     active: true,
+    description:
+        'This workflow listens for surecart\'s "order.paid" event and begins the fulfillment process acting as the controller.',
     isArchived: false,
     settings: {
         executionOrder: 'v1',
@@ -1202,8 +1200,6 @@ return $input.all();`,
         fileName: 'cust_{{ $json.wpuser_id }}/order_{{ $json.order_id }}/ready.txt',
         additionalFields: {},
     };
-
-
 
     // =====================================================================
     // ROUTAGE ET CONNEXIONS

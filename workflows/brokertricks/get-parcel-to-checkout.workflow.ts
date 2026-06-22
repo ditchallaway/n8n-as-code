@@ -31,7 +31,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         "This is part of the checkout flow. it gets the customers selected property's parcel number and returns it to the checkout form for confirmation.",
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: { executionOrder: 'v1', binaryMode: 'separate', availableInMCP: true },
 })
 export class GetParcelToCheckoutWorkflow {
@@ -137,7 +136,7 @@ export class GetParcelToCheckoutWorkflow {
             parameters: [
                 {
                     name: 'query',
-                    value: '={{ $json.query.latInput }},{{ $json.query.lngInput }}',
+                    value: "={{ $('Webhook').item.json.query.latInput }},{{ $('Webhook').item.json.query.lngInput }}",
                 },
                 {
                     name: 'autocomplete',

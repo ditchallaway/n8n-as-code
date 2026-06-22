@@ -1,7 +1,7 @@
 import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
-// Workflow : Overhead-North
+// Workflow : double
 // Nodes   : 25  |  Connections: 22
 //
 // NODE INDEX
@@ -68,7 +68,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'Tqh6g1yqvcfi5qeF',
     name: 'double',
     active: true,
+    description:
+        "this workflow produces an overhead, north facing view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the images as a fallback.",
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
@@ -76,7 +79,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
         binaryMode: 'separate',
     },
 })
-export class OverheadNorthWorkflow {
+export class DoubleWorkflow {
     // =====================================================================
     // CONFIGURATION DES NOEUDS
     // =====================================================================
@@ -435,21 +438,21 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ JSON.stringify({
-  "job_json": JSON.stringify({
-    "lat": parseFloat($('Webhook').item.json.body.payload.latitude),
-    "lon": parseFloat($('Webhook').item.json.body.payload.longitude),
-    "boundary": $('Webhook').item.json.body.payload.geometry,
-    "acres": parseFloat($('Webhook').item.json.body.payload.acres),
-    "county": $('Webhook').item.json.body.payload.county,
-    "elevation": parseFloat($('Edit Fields9').item.json.elevation),
-    "customer_id": $('Edit Fields9').item.json.customer_id,
-    "order_id": $('Edit Fields9').item.json.order_id,
-    "owner": $('Edit Fields9').item.json.owner
-  }),
-  "snapshot_mode": "overhead_north",
-  "resumeUrl": $resumeUrl
-}) }}`,
+        inputs: {
+            job_json: `={{ JSON.stringify({
+                lat: parseFloat($('Webhook').item.json.body.payload.latitude),
+                lon: parseFloat($('Webhook').item.json.body.payload.longitude),
+                boundary: $('Webhook').item.json.body.payload.geometry,
+                acres: parseFloat($('Webhook').item.json.body.payload.acres),
+                county: $('Webhook').item.json.body.payload.county,
+                elevation: parseFloat($('Edit Fields9').item.json.elevation),
+                customer_id: $('Edit Fields9').item.json.customer_id,
+                order_id: $('Edit Fields9').item.json.order_id,
+                owner: $('Edit Fields9').item.json.owner
+            }) }}`,
+            snapshot_mode: 'overhead_north',
+            resumeUrl: '={{ $resumeUrl }}',
+        },
     };
 
     @node({
