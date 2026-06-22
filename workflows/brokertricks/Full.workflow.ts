@@ -443,7 +443,7 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ {
+        inputs: `={{ JSON.stringify({
   "job_json": JSON.stringify({
     "lat": parseFloat($('Edit Fields9').item.json.lat),
     "lon": parseFloat($('Edit Fields9').item.json.lon),
@@ -456,7 +456,7 @@ return $input.all();`,
   }),
   "snapshot_mode": "all",
   "resumeUrl": $resumeUrl
-} }}`,
+}) }}`,
     };
 
     @node({

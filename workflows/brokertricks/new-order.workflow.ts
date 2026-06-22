@@ -1020,23 +1020,41 @@ return [
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
-
-const coordinates = $('path-to-data').first().json.geometry.coordinates
+const geometry = $('path-to-data').first().json.geometry;
 
 const color = "0xffff00ff";
 const weight = 4;
 
 // Helper function to create the path string with rounded numbers
-function createPathString(coordinates) {
-  return coordinates.map(coord => {
+function createPathString(ringCoords) {
+  const points = ringCoords.map(coord => {
     const lat = Number(coord[1]).toFixed(7); // Convert to number, round to 7 decimals
     const lon = Number(coord[0]).toFixed(7); // Convert to number, round to 7 decimals
     return \`\${lat},\${lon}\`;
-  }).join('|');  // Reverse lat/lon
+  }).join('|');
+  return \`path=color:\${color}|weight:\${weight}|\${points}\`;
 }
 
-// Build the path string
-const pathString = \`path=color:\${color}|weight:\${weight}|\${createPathString(coordinates)}\`;
+let paths = [];
+
+if (geometry.type === 'Polygon') {
+  // geometry.coordinates is an array of rings (first is outer, rest are holes)
+  geometry.coordinates.forEach(ring => {
+    paths.push(createPathString(ring));
+  });
+} else if (geometry.type === 'MultiPolygon') {
+  // geometry.coordinates is an array of polygons (each an array of rings)
+  geometry.coordinates.forEach(polygon => {
+    polygon.forEach(ring => {
+      paths.push(createPathString(ring));
+    });
+  });
+} else {
+  throw new Error('Unsupported geometry type: ' + geometry.type);
+}
+
+// Build the final string by joining all paths with &
+const pathString = paths.join('&');
 
 // Return the result
 return [{ json: { pathString: pathString } }];`,

@@ -1,7 +1,7 @@
 import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
-// Workflow : Overhead-Only
+// Workflow : Overhead-North
 // Nodes   : 25  |  Connections: 22
 //
 // NODE INDEX
@@ -65,8 +65,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // =====================================================================
 
 @workflow({
-    id: 'fD94owK14KYr97yB',
-    name: 'Overhead-Only',
+    id: 'Tqh6g1yqvcfi5qeF',
+    name: 'double',
     active: true,
     isArchived: false,
     settings: {
@@ -76,7 +76,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
         binaryMode: 'separate',
     },
 })
-export class OverheadOnlyWorkflow {
+export class OverheadNorthWorkflow {
     // =====================================================================
     // CONFIGURATION DES NOEUDS
     // =====================================================================
@@ -399,7 +399,7 @@ return $input.all();`,
 
     @node({
         id: 'fd158265-2008-4ef4-8ea4-f58a2436c993',
-        webhookId: '0d4f438a-183f-4767-b9eb-e4dbf496420d',
+        webhookId: 'f57fa959-7e09-444d-9ade-e4052e7307d9',
         name: 'Dispatch a workflow event and wait for completion',
         type: 'n8n-nodes-base.github',
         version: 1.1,
@@ -435,7 +435,7 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ {
+        inputs: `={{ JSON.stringify({
   "job_json": JSON.stringify({
     "lat": parseFloat($('Webhook').item.json.body.payload.latitude),
     "lon": parseFloat($('Webhook').item.json.body.payload.longitude),
@@ -447,9 +447,9 @@ return $input.all();`,
     "order_id": $('Edit Fields9').item.json.order_id,
     "owner": $('Edit Fields9').item.json.owner
   }),
-  "snapshot_mode": "overhead_only",
+  "snapshot_mode": "overhead_north",
   "resumeUrl": $resumeUrl
-} }}`,
+}) }}`,
     };
 
     @node({
@@ -645,7 +645,7 @@ try {
 const params = [
   \`customer_id=\${encodeURIComponent(customer_id)}\`,
   \`order_id=\${encodeURIComponent(order_id)}\`,
-  'pack=overhead_only',
+  'pack=overhead_north',
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
 if (fulfillment_id) {

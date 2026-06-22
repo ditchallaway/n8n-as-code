@@ -1,8 +1,8 @@
 import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
-// Workflow : single
-// Nodes   : 24  |  Connections: 21
+// Workflow : Overhead-Only
+// Nodes   : 25  |  Connections: 22
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -31,6 +31,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ShortenEditorUrl                   httpRequest
 // BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
+// RespondToWebhook                   respondToWebhook
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -56,6 +57,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                        → ShortenEditorUrl
 //                                          → BackupEditorUrl
 //                                            → Ntfy
+//                                              → RespondToWebhook
 // </workflow-map>
 
 // =====================================================================
@@ -66,8 +68,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     id: 'fD94owK14KYr97yB',
     name: 'single',
     active: true,
-    description:
-        "this workflow produces an overhead view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the image as a fallback.",
     isArchived: false,
     settings: {
         executionOrder: 'v1',
@@ -76,7 +76,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
         binaryMode: 'separate',
     },
 })
-export class SingleWorkflow {
+export class OverheadOnlyWorkflow {
     // =====================================================================
     // CONFIGURATION DES NOEUDS
     // =====================================================================
@@ -221,9 +221,15 @@ export class SingleWorkflow {
                     type: 'object',
                 },
                 {
+                    id: 'fbffd5dc-6e53-4038-a1b1-9d53ccc9986c',
+                    name: 'owner',
+                    value: "={{ $if($input['edit fields'].item.json.owner, $isEmpty(),$('HTTP Request').item.json.fields.primaryownername ) }}",
+                    type: 'string',
+                },
+                {
                     id: 'dd033ec8-237e-4e04-9004-623914baa468',
                     name: 'acres',
-                    value: '={{ $json.acres }}',
+                    value: '=',
                     type: 'number',
                 },
             ],
@@ -248,6 +254,12 @@ export class SingleWorkflow {
                     name: 'acres',
                     value: '={{ $json.acres }}',
                     type: 'number',
+                },
+                {
+                    id: '86c320a1-3e81-4e96-8028-c2b360c911af',
+                    name: 'owner',
+                    value: "={{ $('Edit Fields9').item.json.owner }}",
+                    type: 'string',
                 },
                 {
                     id: '369090e7-3df2-451b-b0df-8a21951a35e1',
@@ -309,7 +321,7 @@ export class SingleWorkflow {
         name: 'KML Generator',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-1456, 176],
+        position: [-1450, 176],
     })
     KmlGenerator = {
         jsCode: `for (const item of $input.all()) {
@@ -374,7 +386,7 @@ return $input.all();`,
         name: 'Upload KML to S3',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [-1408, 176],
+        position: [-1400, 176],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadKmlToS3 = {
@@ -423,7 +435,7 @@ return $input.all();`,
             mode: 'list',
             cachedResultName: 'main',
         },
-        inputs: `={{ {
+        inputs: `={{ JSON.stringify({
   "job_json": JSON.stringify({
     "lat": parseFloat($('Webhook').item.json.body.payload.latitude),
     "lon": parseFloat($('Webhook').item.json.body.payload.longitude),
@@ -432,12 +444,12 @@ return $input.all();`,
     "county": $('Webhook').item.json.body.payload.county,
     "elevation": parseFloat($('Edit Fields9').item.json.elevation),
     "customer_id": $('Edit Fields9').item.json.customer_id,
-    "wpuser_id": $('Webhook').item.json.body.payload.wpuser_id,
-    "order_id": $('Edit Fields9').item.json.order_id
+    "order_id": $('Edit Fields9').item.json.order_id,
+    "owner": $('Edit Fields9').item.json.owner
   }),
   "snapshot_mode": "overhead_only",
-  "resumeUrl": $('Webhook').item.json.resumeUrl
-} }}`,
+  "resumeUrl": $resumeUrl
+}) }}`,
     };
 
     @node({
@@ -514,7 +526,7 @@ return items;`,
     UploadAFile = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/{{ $json.fileName }}',
+        fileName: 'cust_{{ $json.wpuser_id }}/order_{{ $json.order_id }}/{{ $json.fileName }}',
         additionalFields: {},
     };
 
@@ -629,79 +641,30 @@ try {
     // fallback if not available
 }
 
-// Dynamically build files array from all incoming items
-// Include reference images for the human editor
-const timestamp = Date.now();
-const files = [];
-for (const item of items) {
-  if (item.json.imageUrl) {
-    files.push(\`\${item.json.imageUrl}?t=\${timestamp}\`);
-  }
-}
-
-// Fallback in case no imageUrls were passed
-if (files.length === 0) {
-  files.push(\`https://pics.brokertricks.com/\${customer_id}/\${order_id}/property_overhead.png?t=\${timestamp}\`);
-}
-
-const webhookUrl = \`https://auto.brokertricks.com/webhook/bucket?customer_id=\${customer_id}&order_id=\${order_id}&direction=full\`;
-
-// Build ExtendScript that loops over ALL open documents
-// Photopea opens each file as a separate tab — we must iterate
-// through every document to add the acreage text layer to each one.
-const script = \`
-var acreageText = "\${acreage} ACRES";
-var expectedFiles = \${files.length};
-if (app.documents.length === expectedFiles) {
-  for (var i = 0; i < expectedFiles; i++) {
-    app.activeDocument = app.documents[i];
-    var t = app.activeDocument.artLayers.add();
-    t.kind = LayerKind.TEXT;
-    t.textItem.contents = acreageText;
-    t.textItem.size = 120;
-    var c = new SolidColor();
-    c.rgb.hexValue = "FFFF00";
-    t.textItem.color = c;
-    t.textItem.position = [100, 200];
-  }
-}
-\`.trim().replace(/\\s+/g, ' ');
-
-const payload = {
-    files: files,
-    server: {
-        url: webhookUrl,
-        formats: ["png"]
-    },
-    script: script
-};
-
-const encodedConfig = encodeURIComponent(JSON.stringify(payload));
-
-// Add query params for the dashboard UI, and the hash for Photopea
+// Build short editor URL — the editor page builds the Photopea config itself
 const params = [
   \`customer_id=\${encodeURIComponent(customer_id)}\`,
   \`order_id=\${encodeURIComponent(order_id)}\`,
-  \`direction=full\`,
+  'pack=overhead_only',
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
 if (fulfillment_id) {
   params.push(\`fulfillment_id=\${encodeURIComponent(fulfillment_id)}\`);
 }
-const editorUrl = \`https://app.brokertricks.com/editor-full.html?\${params.join('&')}#\${encodedConfig}\`;
 
-// We only need to output a single item containing the combined URL
-return [
-  {
-    json: {
-      ...input,
-      editorUrl: editorUrl,
-      photopeaPayload: payload,
-      filesIncluded: files.length,
-      fulfillment_id: fulfillment_id
-    }
+const editorUrl = \`https://app.brokertricks.com/editor/?\${params.join('&')}\`;
+
+// Count images for reference
+const files = items.filter(item => item.json.imageUrl).map(item => item.json.imageUrl);
+
+return [{
+  json: {
+    ...input,
+    editorUrl,
+    filesIncluded: files.length,
+    fulfillment_id
   }
-];`,
+}];`,
     };
 
     @node({
@@ -740,6 +703,7 @@ return [
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
+const input = items[0].json;
 const coordinates = $input.first().json.geometry.coordinates[0];  // Access the first ring of the Polygon
 
 const color = "0xffff00ff";
@@ -807,7 +771,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Shorten Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [608, 176],
+        position: [600, 176],
     })
     ShortenEditorUrl = {
         method: 'POST',
@@ -858,11 +822,20 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [1008, 176],
+        position: [1000, 176],
     })
     Ntfy = {
         method: 'POST',
         url: 'https://ntfy.sh/brokertricks_alerts',
+        sendBody: true,
+        specifyBody: 'string',
+        body: `Render ready for review.
+
+Photopea Link: 
+{{ $("Shorten Editor URL").item.json.shortLink }}
+
+Order Dashboard: 
+https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepare Configuration").item.json.order_id }}`,
         sendHeaders: true,
         headerParameters: {
             parameters: [
@@ -876,15 +849,24 @@ return [{ json: { pathString: pathString } }];`,
                 },
             ],
         },
-        sendBody: true,
-        specifyBody: 'string',
-        body: `Render ready for review.
+        options: {},
+    };
 
-Photopea Link: 
-{{ $("Shorten Editor URL").item.json.shortLink }}
-
-Order Dashboard: 
-https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepare Configuration").item.json.order_id }}`,
+    @node({
+        id: '9fc5d717-c41f-43b4-95aa-dd024b1a1a51',
+        name: 'Respond to Webhook',
+        type: 'n8n-nodes-base.respondToWebhook',
+        version: 1.5,
+        position: [1200, 176],
+    })
+    RespondToWebhook = {
+        respondWith: 'json',
+        responseBody: `={
+  "status": "success",
+  "order": "order_{{ $('Webhook').item.json.body.payload.order_id }}",
+"wp_user": "{{ $('Webhook').item.json.body.payload.wpuser_id }}",
+"editor_url": "{{ $('Shorten Editor URL').item.json.shortLink }}"
+} `,
         options: {},
     };
 
@@ -915,5 +897,6 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         this.PrepareConfiguration.out(0).to(this.ShortenEditorUrl.in(0));
         this.ShortenEditorUrl.out(0).to(this.BackupEditorUrl.in(0));
         this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
+        this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
     }
 }

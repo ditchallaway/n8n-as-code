@@ -2,7 +2,7 @@
   "workflows": {
     "DLyxGg3CIEt94Mf9": {
       "lastSyncedHash": "72c86430870b3b30a102ca2566af0bd29d4fa55c75c946816556efd702252775",
-      "lastSyncedAt": "2026-06-21T06:53:14.688Z",
+      "lastSyncedAt": "2026-06-21T18:57:44.422Z",
       "filename": "get-parcel-to-checkout.workflow.ts"
     },
     "eiHeW6leMz4NRikO": {
@@ -22,7 +22,7 @@
     },
     "sTOjWDor1GgzoCCt": {
       "lastSyncedHash": "47211dcf1d995b1d56c9db338239c27fbd4d8210148ef864bb9bdd6526319d9e",
-      "lastSyncedAt": "2026-06-21T06:52:23.786Z",
+      "lastSyncedAt": "2026-06-21T18:57:12.978Z",
       "filename": "cookie.workflow.ts"
     },
     "fD94owK14KYr97yB": {
