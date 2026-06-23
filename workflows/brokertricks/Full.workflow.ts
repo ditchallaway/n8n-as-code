@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 30  |  Connections: 28
+// Nodes   : 34  |  Connections: 34
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -13,7 +13,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields1                        set
 // KmlGenerator                       code
 // UploadKmlToS3                      s3                         [creds]
-// DispatchAWorkflowEventAndWaitForCompletion github                     [creds]
 // HttpRequest2                       httpRequest
 // HttpRequest3                       httpRequest                [creds]
 // Compression                        compression
@@ -30,13 +29,18 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GetFulfillments                    httpRequest                [creds]
 // ShortenEditorUrl                   httpRequest                [creds]
 // Webhook                            executeWorkflowTrigger
-// EditFields4                        set
 // CheckForNotes                      httpRequest                [creds]
 // CreateANote                        httpRequest                [creds]
 // If_                                if
 // HttpRequest1                       httpRequest                [creds]
 // NtfySend                           ntfySend                   [creds]
 // CallbackParent                     httpRequest
+// DispatchAWorkflowEventAndWaitForCompletion github                     [creds]
+// EditFields4                        set
+// Switch_                            switch
+// EditFields5                        set
+// EditFields6                        set
+// EditFields7                        set
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -51,24 +55,30 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                  → EditFields1
 //                    → KmlGenerator
 //                      → UploadKmlToS3
-//                        → EditFields4
-//                          → DispatchAWorkflowEventAndWaitForCompletion
-//                            → HttpRequest2
-//                              → HttpRequest3
-//                                → Compression
-//                                  → CodeInJavascript
-//                                    → UploadAFile
-//                                      → EditFields3
-//                                        → EditFields2
-//                                          → PrepareConfiguration
-//                                            → ShortenEditorUrl
-//                                              → CheckForNotes
-//                                                → If_
-//                                                  → CreateANote
-//                                                    → NtfySend
-//                                                      → CallbackParent
-//                                                 .out(1) → HttpRequest1
-//                                                    → NtfySend (↩ loop)
+//                        → Switch_
+//                          → EditFields7
+//                            → EditFields4
+//                              → DispatchAWorkflowEventAndWaitForCompletion
+//                                → HttpRequest2
+//                                  → HttpRequest3
+//                                    → Compression
+//                                      → CodeInJavascript
+//                                        → UploadAFile
+//                                          → EditFields3
+//                                            → EditFields2
+//                                              → PrepareConfiguration
+//                                                → ShortenEditorUrl
+//                                                  → CheckForNotes
+//                                                    → If_
+//                                                      → CreateANote
+//                                                        → NtfySend
+//                                                          → CallbackParent
+//                                                     .out(1) → HttpRequest1
+//                                                        → NtfySend (↩ loop)
+//                         .out(1) → EditFields6
+//                            → EditFields4 (↩ loop)
+//                         .out(2) → EditFields5
+//                            → EditFields4 (↩ loop)
 // </workflow-map>
 
 // =====================================================================
@@ -82,6 +92,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         "this workflow produces an overhead, north, east, west, and south facing view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the images as a fallback.",
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -112,7 +123,7 @@ export class FullWorkflow {
         name: 'Edit Fields',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-2192, 272],
+        position: [-2192, 368],
     })
     EditFields = {
         assignments: {
@@ -193,7 +204,7 @@ export class FullWorkflow {
         name: 'Edit Fields9',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1968, 272],
+        position: [-1968, 368],
     })
     EditFields9 = {
         assignments: {
@@ -258,7 +269,7 @@ export class FullWorkflow {
         name: 'Edit Fields1',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1296, 272],
+        position: [-1296, 368],
     })
     EditFields1 = {
         assignments: {
@@ -329,7 +340,7 @@ export class FullWorkflow {
         name: 'KML Generator',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-1072, 272],
+        position: [-1072, 368],
     })
     KmlGenerator = {
         jsCode: `for (const item of $input.all()) {
@@ -394,7 +405,7 @@ return $input.all();`,
         name: 'Upload KML to S3',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [-848, 272],
+        position: [-848, 368],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadKmlToS3 = {
@@ -406,65 +417,11 @@ return $input.all();`,
     };
 
     @node({
-        id: 'fd158265-2008-4ef4-8ea4-f58a2436c993',
-        webhookId: 'd4974609-6a46-45bc-8230-d5fc3fdb580c',
-        name: 'Dispatch a workflow event and wait for completion',
-        type: 'n8n-nodes-base.github',
-        version: 1.1,
-        position: [-400, 272],
-        credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
-    })
-    DispatchAWorkflowEventAndWaitForCompletion = {
-        resource: 'workflow',
-        operation: 'dispatchAndWait',
-        owner: {
-            __rl: true,
-            value: 'ditchallaway',
-            mode: 'list',
-            cachedResultName: 'ditchallaway',
-            cachedResultUrl: 'https://github.com/ditchallaway',
-        },
-        repository: {
-            __rl: true,
-            value: 'Robotic-Property-Photographer',
-            mode: 'list',
-            cachedResultName: 'Robotic-Property-Photographer',
-            cachedResultUrl: 'https://github.com/ditchallaway/Robotic-Property-Photographer',
-        },
-        workflowId: {
-            __rl: true,
-            value: 262111778,
-            mode: 'list',
-            cachedResultName: 'Snapshots',
-        },
-        ref: {
-            __rl: true,
-            value: 'main',
-            mode: 'list',
-            cachedResultName: 'main',
-        },
-        inputs: `={{ {
-            job_json: JSON.stringify({
-                lat: parseFloat($('Edit Fields9').first().json.lat),
-                lon: parseFloat($('Edit Fields9').first().json.lon),
-                boundary: $('Edit Fields9').first().json.geometry,
-                acres: parseFloat($('Edit Fields9').first().json.acres),
-                county: $('Edit Fields9').first().json.county,
-                elevation: parseFloat($('Edit Fields9').first().json.elevation),
-                customer_id: $('Edit Fields9').first().json.customer_id,
-                order_id: $('Edit Fields9').first().json.order_id
-            }),
-            snapshot_mode: 'all',
-            resumeUrl: $resumeUrl
-        } }}`,
-    };
-
-    @node({
         id: '60e090b9-7a6c-471d-a390-08d100de8cd5',
         name: 'HTTP Request2',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [-176, 272],
+        position: [272, 368],
     })
     HttpRequest2 = {
         url: '=https://api.github.com/repos/ditchallaway/robotic-property-photographer/actions/runs/{{ $json.run_id }}/artifacts',
@@ -476,7 +433,7 @@ return $input.all();`,
         name: 'HTTP Request3',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [48, 272],
+        position: [496, 368],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     HttpRequest3 = {
@@ -491,7 +448,7 @@ return $input.all();`,
         name: 'Compression',
         type: 'n8n-nodes-base.compression',
         version: 1.1,
-        position: [272, 272],
+        position: [720, 368],
     })
     Compression = {
         outputPrefix: '=',
@@ -502,7 +459,7 @@ return $input.all();`,
         name: 'Code in JavaScript',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [496, 272],
+        position: [944, 368],
     })
     CodeInJavascript = {
         jsCode: `const items = [];
@@ -527,7 +484,7 @@ return items;`,
         name: 'Upload a file',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [720, 272],
+        position: [1168, 368],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadAFile = {
@@ -543,7 +500,7 @@ return items;`,
         name: 'Edit Fields2',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [1168, 272],
+        position: [1616, 368],
     })
     EditFields2 = {
         assignments: {
@@ -603,7 +560,7 @@ return items;`,
         name: 'Edit Fields3',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [944, 272],
+        position: [1392, 368],
     })
     EditFields3 = {
         assignments: {
@@ -624,7 +581,7 @@ return items;`,
         name: 'Prepare Configuration',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [1392, 272],
+        position: [1840, 368],
     })
     PrepareConfiguration = {
         jsCode: `const items = $input.all();
@@ -727,7 +684,7 @@ return [
         name: 'static map url builder',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1520, 272],
+        position: [-1520, 368],
     })
     StaticMapUrlBuilder = {
         assignments: {
@@ -754,7 +711,7 @@ return [
         name: 'geometry to static map url path',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-1744, 272],
+        position: [-1744, 368],
     })
     GeometryToStaticMapUrlPath = {
         jsCode: `// Input JSON containing the geometry and coordinates
@@ -784,7 +741,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'get elevation',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2416, 272],
+        position: [-2416, 368],
     })
     GetElevation = {
         url: '=https://maps.googleapis.com/maps/api/elevation/json?locations={{ $("Webhook").item.json.latitude }},{{ $("Webhook").item.json.longitude }}&key={{ $env.GOOGLE_API_KEY }}',
@@ -796,7 +753,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Get Expanded Order',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2864, 272],
+        position: [-2864, 368],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -814,7 +771,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Get Fulfillments',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [-2640, 272],
+        position: [-2640, 368],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -832,7 +789,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Shorten Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1840, 272],
+        position: [2064, 368],
         credentials: { httpBearerAuth: { id: 'Hy4bWHoBR2fWc0wj', name: 'Short link bearer' } },
     })
     ShortenEditorUrl = {
@@ -863,37 +820,10 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Webhook',
         type: 'n8n-nodes-base.executeWorkflowTrigger',
         version: 1.1,
-        position: [-3088, 272],
+        position: [-3088, 368],
     })
     Webhook = {
         inputSource: 'passthrough',
-    };
-
-    @node({
-        id: '8d93c293-3315-4253-94d9-9258025d36ff',
-        name: 'Edit Fields4',
-        type: 'n8n-nodes-base.set',
-        version: 3.4,
-        position: [-624, 272],
-    })
-    EditFields4 = {
-        assignments: {
-            assignments: [
-                {
-                    id: '2ef215e0-b03e-4633-8bb3-f50868a1f235',
-                    name: 'geometry',
-                    value: "={{ $('Webhook').item.json.geometry }}",
-                    type: 'object',
-                },
-                {
-                    id: 'bc3bcc7b-f963-427e-8735-8fc551287b4a',
-                    name: 'centroid',
-                    value: "={{ $('Webhook').item.json.centroid }}",
-                    type: 'string',
-                },
-            ],
-        },
-        options: {},
     };
 
     @node({
@@ -901,7 +831,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'check for notes',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2064, 272],
+        position: [2288, 368],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -919,7 +849,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'create a note',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2512, 176],
+        position: [2736, 272],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -958,7 +888,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'If',
         type: 'n8n-nodes-base.if',
         version: 2.3,
-        position: [2288, 272],
+        position: [2512, 368],
     })
     If_ = {
         conditions: {
@@ -991,7 +921,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'HTTP Request1',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [2512, 368],
+        position: [2736, 464],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1030,7 +960,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Ntfy Send',
         type: 'n8n-nodes-ntfy-client.ntfySend',
         version: 1,
-        position: [2736, 272],
+        position: [2960, 368],
         credentials: { ntfyApi: { id: 'W2xKUTn1PP43EdnG', name: 'ntfy account' } },
     })
     NtfySend = {
@@ -1045,7 +975,7 @@ return [{ json: { pathString: pathString } }];`,
         name: 'Callback Parent',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [2960, 272],
+        position: [3184, 368],
     })
     CallbackParent = {
         method: 'POST',
@@ -1055,6 +985,244 @@ return [{ json: { pathString: pathString } }];`,
         jsonBody: {
             wpuser_id: "={{ $('Webhook').item.json.body.payload.wpuser_id }}",
             order_id: "={{ $('Webhook').item.json.body.payload.order_id }}",
+        },
+        options: {},
+    };
+
+    @node({
+        id: 'a7912591-50ce-4f7f-85eb-3f0db9486d46',
+        webhookId: 'a0aa7f23-74a9-4f95-8851-101a391b1f0c',
+        name: 'Dispatch a workflow event and wait for completion',
+        type: 'n8n-nodes-base.github',
+        version: 1.1,
+        position: [48, 368],
+        credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
+    })
+    DispatchAWorkflowEventAndWaitForCompletion = {
+        resource: 'workflow',
+        operation: 'dispatchAndWait',
+        owner: {
+            __rl: true,
+            value: 'ditchallaway',
+            mode: 'list',
+            cachedResultName: 'ditchallaway',
+            cachedResultUrl: 'https://github.com/ditchallaway',
+        },
+        repository: {
+            __rl: true,
+            value: 'Robotic-Property-Photographer',
+            mode: 'list',
+            cachedResultName: 'Robotic-Property-Photographer',
+            cachedResultUrl: 'https://github.com/ditchallaway/Robotic-Property-Photographer',
+        },
+        workflowId: {
+            __rl: true,
+            value: 262111778,
+            mode: 'list',
+            cachedResultName: 'Snapshots',
+        },
+        ref: {
+            __rl: true,
+            value: 'main',
+            mode: 'list',
+            cachedResultName: 'main',
+        },
+        inputs: `={{ JSON.stringify({
+  "job_json": JSON.stringify({
+    "lat": parseFloat($('Edit Fields9').first().json.lat), 
+    "lon": parseFloat($('Edit Fields9').first().json.lon), 
+    "boundary": $('Edit Fields9').first().json.geometry, 
+    "acres": parseFloat($('Edit Fields9').first().json.acres), 
+    "county": $('Edit Fields9').first().json.county, 
+    "elevation": parseFloat($('Edit Fields9').first().json.elevation), 
+    "customer_id": $('Edit Fields9').first().json.customer_id, 
+    "order_id": $('Edit Fields9').first().json.order_id 
+  }), 
+  "snapshot_mode": $('Edit Fields5').item.json["snapshot mode"], 
+  "resumeUrl": $resumeUrl 
+}) }}`,
+    };
+
+    @node({
+        id: '3046223c-e36f-4db3-a70c-5bc0e8d4b7a5',
+        name: 'Edit Fields4',
+        type: 'n8n-nodes-base.set',
+        version: 3.4,
+        position: [-176, 368],
+    })
+    EditFields4 = {
+        assignments: {
+            assignments: [
+                {
+                    id: '2ef215e0-b03e-4633-8bb3-f50868a1f235',
+                    name: 'geometry',
+                    value: "={{ $('Webhook').item.json.geometry }}",
+                    type: 'object',
+                },
+                {
+                    id: 'bc3bcc7b-f963-427e-8735-8fc551287b4a',
+                    name: 'centroid',
+                    value: "={{ $('Webhook').item.json.centroid }}",
+                    type: 'string',
+                },
+                {
+                    id: '0b2f5d4c-7155-4bb8-8498-cb0ac19dc4a8',
+                    name: 'snapshot mode',
+                    value: '={{ $json["snapshot mode"] }}',
+                    type: 'string',
+                },
+            ],
+        },
+        options: {},
+    };
+
+    @node({
+        id: '1468ab8b-a4a0-44d0-9d28-07f1b432a475',
+        name: 'Switch',
+        type: 'n8n-nodes-base.switch',
+        version: 3.3,
+        position: [-624, 352],
+    })
+    Switch_ = {
+        rules: {
+            values: [
+                {
+                    conditions: {
+                        options: {
+                            caseSensitive: true,
+                            leftValue: '',
+                            typeValidation: 'strict',
+                            version: 2,
+                        },
+                        conditions: [
+                            {
+                                leftValue: "={{ $('Webhook').item.json.pid }}",
+                                rightValue: ' bb3c33ae-36bc-488d-809e-166665ad7fe6',
+                                operator: {
+                                    type: 'string',
+                                    operation: 'equals',
+                                },
+                                id: '656adc4d-1f78-4445-bebe-b6cd65b2b531',
+                            },
+                        ],
+                        combinator: 'and',
+                    },
+                    renameOutput: true,
+                    outputKey: 'single',
+                },
+                {
+                    conditions: {
+                        options: {
+                            caseSensitive: true,
+                            leftValue: '',
+                            typeValidation: 'strict',
+                            version: 2,
+                        },
+                        conditions: [
+                            {
+                                id: 'a7615221-b164-40cb-9df2-0540db1fdc75',
+                                leftValue: "={{ $('Webhook').item.json.pid }}",
+                                rightValue: '69e6ffdb-d671-4309-a9d9-78fdef6d958a',
+                                operator: {
+                                    type: 'string',
+                                    operation: 'equals',
+                                    name: 'filter.operator.equals',
+                                },
+                            },
+                        ],
+                        combinator: 'and',
+                    },
+                    renameOutput: true,
+                    outputKey: 'double',
+                },
+                {
+                    conditions: {
+                        options: {
+                            caseSensitive: true,
+                            leftValue: '',
+                            typeValidation: 'strict',
+                            version: 2,
+                        },
+                        conditions: [
+                            {
+                                id: '6911a445-1c99-401e-9e79-121a5226a192',
+                                leftValue: "={{ $('Webhook').item.json.pid }}",
+                                rightValue: 'd082d9a3-90d3-41e3-8b6a-53e8b4572cf6',
+                                operator: {
+                                    type: 'string',
+                                    operation: 'equals',
+                                },
+                            },
+                        ],
+                        combinator: 'and',
+                    },
+                    renameOutput: true,
+                    outputKey: 'full',
+                },
+            ],
+        },
+        options: {},
+    };
+
+    @node({
+        id: '707d90a6-00f7-4d3f-8825-ec2c77c523ca',
+        name: 'Edit Fields5',
+        type: 'n8n-nodes-base.set',
+        version: 3.4,
+        position: [-400, 560],
+    })
+    EditFields5 = {
+        assignments: {
+            assignments: [
+                {
+                    id: '00002fba-02a4-462c-811d-265defc8a549',
+                    name: 'snapshot mode',
+                    value: 'full',
+                    type: 'string',
+                },
+            ],
+        },
+        options: {},
+    };
+
+    @node({
+        id: 'a0423d19-3063-4e1f-80e3-7e6f0c9eea37',
+        name: 'Edit Fields6',
+        type: 'n8n-nodes-base.set',
+        version: 3.4,
+        position: [-400, 368],
+    })
+    EditFields6 = {
+        assignments: {
+            assignments: [
+                {
+                    id: '2c8a5574-8c39-4d85-9259-eed68a123952',
+                    name: 'snapshot mode',
+                    value: 'double',
+                    type: 'string',
+                },
+            ],
+        },
+        options: {},
+    };
+
+    @node({
+        id: '4344e423-7613-4be9-a4f0-740135310e17',
+        name: 'Edit Fields7',
+        type: 'n8n-nodes-base.set',
+        version: 3.4,
+        position: [-400, 176],
+    })
+    EditFields7 = {
+        assignments: {
+            assignments: [
+                {
+                    id: '9fcae74e-f9e5-43a7-ad26-9cbb7420d9f0',
+                    name: 'snapshot mode',
+                    value: 'single',
+                    type: 'string',
+                },
+            ],
         },
         options: {},
     };
@@ -1069,8 +1237,7 @@ return [{ json: { pathString: pathString } }];`,
         this.EditFields9.out(0).to(this.GeometryToStaticMapUrlPath.in(0));
         this.EditFields1.out(0).to(this.KmlGenerator.in(0));
         this.KmlGenerator.out(0).to(this.UploadKmlToS3.in(0));
-        this.UploadKmlToS3.out(0).to(this.EditFields4.in(0));
-        this.DispatchAWorkflowEventAndWaitForCompletion.out(0).to(this.HttpRequest2.in(0));
+        this.UploadKmlToS3.out(0).to(this.Switch_.in(0));
         this.HttpRequest2.out(0).to(this.HttpRequest3.in(0));
         this.HttpRequest3.out(0).to(this.Compression.in(0));
         this.Compression.out(0).to(this.CodeInJavascript.in(0));
@@ -1085,7 +1252,6 @@ return [{ json: { pathString: pathString } }];`,
         this.Webhook.out(0).to(this.GetExpandedOrder.in(0));
         this.GetExpandedOrder.out(0).to(this.GetFulfillments.in(0));
         this.GetFulfillments.out(0).to(this.GetElevation.in(0));
-        this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
         this.ShortenEditorUrl.out(0).to(this.CheckForNotes.in(0));
         this.CheckForNotes.out(0).to(this.If_.in(0));
         this.CreateANote.out(0).to(this.NtfySend.in(0));
@@ -1093,5 +1259,13 @@ return [{ json: { pathString: pathString } }];`,
         this.If_.out(1).to(this.HttpRequest1.in(0));
         this.HttpRequest1.out(0).to(this.NtfySend.in(0));
         this.NtfySend.out(0).to(this.CallbackParent.in(0));
+        this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
+        this.Switch_.out(0).to(this.EditFields7.in(0));
+        this.Switch_.out(1).to(this.EditFields6.in(0));
+        this.Switch_.out(2).to(this.EditFields5.in(0));
+        this.EditFields5.out(0).to(this.EditFields4.in(0));
+        this.EditFields6.out(0).to(this.EditFields4.in(0));
+        this.EditFields7.out(0).to(this.EditFields4.in(0));
+        this.DispatchAWorkflowEventAndWaitForCompletion.out(0).to(this.HttpRequest2.in(0));
     }
 }

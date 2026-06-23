@@ -25,6 +25,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'r2-uploader',
     active: true,
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: { executionOrder: 'v1', binaryMode: 'separate', availableInMCP: true },
 })
 export class R2UploaderWorkflow {

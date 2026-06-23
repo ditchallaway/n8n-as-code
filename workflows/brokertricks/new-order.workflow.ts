@@ -72,6 +72,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         'This workflow listens for surecart\'s "order.paid" event and begins the fulfillment process acting as the controller.',
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         callerPolicy: 'workflowsFromSameOwner',
@@ -131,7 +132,7 @@ export class NewOrderWorkflow {
                         combinator: 'and',
                     },
                     renameOutput: true,
-                    outputKey: 'single image',
+                    outputKey: 'single',
                 },
                 {
                     conditions: {
@@ -156,7 +157,7 @@ export class NewOrderWorkflow {
                         combinator: 'and',
                     },
                     renameOutput: true,
-                    outputKey: 'single full',
+                    outputKey: 'double',
                 },
                 {
                     conditions: {
@@ -180,7 +181,7 @@ export class NewOrderWorkflow {
                         combinator: 'and',
                     },
                     renameOutput: true,
-                    outputKey: 'listing pack',
+                    outputKey: 'full',
                 },
             ],
         },
@@ -843,8 +844,6 @@ export class NewOrderWorkflow {
         content: `## GET RATE LIMITS 
 **GET** request [https://app.regrid.com/users/lookup_limits.json](https://app.regrid.com/users/lookup_limits.json)`,
         height: 304,
-        width: 240,
-        color: 1,
     };
 
     @node({
