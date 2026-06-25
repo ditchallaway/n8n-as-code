@@ -603,7 +603,7 @@ try {
 // Build short editor URL — the editor page builds the Photopea config itself
 const params = [
   \`customer_id=\${encodeURIComponent(customer_id)}\`,
-  \`order_id=\${encodeURIComponent(order_id)}\`,
+  \`order_id=\${encodeURIComponent(order_id.startsWith('order_') ? order_id : 'order_' + order_id)}\`,
   'pack=overhead_north',
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
