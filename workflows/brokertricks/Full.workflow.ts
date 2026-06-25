@@ -410,7 +410,7 @@ return $input.all();`,
     UploadKmlToS3 = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
+        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
         binaryPropertyName: 'kml_data',
         additionalFields: {},
     };
@@ -922,24 +922,7 @@ return [{ json: { pathString: pathString } }];`,
         tags: 'new-order',
     };
 
-    @node({
-        id: 'a12b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6',
-        name: 'Callback Parent',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.4,
-        position: [3184, 368],
-    })
-    CallbackParent = {
-        method: 'POST',
-        url: "={{ $('Webhook').item.json.resumeUrl }}",
-        sendBody: true,
-        specifyBody: 'json',
-        jsonBody: {
-            wpuser_id: "={{ $('Webhook').item.json.body.payload.wpuser_id }}",
-            order_id: "={{ $('Webhook').item.json.body.payload.order_id }}",
-        },
-        options: {},
-    };
+
 
     @node({
         id: 'a7912591-50ce-4f7f-85eb-3f0db9486d46',
@@ -1210,7 +1193,7 @@ return [{ json: { pathString: pathString } }];`,
         this.If_.out(0).to(this.CreateANote.in(0));
         this.If_.out(1).to(this.HttpRequest1.in(0));
         this.HttpRequest1.out(0).to(this.NtfySend.in(0));
-        this.NtfySend.out(0).to(this.CallbackParent.in(0));
+
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
         this.Switch_.out(0).to(this.EditFields7.in(0));
         this.Switch_.out(1).to(this.EditFields6.in(0));

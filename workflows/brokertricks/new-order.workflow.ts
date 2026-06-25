@@ -1141,18 +1141,7 @@ return [{ json: { pathString: pathString } }];`,
         },
     };
 
-    @node({
-        id: '2cf32f58-7c85-4841-8631-f111fdb114db',
-        webhookId: '109cbc83-2967-47db-8947-cbac80d1a449',
-        name: 'Wait',
-        type: 'n8n-nodes-base.wait',
-        version: 1,
-        position: [1424, 1456],
-    })
-    Wait = {
-        resume: 'webhook',
-        options: {},
-    };
+
 
     @node({
         id: 'bef32124-b4a5-41f1-82a0-0420eca638e4',
@@ -1216,10 +1205,9 @@ return $input.all();`,
         this.If_.out(0).to(this.Cookie.in(0));
         this.If_.out(1).to(this.NoOperationDoNothing.in(0));
         this.DataShaper.out(0).to(this.IdempotencyCleanup.in(0));
-        this.CallOverheadWorkflow.out(0).to(this.Wait.in(0));
-        this.CallSingleWorkflow.out(0).to(this.Wait.in(0));
-        this.CallFullWorkflow.out(0).to(this.Wait.in(0));
-        this.Wait.out(0).to(this.CodeInJavascript.in(0));
+        this.CallOverheadWorkflow.out(0).to(this.CodeInJavascript.in(0));
+        this.CallSingleWorkflow.out(0).to(this.CodeInJavascript.in(0));
+        this.CallFullWorkflow.out(0).to(this.CodeInJavascript.in(0));
         this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
         this.UploadAFile.out(0).to(this.DataShaper.in(0));
         this.Cookie.out(0).to(this.GeoToPath.in(0));
