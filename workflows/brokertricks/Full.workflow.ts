@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 34  |  Connections: 34
+// Nodes   : 33  |  Connections: 33
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -34,7 +34,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // If_                                if
 // HttpRequest1                       httpRequest                [creds]
 // NtfySend                           ntfySend                   [creds]
-// CallbackParent                     httpRequest
 // DispatchAWorkflowEventAndWaitForCompletion github                     [creds]
 // EditFields4                        set
 // Switch_                            switch
@@ -72,7 +71,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                                    → If_
 //                                                      → CreateANote
 //                                                        → NtfySend
-//                                                          → CallbackParent
 //                                                     .out(1) → HttpRequest1
 //                                                        → NtfySend (↩ loop)
 //                         .out(1) → EditFields6
@@ -922,8 +920,6 @@ return [{ json: { pathString: pathString } }];`,
         tags: 'new-order',
     };
 
-
-
     @node({
         id: 'a7912591-50ce-4f7f-85eb-3f0db9486d46',
         webhookId: 'a0aa7f23-74a9-4f95-8851-101a391b1f0c',
@@ -1193,7 +1189,6 @@ return [{ json: { pathString: pathString } }];`,
         this.If_.out(0).to(this.CreateANote.in(0));
         this.If_.out(1).to(this.HttpRequest1.in(0));
         this.HttpRequest1.out(0).to(this.NtfySend.in(0));
-
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
         this.Switch_.out(0).to(this.EditFields7.in(0));
         this.Switch_.out(1).to(this.EditFields6.in(0));

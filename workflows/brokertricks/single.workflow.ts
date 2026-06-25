@@ -407,7 +407,7 @@ return $input.all();`,
     UploadKmlToS3 = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
+        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
         binaryPropertyName: 'kml_data',
         additionalFields: {},
     };

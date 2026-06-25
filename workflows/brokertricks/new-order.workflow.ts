@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : new-order
-// Nodes   : 24  |  Connections: 24
+// Nodes   : 23  |  Connections: 23
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -28,7 +28,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // GetUser                            wordpress                  [creds]
 // SetIdempotencyKey                  set
 // IdempotencyCheck                   executeWorkflow
-// Wait                               wait
 // CodeInJavascript                   code
 // UploadAFile                        s3                         [creds]
 //
@@ -49,15 +48,14 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                          → EditFields
 //                            → Switch_
 //                              → CallOverheadWorkflow
-//                                → Wait
-//                                  → CodeInJavascript
-//                                    → UploadAFile
-//                                      → DataShaper
-//                                        → IdempotencyCleanup
+//                                → CodeInJavascript
+//                                  → UploadAFile
+//                                    → DataShaper
+//                                      → IdempotencyCleanup
 //                             .out(1) → CallSingleWorkflow
-//                                → Wait (↩ loop)
+//                                → CodeInJavascript (↩ loop)
 //                             .out(2) → CallFullWorkflow
-//                                → Wait (↩ loop)
+//                                → CodeInJavascript (↩ loop)
 //           .out(1) → NoOperationDoNothing
 // </workflow-map>
 
@@ -72,7 +70,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         'This workflow listens for surecart\'s "order.paid" event and begins the fulfillment process acting as the controller.',
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         callerPolicy: 'workflowsFromSameOwner',
@@ -1140,8 +1137,6 @@ return [{ json: { pathString: pathString } }];`,
             waitForSubWorkflow: true,
         },
     };
-
-
 
     @node({
         id: 'bef32124-b4a5-41f1-82a0-0420eca638e4',
