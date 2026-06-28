@@ -60,7 +60,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// METADATA DU WORKFLOW
+// WORKFLOW METADATA
 // =====================================================================
 
 @workflow({
@@ -79,7 +79,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class NewOrderWorkflow {
     // =====================================================================
-    // CONFIGURATION DES NOEUDS
+    // NODE CONFIGURATION
     // =====================================================================
 
     @node({
@@ -658,6 +658,19 @@ export class NewOrderWorkflow {
             mappingMode: 'defineBelow',
             value: {
                 body: '={{ { payload: $json } }}',
+                wpuser_id: '={{ $json.wpuser_id }}',
+                email: '={{ $json.email }}',
+                order_id: '={{ $json.order_id || $json.body?.data?.object?.order_id || $json.body?.data?.object?.id }}',
+                parcel_apn: '={{ $json.parcel_apn }}',
+                latitude: '={{ $json.latitude }}',
+                longitude: '={{ $json.longitude }}',
+                price_id: '={{ $json.price_id }}',
+                pid: '={{ $json.pid }}',
+                acres: '={{ $json.acres }}',
+                county: '={{ $json.county }}',
+                geometry: '={{ $json.geometry }}',
+                customer_id: '={{ $json.customer_id }}',
+                centroid: '={{ $json.centroid }}',
             },
             matchingColumns: [],
             schema: [
@@ -1185,7 +1198,7 @@ return $input.all();`,
     };
 
     // =====================================================================
-    // ROUTAGE ET CONNEXIONS
+    // ROUTING AND CONNECTIONS
     // =====================================================================
 
     @links()

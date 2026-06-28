@@ -17,7 +17,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// METADATA DU WORKFLOW
+// WORKFLOW METADATA
 // =====================================================================
 
 @workflow({
@@ -25,11 +25,16 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Fulfill',
     active: true,
     isArchived: false,
-    settings: { executionOrder: 'v1', availableInMCP: false, callerPolicy: 'workflowsFromSameOwner' },
+    settings: {
+        executionOrder: 'v1',
+        availableInMCP: false,
+        callerPolicy: 'workflowsFromSameOwner',
+        binaryMode: 'separate',
+    },
 })
 export class FulfillWorkflow {
     // =====================================================================
-    // CONFIGURATION DES NOEUDS
+    // NODE CONFIGURATION
     // =====================================================================
 
     @node({
@@ -66,13 +71,13 @@ export class FulfillWorkflow {
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
-  "status": "fulfilled"
+  "shipment_status": "delivered"
 }`,
         options: {},
     };
 
     // =====================================================================
-    // ROUTAGE ET CONNEXIONS
+    // ROUTING AND CONNECTIONS
     // =====================================================================
 
     @links()

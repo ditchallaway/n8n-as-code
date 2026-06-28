@@ -80,7 +80,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// METADATA DU WORKFLOW
+// WORKFLOW METADATA
 // =====================================================================
 
 @workflow({
@@ -100,7 +100,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class FullWorkflow {
     // =====================================================================
-    // CONFIGURATION DES NOEUDS
+    // NODE CONFIGURATION
     // =====================================================================
 
     @node({
@@ -603,10 +603,13 @@ try {
     // fallback if not available
 }
 
+const safeOrderId = String(order_id || '');
+const formattedOrderId = safeOrderId.startsWith('order_') ? safeOrderId : 'order_' + safeOrderId;
+
 // Build short editor URL — the editor page builds the Photopea config itself
 const params = [
   \`customer_id=\${encodeURIComponent(customer_id)}\`,
-  \`order_id=\${encodeURIComponent(order_id.startsWith('order_') ? order_id : 'order_' + order_id)}\`,
+  \`order_id=\${encodeURIComponent(formattedOrderId)}\`,
   'pack=full',
   \`acreage=\${encodeURIComponent(acreage)}\`
 ];
@@ -683,7 +686,7 @@ function createPathString(coordinates) {
 const pathString = \`path=color:\${color}|weight:\${weight}|\${createPathString(coordinates)}\`;
 
 // Return the result
-return [{ json: { pathString: pathString } }];`,
+return [{ json: { ...$input.first().json, pathString: pathString } }];`,
     };
 
     @node({
@@ -1159,7 +1162,7 @@ return [{ json: { pathString: pathString } }];`,
     };
 
     // =====================================================================
-    // ROUTAGE ET CONNEXIONS
+    // ROUTING AND CONNECTIONS
     // =====================================================================
 
     @links()

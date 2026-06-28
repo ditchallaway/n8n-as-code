@@ -43,7 +43,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// METADATA DU WORKFLOW
+// WORKFLOW METADATA
 // =====================================================================
 
 @workflow({
@@ -61,7 +61,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class CookieWorkflow {
     // =====================================================================
-    // CONFIGURATION DES NOEUDS
+    // NODE CONFIGURATION
     // =====================================================================
 
     @node({
@@ -505,7 +505,7 @@ export class CookieWorkflow {
     };
 
     // =====================================================================
-    // ROUTAGE ET CONNEXIONS
+    // ROUTING AND CONNECTIONS
     // =====================================================================
 
     @links()

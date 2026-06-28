@@ -17,7 +17,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// METADATA DU WORKFLOW
+// WORKFLOW METADATA
 // =====================================================================
 
 @workflow({
@@ -25,12 +25,11 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'ungrid',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: { executionOrder: 'v1' },
 })
 export class UngridWorkflow {
     // =====================================================================
-    // CONFIGURATION DES NOEUDS
+    // NODE CONFIGURATION
     // =====================================================================
 
     @node({
@@ -1029,7 +1028,7 @@ export class UngridWorkflow {
     };
 
     // =====================================================================
-    // ROUTAGE ET CONNEXIONS
+    // ROUTING AND CONNECTIONS
     // =====================================================================
 
     @links()
