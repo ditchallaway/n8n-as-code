@@ -25,7 +25,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Fulfill',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: { executionOrder: 'v1', availableInMCP: false, callerPolicy: 'workflowsFromSameOwner' },
 })
 export class FulfillWorkflow {
@@ -63,7 +62,7 @@ export class FulfillWorkflow {
         method: 'PATCH',
         url: 'https://api.surecart.com/v1/fulfillments/{{ $json.body.fulfillment_id }}',
         authentication: 'genericCredentialType',
-        genericAuthType: 'httpBearerAuth',
+        genericAuthType: 'httpHeaderAuth',
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
