@@ -73,7 +73,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -83,6 +83,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         "this workflow produces an overhead view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the image as a fallback.",
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
@@ -92,7 +93,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class SingleWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -502,7 +503,7 @@ return items;`,
                 {
                     id: 'e0230557-51e0-480a-902e-a7db19187952',
                     name: 'customer_id',
-                    value: "={{ $('Edit Fields9').item.json.customer_id }}",
+                    value: "=cust_{{ $('Edit Fields9').item.json.customer_id }}",
                     type: 'string',
                 },
                 {
@@ -1071,7 +1072,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()

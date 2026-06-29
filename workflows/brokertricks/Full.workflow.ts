@@ -80,7 +80,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -90,6 +90,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         "this workflow produces an overhead, north, east, west, and south facing view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the images as a fallback.",
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         binaryMode: 'separate',
@@ -100,7 +101,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class FullWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -239,7 +240,7 @@ export class FullWorkflow {
                 {
                     id: '47501d91-0e4d-4484-b987-e06c59997b52',
                     name: 'order_id',
-                    value: '={{ $json.order_id }}',
+                    value: '= {{ $json.order_id }}',
                     type: 'string',
                 },
                 {
@@ -511,7 +512,7 @@ return items;`,
                 {
                     id: '645ef0e8-eba0-40f0-a5d0-4cb73b2514ed',
                     name: 'order_id',
-                    value: "={{ $('Edit Fields9').item.json.order_id }}",
+                    value: "=order_{{ $('Edit Fields9').item.json.order_id }}",
                     type: 'string',
                 },
                 {
@@ -1162,7 +1163,7 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()
