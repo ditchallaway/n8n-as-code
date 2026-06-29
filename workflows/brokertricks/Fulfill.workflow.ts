@@ -17,7 +17,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -25,6 +25,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Fulfill',
     active: true,
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
@@ -34,7 +35,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class FulfillWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -43,7 +44,7 @@ export class FulfillWorkflow {
         name: 'Webhook',
         type: 'n8n-nodes-base.webhook',
         version: 2.1,
-        position: [100, 100],
+        position: [112, 112],
     })
     Webhook = {
         httpMethod: 'POST',
@@ -57,7 +58,7 @@ export class FulfillWorkflow {
         name: 'Fulfill in SureCart',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [300, 100],
+        position: [336, 96],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -65,9 +66,9 @@ export class FulfillWorkflow {
     })
     FulfillInSurecart = {
         method: 'PATCH',
-        url: 'https://api.surecart.com/v1/fulfillments/{{ $json.body.fulfillment_id }}',
-        authentication: 'genericCredentialType',
-        genericAuthType: 'httpHeaderAuth',
+        url: '=https://api.surecart.com/v1/fulfillments/{{ $json.body.fulfillment_id }}',
+        authentication: 'predefinedCredentialType',
+        nodeCredentialType: 'httpBearerAuth',
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
@@ -77,7 +78,7 @@ export class FulfillWorkflow {
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()
