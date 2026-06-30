@@ -60,7 +60,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -70,6 +70,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         'This workflow listens for surecart\'s "order.paid" event and begins the fulfillment process acting as the controller.',
     isArchived: false,
+    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         callerPolicy: 'workflowsFromSameOwner',
@@ -79,7 +80,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class NewOrderWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -204,7 +205,7 @@ export class NewOrderWorkflow {
                 {
                     id: 'f94a3ebb-b2ba-4cf4-8af1-fa68159a59de',
                     name: 'email',
-                    value: "={{ $('get user').item.json.name }}",
+                    value: "={{ $('get checkout').item.json.email }}",
                     type: 'string',
                 },
                 {
@@ -1118,6 +1119,12 @@ return [{ json: { pathString: pathString } }];`,
                     value: '={{ $json.customer }}',
                     type: 'string',
                 },
+                {
+                    id: '2d26a605-3ca1-4b88-889c-fef3ff695bf8',
+                    name: 'customer email',
+                    value: '={{ $json.email }}',
+                    type: 'string',
+                },
             ],
         },
         options: {},
@@ -1198,7 +1205,7 @@ return $input.all();`,
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()

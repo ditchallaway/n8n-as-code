@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : double
-// Nodes   : 30  |  Connections: 29
+// Nodes   : 32  |  Connections: 32
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -28,15 +28,17 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // Webhook                            executeWorkflowTrigger
 // GetFulfillments                    httpRequest                [creds]
 // ShortenEditorUrl                   httpRequest
-// BackupEditorUrl                    httpRequest                [creds]
 // Ntfy                               httpRequest
-// RespondToWebhook                   respondToWebhook
 // DispatchAWorkflowEventAndWaitForCompletion github                     [creds]
 // EditFields4                        set
 // Switch_                            switch
 // EditFields5                        set
 // EditFields6                        set
 // EditFields7                        set
+// CheckForNotes                      httpRequest                [creds]
+// CreateANote                        httpRequest                [creds]
+// If_                                if
+// HttpRequest1                       httpRequest                [creds]
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -63,9 +65,12 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                          → EditFields2
 //                                            → PrepareConfiguration
 //                                              → ShortenEditorUrl
-//                                                → BackupEditorUrl
-//                                                  → Ntfy
-//                                                    → RespondToWebhook
+//                                                → CheckForNotes
+//                                                  → If_
+//                                                    → CreateANote
+//                                                      → Ntfy
+//                                                   .out(1) → HttpRequest1
+//                                                      → Ntfy (↩ loop)
 //                       .out(1) → EditFields6
 //                          → EditFields4 (↩ loop)
 //                       .out(2) → EditFields5
@@ -198,12 +203,6 @@ export class DoubleWorkflow {
                     name: 'elevation',
                     value: "={{ $('get elevation').item.json.results[0].elevation }}",
                     type: 'number',
-                },
-                {
-                    id: '371329a8-6fc2-40da-a44f-a2e0ecf85799',
-                    name: 'lat',
-                    value: "={{ $('get elevation').item.json.results[0].location.lat }}",
-                    type: 'string',
                 },
                 {
                     id: 'd9e3c9b4-6d08-4581-93b6-1b71c7196349',
@@ -503,13 +502,13 @@ return items;`,
                 {
                     id: 'e0230557-51e0-480a-902e-a7db19187952',
                     name: 'customer_id',
-                    value: "={{ $('Edit Fields9').item.json.customer_id }}",
+                    value: '={{ "cust_" + $(\'Edit Fields9\').item.json.customer_id }}',
                     type: 'string',
                 },
                 {
                     id: '645ef0e8-eba0-40f0-a5d0-4cb73b2514ed',
                     name: 'order_id',
-                    value: "=order_{{ $('Edit Fields9').item.json.order_id }}",
+                    value: '={{ "order_" + $(\'Edit Fields9\').item.json.order_id }}',
                     type: 'string',
                 },
                 {
@@ -758,34 +757,11 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
     };
 
     @node({
-        id: '3c8e54c0-abcd-4e00-a111-5b7f1e9c7a2b',
-        name: 'Backup Editor URL',
-        type: 'n8n-nodes-base.httpRequest',
-        version: 4.3,
-        position: [2000, 368],
-        credentials: { httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' } },
-    })
-    BackupEditorUrl = {
-        method: 'PATCH',
-        url: '=https://api.surecart.com/v1/orders/{{ $("Prepare Configuration").item.json.order_id }}',
-        authentication: 'genericCredentialType',
-        genericAuthType: 'httpBearerAuth',
-        sendBody: true,
-        specifyBody: 'json',
-        jsonBody: `={
-  "metadata": {
-    "photopea_editor_url": "{{ $json.shortLink }}"
-  }
-}`,
-        options: {},
-    };
-
-    @node({
         id: '5d9f65d1-bcde-4f11-b222-6c8a2f0d8b3c',
         name: 'Ntfy',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2224, 368],
+        position: [2736, 400],
     })
     Ntfy = {
         method: 'POST',
@@ -815,24 +791,6 @@ Photopea Link:
 
 Order Dashboard: 
 https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepare Configuration").item.json.order_id }}`,
-        options: {},
-    };
-
-    @node({
-        id: '9fc5d717-c41f-43b4-95aa-dd024b1a1a51',
-        name: 'Respond to Webhook',
-        type: 'n8n-nodes-base.respondToWebhook',
-        version: 1.5,
-        position: [2448, 368],
-    })
-    RespondToWebhook = {
-        respondWith: 'json',
-        responseBody: `={
-  "status": "success",
-  "order": "order_{{ $('Webhook').item.json.body.payload.order_id }}",
-"wp_user": "{{ $('Webhook').item.json.body.payload.wpuser_id }}",
-"editor_url": "{{ $('Shorten Editor URL').item.json.shortLink }}"
-} `,
         options: {},
     };
 
@@ -1074,6 +1032,135 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         options: {},
     };
 
+    @node({
+        id: 'd0c8af75-6419-4bd5-af3e-7b2cd72f893d',
+        name: 'check for notes',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [2064, 688],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    CheckForNotes = {
+        url: '=https://api.surecart.com/v1/notes?notable_id={{ $("Prepare Configuration").item.json.order_id }}&notable_type=order',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        options: {},
+    };
+
+    @node({
+        id: '34abf855-4088-43b4-958f-946dcdf976de',
+        name: 'create a note',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [2512, 592],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    CreateANote = {
+        method: 'POST',
+        url: '=https://api.surecart.com/v1/notes',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Content-Type',
+                    value: 'application/json',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+    "note": {
+      "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
+      "notable_id": {{ JSON.stringify( $('Webhook').item.json.order_id ) }},
+      "notable_type": "order",
+      "metadata": {"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
+            }
+}
+`,
+        options: {},
+    };
+
+    @node({
+        id: '498a6b60-9e10-46a3-beb0-4501076766e9',
+        name: 'If',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [2288, 688],
+    })
+    If_ = {
+        conditions: {
+            options: {
+                caseSensitive: true,
+                leftValue: '',
+                typeValidation: 'strict',
+                version: 3,
+            },
+            conditions: [
+                {
+                    id: '52eae219-b7fe-47c3-b5a0-eb1e7282e1ba',
+                    leftValue:
+                        '={{ !($json.data || []).some(n => (n.metadata && n.metadata["Editor URL"]) || (n.body && n.body.includes("link.brokertricks.com"))) }}',
+                    rightValue: '',
+                    operator: {
+                        type: 'boolean',
+                        operation: 'true',
+                        singleValue: true,
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
+    };
+
+    @node({
+        id: 'a0f85399-574b-4df9-b585-007da909f860',
+        name: 'HTTP Request1',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [2512, 784],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    HttpRequest1 = {
+        method: 'PATCH',
+        url: '=https://api.surecart.com/v1/notes/{{ ($json.data || []).find(n => (n.metadata && n.metadata["Editor URL"]) || (n.body && n.body.includes("link.brokertricks.com")))?.id }}',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Content-Type',
+                    value: 'application/json',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+    "note": {
+      "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
+      "notable_id": {{ JSON.stringify( $('Prepare Configuration').item.json.order_id) }},
+      "notable_type": "order",
+      "metadata": {
+"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
+            }
+}`,
+        options: {},
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -1098,9 +1185,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         this.Webhook.out(0).to(this.GetFulfillments.in(0));
         this.GetFulfillments.out(0).to(this.GetElevation.in(0));
         this.PrepareConfiguration.out(0).to(this.ShortenEditorUrl.in(0));
-        this.ShortenEditorUrl.out(0).to(this.BackupEditorUrl.in(0));
-        this.BackupEditorUrl.out(0).to(this.Ntfy.in(0));
-        this.Ntfy.out(0).to(this.RespondToWebhook.in(0));
+        this.ShortenEditorUrl.out(0).to(this.CheckForNotes.in(0));
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
         this.Switch_.out(0).to(this.EditFields7.in(0));
         this.Switch_.out(1).to(this.EditFields6.in(0));
@@ -1109,5 +1194,10 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         this.EditFields6.out(0).to(this.EditFields4.in(0));
         this.EditFields7.out(0).to(this.EditFields4.in(0));
         this.DispatchAWorkflowEventAndWaitForCompletion.out(0).to(this.HttpRequest2.in(0));
+        this.CheckForNotes.out(0).to(this.If_.in(0));
+        this.If_.out(0).to(this.CreateANote.in(0));
+        this.If_.out(1).to(this.HttpRequest1.in(0));
+        this.CreateANote.out(0).to(this.Ntfy.in(0));
+        this.HttpRequest1.out(0).to(this.Ntfy.in(0));
     }
 }

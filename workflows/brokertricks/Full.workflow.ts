@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Full
-// Nodes   : 33  |  Connections: 33
+// Nodes   : 34  |  Connections: 34
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -40,6 +40,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields5                        set
 // EditFields6                        set
 // EditFields7                        set
+// CheckForNotes1                     httpRequest                [creds]
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -70,9 +71,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                                  → CheckForNotes
 //                                                    → If_
 //                                                      → CreateANote
-//                                                        → NtfySend
+//                                                        → CheckForNotes1
+//                                                          → NtfySend
 //                                                     .out(1) → HttpRequest1
-//                                                        → NtfySend (↩ loop)
+//                                                        → CheckForNotes1 (↩ loop)
 //                         .out(1) → EditFields6
 //                            → EditFields4 (↩ loop)
 //                         .out(2) → EditFields5
@@ -177,7 +179,7 @@ export class FullWorkflow {
                 {
                     id: '79de9b5b-743c-4c2e-9a30-b954e9352f5f',
                     name: 'customer_id',
-                    value: "=cust_{{ $('Webhook').item.json.wpuser_id }}",
+                    value: "={{ $('Webhook').item.json.wpuser_id }}",
                     type: 'string',
                 },
                 {
@@ -506,13 +508,13 @@ return items;`,
                 {
                     id: 'e0230557-51e0-480a-902e-a7db19187952',
                     name: 'customer_id',
-                    value: "={{ $('Edit Fields9').item.json.customer_id }}",
+                    value: '={{ "cust_" + $(\'Edit Fields9\').item.json.customer_id }}',
                     type: 'string',
                 },
                 {
                     id: '645ef0e8-eba0-40f0-a5d0-4cb73b2514ed',
                     name: 'order_id',
-                    value: "=order_{{ $('Edit Fields9').item.json.order_id }}",
+                    value: '={{ "order_" + $(\'Edit Fields\').item.json.order_id }}',
                     type: 'string',
                 },
                 {
@@ -566,7 +568,7 @@ return items;`,
                 {
                     id: 'd596049d-c49b-4128-a169-e36e268497ce',
                     name: 'imageUrl',
-                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/order_{{ $('Edit Fields9').item.json.order_id.toString().replace('order_', '') }}/{{ $('Code in JavaScript').item.json.fileName }}",
+                    value: "=https://pics.brokertricks.com/{{ $('Edit Fields9').item.json.customer_id }}/{{ \"order_\" + $('Edit Fields').item.json.order_id }}/{{ $('Code in JavaScript').item.json.fileName }}",
                     type: 'string',
                 },
             ],
@@ -828,7 +830,7 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         jsonBody: `={
     "note": {
       "body": {{ JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }},
-      "notable_id": {{ JSON.stringify( $('Prepare Configuration').item.json.order_id) }},
+      "notable_id": {{ JSON.stringify( $('Webhook').item.json.order_id ) }},
       "notable_type": "order",
       "metadata": {"Editor URL": {{JSON.stringify( $('Shorten Editor URL').item.json.shortLink) }}}
             }
@@ -914,12 +916,14 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         name: 'Ntfy Send',
         type: 'n8n-nodes-ntfy-client.ntfySend',
         version: 1,
-        position: [2960, 368],
+        position: [3216, 368],
         credentials: { ntfyApi: { id: 'W2xKUTn1PP43EdnG', name: 'ntfy account' } },
     })
     NtfySend = {
         topic: 'to-human-bt-test',
-        message: '={{$json.body}}\n\nCustomer Email: {{ $("Webhook").item.json.body?.payload?.customer?.email || $("Webhook").item.json.body?.payload?.email || $("Webhook").item.json.email || "N/A" }}',
+        message: `={{ $('create a note').item.json.body}}
+
+Customer Email: {{ $("Webhook").item.json.body?.payload?.customer?.email || $("Webhook").item.json.body?.payload?.email || $("Webhook").item.json.email || "N/A" }}`,
         title: 'New-Order',
         tags: 'new-order',
     };
@@ -1162,6 +1166,24 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         options: {},
     };
 
+    @node({
+        id: '689d6f13-82f3-4950-9ab5-493713a00dfe',
+        name: 'check for notes1',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [3008, 368],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    CheckForNotes1 = {
+        url: '=https://api.surecart.com/v1/notes?notable_id={{ $("Prepare Configuration").item.json.order_id }}&notable_type=order',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        options: {},
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -1189,10 +1211,10 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         this.GetFulfillments.out(0).to(this.GetElevation.in(0));
         this.ShortenEditorUrl.out(0).to(this.CheckForNotes.in(0));
         this.CheckForNotes.out(0).to(this.If_.in(0));
-        this.CreateANote.out(0).to(this.NtfySend.in(0));
+        this.CreateANote.out(0).to(this.CheckForNotes1.in(0));
         this.If_.out(0).to(this.CreateANote.in(0));
         this.If_.out(1).to(this.HttpRequest1.in(0));
-        this.HttpRequest1.out(0).to(this.NtfySend.in(0));
+        this.HttpRequest1.out(0).to(this.CheckForNotes1.in(0));
         this.EditFields4.out(0).to(this.DispatchAWorkflowEventAndWaitForCompletion.in(0));
         this.Switch_.out(0).to(this.EditFields7.in(0));
         this.Switch_.out(1).to(this.EditFields6.in(0));
@@ -1201,5 +1223,6 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         this.EditFields6.out(0).to(this.EditFields4.in(0));
         this.EditFields7.out(0).to(this.EditFields4.in(0));
         this.DispatchAWorkflowEventAndWaitForCompletion.out(0).to(this.HttpRequest2.in(0));
+        this.CheckForNotes1.out(0).to(this.NtfySend.in(0));
     }
 }
