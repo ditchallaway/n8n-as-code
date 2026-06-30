@@ -807,6 +807,9 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         specifyBody: 'string',
         body: `Render ready for review.
 
+Customer Email:
+{{ $('Webhook').item.json.body?.payload?.customer?.email || $('Webhook').item.json.body?.payload?.email || $('Webhook').item.json.email || 'N/A' }}
+
 Photopea Link: 
 {{ $("Shorten Editor URL").item.json.shortLink }}
 

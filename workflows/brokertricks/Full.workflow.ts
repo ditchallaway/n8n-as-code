@@ -919,7 +919,7 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
     })
     NtfySend = {
         topic: 'to-human-bt-test',
-        message: '={{$json.body}}',
+        message: '={{$json.body}}\n\nCustomer Email: {{ $("Webhook").item.json.body?.payload?.customer?.email || $("Webhook").item.json.body?.payload?.email || $("Webhook").item.json.email || "N/A" }}',
         title: 'New-Order',
         tags: 'new-order',
     };
