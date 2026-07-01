@@ -70,7 +70,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         'This workflow listens for surecart\'s "order.paid" event and begins the fulfillment process acting as the controller.',
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         callerPolicy: 'workflowsFromSameOwner',

@@ -25,7 +25,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     name: 'Fulfill',
     active: true,
     isArchived: false,
-    projectId: 'SxZfT7rxAv9cKdRm',
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
@@ -72,7 +71,9 @@ export class FulfillWorkflow {
         sendBody: true,
         specifyBody: 'json',
         jsonBody: `={
-  "shipment_status": "delivered"
+  "fulfillment": {
+    "shipment_status": "delivered"
+  }
 }`,
         options: {},
     };
