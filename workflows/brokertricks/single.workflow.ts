@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : single
-// Nodes   : 32  |  Connections: 32
+// Nodes   : 36  |  Connections: 36
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -39,6 +39,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // CreateANote                        httpRequest                [creds]
 // If_                                if
 // HttpRequest1                       httpRequest                [creds]
+// UploadStaticMap                    s3                         [creds]
+// HttpRequest4                       httpRequest
+// UploadStaticMap1                   s3                         [creds]
+// HttpRequest5                       httpRequest
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -49,32 +53,36 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //          → EditFields9
 //            → GeometryToStaticMapUrlPath
 //              → StaticMapUrlBuilder
-//                → EditFields1
-//                  → KmlGenerator
-//                    → UploadKmlToS3
-//                      → Switch_
-//                        → EditFields7
-//                          → EditFields4
-//                            → DispatchAWorkflowEventAndWaitForCompletion
-//                              → HttpRequest2
-//                                → HttpRequest3
-//                                  → Compression
-//                                    → CodeInJavascript
-//                                      → UploadAFile
-//                                        → EditFields3
-//                                          → EditFields2
-//                                            → PrepareConfiguration
-//                                              → ShortenEditorUrl
-//                                                → CheckForNotes
-//                                                  → If_
-//                                                    → CreateANote
-//                                                      → Ntfy
-//                                                   .out(1) → HttpRequest1
-//                                                      → Ntfy (↩ loop)
-//                       .out(1) → EditFields6
-//                          → EditFields4 (↩ loop)
-//                       .out(2) → EditFields5
-//                          → EditFields4 (↩ loop)
+//                → HttpRequest5
+//                  → UploadStaticMap1
+//                    → HttpRequest4
+//                      → UploadStaticMap
+//                        → EditFields1
+//                          → KmlGenerator
+//                            → UploadKmlToS3
+//                              → Switch_
+//                                → EditFields7
+//                                  → EditFields4
+//                                    → DispatchAWorkflowEventAndWaitForCompletion
+//                                      → HttpRequest2
+//                                        → HttpRequest3
+//                                          → Compression
+//                                            → CodeInJavascript
+//                                              → UploadAFile
+//                                                → EditFields3
+//                                                  → EditFields2
+//                                                    → PrepareConfiguration
+//                                                      → ShortenEditorUrl
+//                                                        → CheckForNotes
+//                                                          → If_
+//                                                            → CreateANote
+//                                                              → Ntfy
+//                                                           .out(1) → HttpRequest1
+//                                                              → Ntfy (↩ loop)
+//                               .out(1) → EditFields6
+//                                  → EditFields4 (↩ loop)
+//                               .out(2) → EditFields5
+//                                  → EditFields4 (↩ loop)
 // </workflow-map>
 
 // =====================================================================
@@ -264,7 +272,7 @@ export class SingleWorkflow {
         name: 'Edit Fields1',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-1584, 368],
+        position: [-688, 368],
     })
     EditFields1 = {
         assignments: {
@@ -341,7 +349,7 @@ export class SingleWorkflow {
         name: 'KML Generator',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [-1360, 368],
+        position: [-464, 368],
     })
     KmlGenerator = {
         jsCode: `for (const item of $input.all()) {
@@ -406,7 +414,7 @@ return $input.all();`,
         name: 'Upload KML to S3',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [-1136, 368],
+        position: [-240, 368],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadKmlToS3 = {
@@ -422,7 +430,7 @@ return $input.all();`,
         name: 'HTTP Request2',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [-16, 368],
+        position: [880, 368],
     })
     HttpRequest2 = {
         url: '=https://api.github.com/repos/ditchallaway/robotic-property-photographer/actions/runs/{{ $json.run_id }}/artifacts',
@@ -434,7 +442,7 @@ return $input.all();`,
         name: 'HTTP Request3',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [208, 368],
+        position: [1104, 368],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     HttpRequest3 = {
@@ -449,7 +457,7 @@ return $input.all();`,
         name: 'Compression',
         type: 'n8n-nodes-base.compression',
         version: 1.1,
-        position: [432, 368],
+        position: [1328, 368],
     })
     Compression = {
         outputPrefix: '=',
@@ -460,7 +468,7 @@ return $input.all();`,
         name: 'Code in JavaScript',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [656, 368],
+        position: [1552, 368],
     })
     CodeInJavascript = {
         jsCode: `const items = [];
@@ -485,7 +493,7 @@ return items;`,
         name: 'Upload a file',
         type: 'n8n-nodes-base.s3',
         version: 1,
-        position: [880, 368],
+        position: [1776, 368],
         credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
     })
     UploadAFile = {
@@ -500,7 +508,7 @@ return items;`,
         name: 'Edit Fields2',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [1328, 368],
+        position: [2224, 368],
     })
     EditFields2 = {
         assignments: {
@@ -560,7 +568,7 @@ return items;`,
         name: 'Edit Fields3',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [1104, 368],
+        position: [2000, 368],
     })
     EditFields3 = {
         assignments: {
@@ -581,7 +589,7 @@ return items;`,
         name: 'Prepare Configuration',
         type: 'n8n-nodes-base.code',
         version: 2,
-        position: [1552, 368],
+        position: [2448, 368],
     })
     PrepareConfiguration = {
         jsCode: `const items = $input.all();
@@ -739,7 +747,7 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         name: 'Shorten Editor URL',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [1776, 368],
+        position: [2672, 368],
     })
     ShortenEditorUrl = {
         method: 'POST',
@@ -767,7 +775,7 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
         name: 'Ntfy',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2880, 368],
+        position: [3568, 368],
     })
     Ntfy = {
         method: 'POST',
@@ -806,7 +814,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'Dispatch a workflow event and wait for completion',
         type: 'n8n-nodes-base.github',
         version: 1.1,
-        position: [-240, 368],
+        position: [656, 368],
         credentials: { githubApi: { id: 'WAVhETF4rbadk9yF', name: 'GitHub account' } },
     })
     DispatchAWorkflowEventAndWaitForCompletion = {
@@ -859,7 +867,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'Edit Fields4',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-464, 368],
+        position: [432, 368],
     })
     EditFields4 = {
         assignments: {
@@ -892,7 +900,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'Switch',
         type: 'n8n-nodes-base.switch',
         version: 3.3,
-        position: [-912, 352],
+        position: [-16, 352],
     })
     Switch_ = {
         rules: {
@@ -980,7 +988,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'Edit Fields5',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-688, 560],
+        position: [208, 560],
     })
     EditFields5 = {
         assignments: {
@@ -1001,7 +1009,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'Edit Fields6',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-688, 368],
+        position: [208, 368],
     })
     EditFields6 = {
         assignments: {
@@ -1022,7 +1030,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'Edit Fields7',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [-688, 176],
+        position: [208, 176],
     })
     EditFields7 = {
         assignments: {
@@ -1043,7 +1051,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'check for notes',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2208, 800],
+        position: [2896, 368],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1061,7 +1069,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'create a note',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [2656, 704],
+        position: [3344, 272],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1100,7 +1108,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'If',
         type: 'n8n-nodes-base.if',
         version: 2.3,
-        position: [2432, 800],
+        position: [3120, 368],
     })
     If_ = {
         conditions: {
@@ -1133,7 +1141,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         name: 'HTTP Request1',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.4,
-        position: [2656, 896],
+        position: [3344, 464],
         credentials: {
             httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
             httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
@@ -1167,6 +1175,76 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         options: {},
     };
 
+    @node({
+        id: '8b8ad08b-1ae7-4db3-accd-8d338748e1a3',
+        name: 'Upload static map',
+        type: 'n8n-nodes-base.s3',
+        version: 1,
+        position: [-912, 368],
+        credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
+    })
+    UploadStaticMap = {
+        operation: 'upload',
+        bucketName: 'btx-store',
+        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.png',
+        binaryPropertyName: 'map',
+        additionalFields: {},
+    };
+
+    @node({
+        id: '3b2ab85a-288c-444e-903a-03122ccd0502',
+        name: 'HTTP Request4',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [-1136, 368],
+    })
+    HttpRequest4 = {
+        url: '={{ $json.srcmap }}',
+        options: {
+            response: {
+                response: {
+                    responseFormat: 'file',
+                    outputPropertyName: 'map',
+                },
+            },
+        },
+    };
+
+    @node({
+        id: '63a5f0ff-ba88-4a74-8477-0b1928198243',
+        name: 'Upload static map1',
+        type: 'n8n-nodes-base.s3',
+        version: 1,
+        position: [-1360, 368],
+        credentials: { s3: { id: '1GusURtMq14SbO6K', name: 'btx-store-bucket' } },
+    })
+    UploadStaticMap1 = {
+        operation: 'upload',
+        bucketName: 'btx-store',
+        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.png',
+        binaryPropertyName: 'map',
+        additionalFields: {},
+    };
+
+    @node({
+        id: '4fc64b1d-8c5b-4ca0-85de-c364bd5f32b5',
+        name: 'HTTP Request5',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [-1584, 368],
+    })
+    HttpRequest5 = {
+        url: '={{ $json.srcmap }}',
+        options: {
+            response: {
+                response: {
+                    responseFormat: 'file',
+                    outputPropertyName: 'map',
+                },
+            },
+        },
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -1185,7 +1263,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         this.UploadAFile.out(0).to(this.EditFields3.in(0));
         this.EditFields2.out(0).to(this.PrepareConfiguration.in(0));
         this.EditFields3.out(0).to(this.EditFields2.in(0));
-        this.StaticMapUrlBuilder.out(0).to(this.EditFields1.in(0));
+        this.StaticMapUrlBuilder.out(0).to(this.HttpRequest5.in(0));
         this.GeometryToStaticMapUrlPath.out(0).to(this.StaticMapUrlBuilder.in(0));
         this.GetElevation.out(0).to(this.EditFields.in(0));
         this.Webhook.out(0).to(this.GetFulfillments.in(0));
@@ -1205,5 +1283,9 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
         this.If_.out(1).to(this.HttpRequest1.in(0));
         this.CreateANote.out(0).to(this.Ntfy.in(0));
         this.HttpRequest1.out(0).to(this.Ntfy.in(0));
+        this.HttpRequest4.out(0).to(this.UploadStaticMap.in(0));
+        this.HttpRequest5.out(0).to(this.UploadStaticMap1.in(0));
+        this.UploadStaticMap1.out(0).to(this.HttpRequest4.in(0));
+        this.UploadStaticMap.out(0).to(this.EditFields1.in(0));
     }
 }
