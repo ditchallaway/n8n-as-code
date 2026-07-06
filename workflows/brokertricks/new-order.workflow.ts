@@ -2,13 +2,12 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : new-order
-// Nodes   : 23  |  Connections: 23
+// Nodes   : 21  |  Connections: 20
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
 // Property name                    Node type (short)         Flags
 // Webhook                            webhook
-// Switch_                            switch
 // EditFields                         set
 // GeoToPath                          httpRequest                [alwaysOutput]
 // PathToData                         httpRequest                [executeOnce]
@@ -16,9 +15,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // NoOperationDoNothing               noOp
 // IdempotencyCleanup                 executeWorkflow
 // DataShaper                         set
-// CallOverheadWorkflow               executeWorkflow
-// CallSingleWorkflow                 executeWorkflow
-// CallFullWorkflow                   executeWorkflow
+// MapProductMode                     code
+// CallRenderWorkflow                 executeWorkflow
 // StickyNote5                        stickyNote
 // Cookie                             httpRequest
 // CreateKml                          code
@@ -46,16 +44,12 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                      → StaticMapUrlBuilder
 //                        → GetUser
 //                          → EditFields
-//                            → Switch_
-//                              → CallOverheadWorkflow
+//                            → MapProductMode
+//                              → CallRenderWorkflow
 //                                → CodeInJavascript
 //                                  → UploadAFile
 //                                    → DataShaper
 //                                      → IdempotencyCleanup
-//                             .out(1) → CallSingleWorkflow
-//                                → CodeInJavascript (↩ loop)
-//                             .out(2) → CallFullWorkflow
-//                                → CodeInJavascript (↩ loop)
 //           .out(1) → NoOperationDoNothing
 // </workflow-map>
 
@@ -99,90 +93,33 @@ export class NewOrderWorkflow {
 
     @node({
         id: 'e3f39d65-5172-4beb-80c0-92296ae8fb8a',
-        name: 'Switch',
-        type: 'n8n-nodes-base.switch',
-        version: 3.3,
+        name: 'Map Product Mode',
+        type: 'n8n-nodes-base.code',
+        version: 2,
         position: [976, 1344],
     })
-    Switch_ = {
-        rules: {
-            values: [
-                {
-                    conditions: {
-                        options: {
-                            caseSensitive: true,
-                            leftValue: '',
-                            typeValidation: 'strict',
-                            version: 2,
-                        },
-                        conditions: [
-                            {
-                                leftValue: "={{ $('set idempotency key').item.json.pid }}",
-                                rightValue: ' bb3c33ae-36bc-488d-809e-166665ad7fe6',
-                                operator: {
-                                    type: 'string',
-                                    operation: 'equals',
-                                },
-                                id: '656adc4d-1f78-4445-bebe-b6cd65b2b531',
-                            },
-                        ],
-                        combinator: 'and',
-                    },
-                    renameOutput: true,
-                    outputKey: 'single',
-                },
-                {
-                    conditions: {
-                        options: {
-                            caseSensitive: true,
-                            leftValue: '',
-                            typeValidation: 'strict',
-                            version: 2,
-                        },
-                        conditions: [
-                            {
-                                id: 'a7615221-b164-40cb-9df2-0540db1fdc75',
-                                leftValue: '={{ $json.pid }}',
-                                rightValue: '69e6ffdb-d671-4309-a9d9-78fdef6d958a',
-                                operator: {
-                                    type: 'string',
-                                    operation: 'equals',
-                                    name: 'filter.operator.equals',
-                                },
-                            },
-                        ],
-                        combinator: 'and',
-                    },
-                    renameOutput: true,
-                    outputKey: 'double',
-                },
-                {
-                    conditions: {
-                        options: {
-                            caseSensitive: true,
-                            leftValue: '',
-                            typeValidation: 'strict',
-                            version: 2,
-                        },
-                        conditions: [
-                            {
-                                id: '6911a445-1c99-401e-9e79-121a5226a192',
-                                leftValue: '={{ $json.pid }}',
-                                rightValue: 'd082d9a3-90d3-41e3-8b6a-53e8b4572cf6',
-                                operator: {
-                                    type: 'string',
-                                    operation: 'equals',
-                                },
-                            },
-                        ],
-                        combinator: 'and',
-                    },
-                    renameOutput: true,
-                    outputKey: 'full',
-                },
-            ],
-        },
-        options: {},
+    MapProductMode = {
+        jsCode: `// Map product ID (pid) to snapshot_mode and pack for the render workflow
+const pid = $json.pid || '';
+
+// Product ID → mode mapping
+const modeMap = {
+  'bb3c33ae-36bc-488d-809e-166665ad7fe6': { snapshot_mode: 'single', pack: 'overhead_only' },
+  '69e6ffdb-d671-4309-a9d9-78fdef6d958a': { snapshot_mode: 'double', pack: 'overhead_north' },
+  'd082d9a3-90d3-41e3-8b6a-53e8b4572cf6': { snapshot_mode: 'full', pack: 'full' },
+  // KML-only product
+  '372e0fc9-d4dd-455b-871a-fe188b08c5e7':              { snapshot_mode: 'kml_only', pack: 'kml_only' },
+};
+
+const mode = modeMap[pid.trim()] || { snapshot_mode: 'single', pack: 'overhead_only' };
+
+return [{
+  json: {
+    ...$json,
+    snapshot_mode: mode.snapshot_mode,
+    pack: mode.pack
+  }
+}];`,
     };
 
     @node({
@@ -583,88 +520,30 @@ export class NewOrderWorkflow {
 
     @node({
         id: '2da639fe-4dad-4151-b025-fcab0b2b5728',
-        name: 'call overhead workflow',
-        type: 'n8n-nodes-base.executeWorkflow',
-        version: 1.3,
-        position: [1200, 1264],
-    })
-    CallOverheadWorkflow = {
-        workflowId: {
-            __rl: true,
-            value: 'fD94owK14KYr97yB',
-            mode: 'list',
-            cachedResultName: 'Overhead-Only',
-        },
-        workflowInputs: {
-            mappingMode: 'defineBelow',
-            value: {
-                body: '={{ { payload: $json } }}',
-            },
-            matchingColumns: [],
-            schema: [],
-            attemptToConvertTypes: false,
-            convertFieldsToString: true,
-        },
-        options: {
-            waitForSubWorkflow: true,
-        },
-    };
-
-    @node({
-        id: 'ef1077d5-71fb-460d-8355-12c5fe0554ae',
-        name: 'call single workflow',
+        name: 'call render workflow',
         type: 'n8n-nodes-base.executeWorkflow',
         version: 1.3,
         position: [1200, 1456],
     })
-    CallSingleWorkflow = {
-        workflowId: {
-            __rl: true,
-            value: 'Tqh6g1yqvcfi5qeF',
-            mode: 'list',
-            cachedResultName: 'Overhead-North',
-        },
-        workflowInputs: {
-            mappingMode: 'defineBelow',
-            value: {
-                body: '={{ { payload: $json } }}',
-            },
-            matchingColumns: [],
-            schema: [],
-            attemptToConvertTypes: false,
-            convertFieldsToString: true,
-        },
-        options: {
-            waitForSubWorkflow: true,
-        },
-    };
-
-    @node({
-        id: 'bb06c8b8-cd67-4b91-b3b2-12ebf8e75ea3',
-        name: 'call full workflow',
-        type: 'n8n-nodes-base.executeWorkflow',
-        version: 1.3,
-        position: [1200, 1648],
-    })
-    CallFullWorkflow = {
+    CallRenderWorkflow = {
         workflowId: {
             __rl: true,
             value: 'eiHeW6leMz4NRikO',
             mode: 'list',
             cachedResultUrl: '/workflow/eiHeW6leMz4NRikO',
-            cachedResultName: 'Full',
+            cachedResultName: 'render',
         },
         workflowInputs: {
             mappingMode: 'defineBelow',
             value: {
-                body: '={{ { payload: $json } }}',
+                snapshot_mode: '={{ $json.snapshot_mode }}',
+                pack: '={{ $json.pack }}',
                 wpuser_id: '={{ $json.wpuser_id }}',
                 email: '={{ $json.email }}',
-                order_id: '={{ $json.order_id || $json.body?.data?.object?.order_id || $json.body?.data?.object?.id }}',
+                order_id: '={{ $json.order_id }}',
                 parcel_apn: '={{ $json.parcel_apn }}',
                 latitude: '={{ $json.latitude }}',
                 longitude: '={{ $json.longitude }}',
-                price_id: '={{ $json.price_id }}',
                 pid: '={{ $json.pid }}',
                 acres: '={{ $json.acres }}',
                 county: '={{ $json.county }}',
@@ -674,6 +553,26 @@ export class NewOrderWorkflow {
             },
             matchingColumns: [],
             schema: [
+                {
+                    id: 'snapshot_mode',
+                    displayName: 'snapshot_mode',
+                    required: true,
+                    defaultMatch: false,
+                    display: true,
+                    canBeUsedToMatch: true,
+                    type: 'string',
+                    removed: false,
+                },
+                {
+                    id: 'pack',
+                    displayName: 'pack',
+                    required: true,
+                    defaultMatch: false,
+                    display: true,
+                    canBeUsedToMatch: true,
+                    type: 'string',
+                    removed: false,
+                },
                 {
                     id: 'wpuser_id',
                     displayName: 'wpuser_id',
@@ -735,78 +634,8 @@ export class NewOrderWorkflow {
                     removed: false,
                 },
                 {
-                    id: 'price_id',
-                    displayName: 'price_id',
-                    required: false,
-                    defaultMatch: false,
-                    display: true,
-                    canBeUsedToMatch: true,
-                    type: 'string',
-                    removed: false,
-                },
-                {
                     id: 'pid',
                     displayName: 'pid',
-                    required: false,
-                    defaultMatch: false,
-                    display: true,
-                    canBeUsedToMatch: true,
-                    type: 'string',
-                    removed: false,
-                },
-                {
-                    id: 'submission_id',
-                    displayName: 'submission_id',
-                    required: false,
-                    defaultMatch: false,
-                    display: true,
-                    canBeUsedToMatch: true,
-                    type: 'string',
-                    removed: false,
-                },
-                {
-                    id: 'geometry',
-                    displayName: 'geometry',
-                    required: false,
-                    defaultMatch: false,
-                    display: true,
-                    canBeUsedToMatch: true,
-                    type: 'string',
-                    removed: false,
-                },
-                {
-                    id: 'cookie',
-                    displayName: 'cookie',
-                    required: false,
-                    defaultMatch: false,
-                    display: true,
-                    canBeUsedToMatch: true,
-                    type: 'string',
-                    removed: false,
-                },
-                {
-                    id: 'kml',
-                    displayName: 'kml',
-                    required: false,
-                    defaultMatch: false,
-                    display: true,
-                    canBeUsedToMatch: true,
-                    type: 'string',
-                    removed: false,
-                },
-                {
-                    id: 'centroid',
-                    displayName: 'centroid',
-                    required: false,
-                    defaultMatch: false,
-                    display: true,
-                    canBeUsedToMatch: true,
-                    type: 'string',
-                    removed: false,
-                },
-                {
-                    id: 'county',
-                    displayName: 'county',
                     required: false,
                     defaultMatch: false,
                     display: true,
@@ -825,8 +654,38 @@ export class NewOrderWorkflow {
                     removed: false,
                 },
                 {
-                    id: 'customer',
-                    displayName: 'customer',
+                    id: 'county',
+                    displayName: 'county',
+                    required: false,
+                    defaultMatch: false,
+                    display: true,
+                    canBeUsedToMatch: true,
+                    type: 'string',
+                    removed: false,
+                },
+                {
+                    id: 'geometry',
+                    displayName: 'geometry',
+                    required: false,
+                    defaultMatch: false,
+                    display: true,
+                    canBeUsedToMatch: true,
+                    type: 'string',
+                    removed: false,
+                },
+                {
+                    id: 'customer_id',
+                    displayName: 'customer_id',
+                    required: false,
+                    defaultMatch: false,
+                    display: true,
+                    canBeUsedToMatch: true,
+                    type: 'string',
+                    removed: false,
+                },
+                {
+                    id: 'centroid',
+                    displayName: 'centroid',
                     required: false,
                     defaultMatch: false,
                     display: true,
@@ -1210,18 +1069,14 @@ return $input.all();`,
     @links()
     defineRouting() {
         this.Webhook.out(0).to(this.GetCheckout.in(0));
-        this.Switch_.out(0).to(this.CallOverheadWorkflow.in(0));
-        this.Switch_.out(1).to(this.CallSingleWorkflow.in(0));
-        this.Switch_.out(2).to(this.CallFullWorkflow.in(0));
-        this.EditFields.out(0).to(this.Switch_.in(0));
+        this.EditFields.out(0).to(this.MapProductMode.in(0));
+        this.MapProductMode.out(0).to(this.CallRenderWorkflow.in(0));
+        this.CallRenderWorkflow.out(0).to(this.CodeInJavascript.in(0));
         this.GeoToPath.out(0).to(this.PathToData.in(0));
         this.PathToData.out(0).to(this.CreateKml.in(0));
         this.If_.out(0).to(this.Cookie.in(0));
         this.If_.out(1).to(this.NoOperationDoNothing.in(0));
         this.DataShaper.out(0).to(this.IdempotencyCleanup.in(0));
-        this.CallOverheadWorkflow.out(0).to(this.CodeInJavascript.in(0));
-        this.CallSingleWorkflow.out(0).to(this.CodeInJavascript.in(0));
-        this.CallFullWorkflow.out(0).to(this.CodeInJavascript.in(0));
         this.CodeInJavascript.out(0).to(this.UploadAFile.in(0));
         this.UploadAFile.out(0).to(this.DataShaper.in(0));
         this.Cookie.out(0).to(this.GeoToPath.in(0));

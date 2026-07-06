@@ -92,10 +92,10 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 @workflow({
     id: 'fD94owK14KYr97yB',
     name: 'single',
-    active: true,
+    active: false,
     description:
-        "this workflow produces an overhead view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the image as a fallback.",
-    isArchived: false,
+        "[ARCHIVED - replaced by render workflow] this workflow produces an overhead view as well as a static map with labels for the editor's  reference and the boundary kml file. the kml is widely accepted in map software and can be used to create the image as a fallback.",
+    isArchived: true,
     settings: {
         executionOrder: 'v1',
         availableInMCP: false,
