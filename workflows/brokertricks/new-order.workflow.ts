@@ -2,12 +2,13 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : new-order
-// Nodes   : 21  |  Connections: 20
+// Nodes   : 21  |  Connections: 19
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
 // Property name                    Node type (short)         Flags
 // Webhook                            webhook
+// MapProductMode                     code
 // EditFields                         set
 // GeoToPath                          httpRequest                [alwaysOutput]
 // PathToData                         httpRequest                [executeOnce]
@@ -15,7 +16,6 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // NoOperationDoNothing               noOp
 // IdempotencyCleanup                 executeWorkflow
 // DataShaper                         set
-// MapProductMode                     code
 // CallRenderWorkflow                 executeWorkflow
 // StickyNote5                        stickyNote
 // Cookie                             httpRequest
@@ -713,6 +713,8 @@ return [{
         content: `## GET RATE LIMITS 
 **GET** request [https://app.regrid.com/users/lookup_limits.json](https://app.regrid.com/users/lookup_limits.json)`,
         height: 304,
+        width: 240,
+        color: '#6c757d',
     };
 
     @node({
