@@ -84,7 +84,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 @workflow({
     id: 'q0BPuZQQFV0xwgjp',
     name: 'render',
-    active: false,
+    active: true,
     description:
         'Unified render workflow. Receives snapshot_mode (single, double, full, kml_only) and pack from the new-order controller. Produces static map, KML boundary file, and optionally dispatches GitHub Actions for rendered snapshots. KML-only orders auto-fulfill and skip the snapshot pipeline.',
     isArchived: false,
