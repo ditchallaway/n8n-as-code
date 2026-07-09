@@ -399,7 +399,7 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
     UploadStaticMap = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.png',
+        fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/property_map.png',
         binaryPropertyName: 'map',
         additionalFields: {},
     };
@@ -484,9 +484,30 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
     })
     KmlGenerator = {
         jsCode: `for (const item of $input.all()) {
-  const coords = item.json.geometry.coordinates[0];
-  const kmlCoords = coords.map(c => \`\${c[0]},\${c[1]},0\`).join(' ');
+  const kmlContent = item.json.kml || '';
+  
+  let finalKml = kmlContent;
+  if (!finalKml) {
+    const coords = item.json.geometry.coordinates[0];
+    const kmlCoords = coords.map(c => \`\${c[0]},\${c[1]},0\`).join(' ');
+    finalKml = \`<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Parcel Boundary</name>
+    <Placemark>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>\${kmlCoords}</coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>\`;
+  }
 
+  const coords = item.json.geometry.coordinates[0];
   item.json.boundary = coords.map(c => [Number(c[0]), Number(c[1])]);
 
   let centroidLon = Number(item.json.lon);
@@ -513,25 +534,9 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
   
   item.json.centroid = { lon: centroidLon, lat: centroidLat };
 
-  const kmlContent = \`<?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://www.opengis.net/kml/2.2">
-  <Document>
-    <name>Parcel Boundary</name>
-    <Placemark>
-      <Polygon>
-        <outerBoundaryIs>
-          <LinearRing>
-            <coordinates>\${kmlCoords}</coordinates>
-          </LinearRing>
-        </outerBoundaryIs>
-      </Polygon>
-    </Placemark>
-  </Document>
-</kml>\`;
-
   item.binary = item.binary || {};
   item.binary.kml_data = {
-    data: Buffer.from(kmlContent).toString('base64'),
+    data: Buffer.from(finalKml).toString('base64'),
     mimeType: 'application/vnd.google-earth.kml+xml',
     fileName: 'parcel_boundary.kml',
     fileExtension: 'kml'
@@ -551,7 +556,7 @@ return $input.all();`,
     UploadKmlToS3 = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: '{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
+        fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
         binaryPropertyName: 'kml_data',
         additionalFields: {},
     };

@@ -87,7 +87,7 @@ export class NewOrderWorkflow {
     Webhook = {
         httpMethod: 'POST',
         path: 'new-order',
-        responseMode: 'lastNode',
+        responseMode: 'onReceived',
         options: {},
     };
 
@@ -538,6 +538,7 @@ return [{
             value: {
                 snapshot_mode: '={{ $json.snapshot_mode }}',
                 pack: '={{ $json.pack }}',
+                kml: '={{ $json.kml }}',
                 wpuser_id: '={{ $json.wpuser_id }}',
                 email: '={{ $json.email }}',
                 order_id: '={{ $json.order_id }}',
@@ -553,6 +554,16 @@ return [{
             },
             matchingColumns: [],
             schema: [
+                {
+                    id: 'kml',
+                    displayName: 'kml',
+                    required: false,
+                    defaultMatch: false,
+                    display: true,
+                    canBeUsedToMatch: true,
+                    type: 'string',
+                    removed: false,
+                },
                 {
                     id: 'snapshot_mode',
                     displayName: 'snapshot_mode',
@@ -740,7 +751,8 @@ return [{
         jsCode: `const geojsonRaw = $('path-to-data').first().json.geometry;
 const ownerName = $('path-to-data').first().json.fields.owner;
 const parcelNumber = $('geo-to-path').first().json.parcelnumb;
-const acres = $input.first().json.fields.lglacres;
+const fields = $input.first().json.fields;
+const acres = fields.lglacres || fields.gisacre || fields.ll_gisacre || 'N/A';
 
 function coordinatesToKML(coordinates) {
   return coordinates.map(
