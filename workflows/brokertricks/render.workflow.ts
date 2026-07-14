@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : render
-// Nodes   : 33  |  Connections: 31
+// Nodes   : 41  |  Connections: 41
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -21,7 +21,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields1                        set
 // KmlGenerator                       code
 // UploadKmlToS3                      s3                         [creds]
-// IsKmlOnly                          if
+// NeedsRender                        if
 // AutoFulfill                        httpRequest                [creds]
 // NtfyKmlReady                       ntfySend                   [creds]
 // DispatchGithubAndWait              github                     [creds]
@@ -33,6 +33,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields3                        set
 // EditFields2                        set
 // StickyNote2                        stickyNote
+// IsAutoFulfill                      if
 // PrepareConfiguration               code
 // ShortenEditorUrl                   httpRequest                [creds]
 // CheckForNotes                      httpRequest                [creds]
@@ -40,6 +41,13 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // CreateANote                        httpRequest                [creds]
 // UpdateNote                         httpRequest                [creds]
 // NtfySend                           ntfySend                   [creds]
+// PrepareAutoFulfillLinks            code
+// ShortenDownloadUrls                httpRequest                [creds]
+// CheckForNotesAutofulfill           httpRequest                [creds]
+// AggregateLinks                     code
+// IfNoteExists                       if
+// CreateNoteAutofulfill              httpRequest                [creds]
+// UpdateNoteAutofulfill              httpRequest                [creds]
 //
 // ROUTING MAP
 // ──────────────────────────────────────────────────────────────────
@@ -56,10 +64,8 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                      → EditFields1
 //                        → KmlGenerator
 //                          → UploadKmlToS3
-//                            → IsKmlOnly
-//                              → AutoFulfill
-//                                → NtfyKmlReady
-//                             .out(1) → DispatchGithubAndWait
+//                            → NeedsRender
+//                              → DispatchGithubAndWait
 //                                → GetArtifacts
 //                                  → DownloadArtifact
 //                                    → Compression
@@ -67,14 +73,26 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                                        → UploadRenderedFile
 //                                          → EditFields3
 //                                            → EditFields2
-//                                              → PrepareConfiguration
-//                                                → ShortenEditorUrl
-//                                                  → CheckForNotes
-//                                                    → If_
-//                                                      → CreateANote
-//                                                        → NtfySend
-//                                                     .out(1) → UpdateNote
-//                                                        → NtfySend (↩ loop)
+//                                              → IsAutoFulfill
+//                                                → PrepareAutoFulfillLinks
+//                                                  → ShortenDownloadUrls
+//                                                    → CheckForNotesAutofulfill
+//                                                      → AggregateLinks
+//                                                        → IfNoteExists
+//                                                          → UpdateNoteAutofulfill
+//                                                            → AutoFulfill
+//                                                              → NtfyKmlReady
+//                                                         .out(1) → CreateNoteAutofulfill
+//                                                            → AutoFulfill (↩ loop)
+//                                               .out(1) → PrepareConfiguration
+//                                                  → ShortenEditorUrl
+//                                                    → CheckForNotes
+//                                                      → If_
+//                                                        → CreateANote
+//                                                          → NtfySend
+//                                                       .out(1) → UpdateNote
+//                                                          → NtfySend (↩ loop)
+//                             .out(1) → PrepareAutoFulfillLinks (↩ loop)
 // </workflow-map>
 
 // =====================================================================
@@ -563,12 +581,12 @@ return $input.all();`,
 
     @node({
         id: 'c4a1b2d3-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
-        name: 'Is KML Only',
+        name: 'Needs Render',
         type: 'n8n-nodes-base.if',
         version: 2.3,
         position: [-176, 368],
     })
-    IsKmlOnly = {
+    NeedsRender = {
         conditions: {
             options: {
                 caseSensitive: true,
@@ -578,12 +596,12 @@ return $input.all();`,
             },
             conditions: [
                 {
-                    id: 'kml-only-check',
+                    id: 'needs-render-check',
                     leftValue: "={{ $('Webhook').item.json.snapshot_mode }}",
                     rightValue: 'kml_only',
                     operator: {
                         type: 'string',
-                        operation: 'equals',
+                        operation: 'notEqual',
                     },
                 },
             ],
@@ -612,7 +630,8 @@ return $input.all();`,
         specifyBody: 'json',
         jsonBody: `={
   "fulfillment": {
-    "shipment_status": "delivered"
+    "shipment_status": "delivered",
+    "notifications_enabled": true
   }
 }`,
         options: {},
@@ -849,6 +868,36 @@ return items;`,
         height: 272,
         width: 192,
         color: '#477D40',
+    };
+
+    @node({
+        id: 'new-is-auto-fulfill-node-uuid',
+        name: 'Is Auto Fulfill',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [1750, 560],
+    })
+    IsAutoFulfill = {
+        conditions: {
+            options: {
+                caseSensitive: true,
+                typeValidation: 'strict',
+                version: 3,
+            },
+            conditions: [
+                {
+                    id: 'is-single',
+                    leftValue: "={{ $('Webhook').item.json.snapshot_mode }}",
+                    rightValue: 'single',
+                    operator: {
+                        type: 'string',
+                        operation: 'equals',
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
     };
 
     @node({
@@ -1095,6 +1144,214 @@ Order Dashboard: https://brokertricks.com/wp-admin/admin.php?page=surecart-order
         tags: 'new-order',
     };
 
+    @node({
+        id: 'new-prepare-links-uuid',
+        name: 'Prepare Auto Fulfill Links',
+        type: 'n8n-nodes-base.code',
+        version: 2,
+        position: [1900, 200],
+    })
+    PrepareAutoFulfillLinks = {
+        jsCode: `const snapshot_mode = $('Webhook').first().json.snapshot_mode;
+const wpuser_id = $('Webhook').first().json.wpuser_id;
+const order_id = $('Webhook').first().json.order_id;
+const baseUrl = "https://pics.brokertricks.com/cust_" + wpuser_id + "/order_" + order_id + "/";
+
+const links = [];
+links.push({ url: baseUrl + "parcel_boundary.kml", key: "kml_url" });
+links.push({ url: baseUrl + "property_map.png", key: "map_url" });
+
+if (snapshot_mode === 'single') {
+  try {
+    const fileName = $('Split Files').first().json.fileName;
+    if (fileName) links.push({ url: baseUrl + fileName, key: "overhead_url" });
+  } catch(e) {}
+}
+return [{ json: { links, order_id } }];`,
+    };
+
+    @node({
+        id: 'new-shorten-uuid',
+        name: 'Shorten Download URLs',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.4,
+        position: [2100, 200],
+        credentials: { httpBearerAuth: { id: 'Hy4bWHoBR2fWc0wj', name: 'Short link bearer' } },
+    })
+    ShortenDownloadUrls = {
+        method: 'POST',
+        url: 'https://link.brokertricks.com/api/link/create',
+        authentication: 'predefinedCredentialType',
+        nodeCredentialType: 'httpBearerAuth',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Authorization',
+                    value: '=Bearer {{ $env.NUXT_SITE_TOKEN }}',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+  "url": "{{ $json.url }}",
+  "comment": "Download URL for order_{{ $('Prepare Auto Fulfill Links').item.json.order_id }}"
+}`,
+        options: {},
+    };
+
+    @node({
+        id: 'new-check-notes-uuid',
+        name: 'Check For Notes AutoFulfill',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [2300, 200],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    CheckForNotesAutofulfill = {
+        url: '=https://api.surecart.com/v1/notes?notable_id={{ $("Prepare Auto Fulfill Links").item.json.order_id }}&notable_type=order',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        options: {},
+    };
+
+    @node({
+        id: 'new-aggregate-uuid',
+        name: 'Aggregate Links',
+        type: 'n8n-nodes-base.code',
+        version: 2,
+        position: [2500, 200],
+    })
+    AggregateLinks = {
+        jsCode: `const shortLinks = $input.all().map(item => item.json.shortLink);
+const originalLinks = $('Prepare Auto Fulfill Links').first().json.links;
+const order_id = $('Prepare Auto Fulfill Links').first().json.order_id;
+const notesNode = $('Check For Notes AutoFulfill').first().json;
+const notes = Array.isArray(notesNode) ? notesNode : (notesNode.data || []);
+
+const metadata = {
+  pack: $('Webhook').first().json.pack,
+  fulfilled_at: new Date().toISOString()
+};
+
+for (let i=0; i<originalLinks.length; i++) {
+  metadata[originalLinks[i].key] = shortLinks[i] || originalLinks[i].url;
+}
+
+const existingNote = notes.find(n => n.metadata && n.metadata.fulfilled_at);
+return [{ json: { metadata, order_id, existing_note_id: existingNote ? existingNote.id : null } }];`,
+    };
+
+    @node({
+        id: 'new-if-note-uuid',
+        name: 'If Note Exists',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [2700, 200],
+    })
+    IfNoteExists = {
+        conditions: {
+            options: {
+                caseSensitive: true,
+                typeValidation: 'strict',
+                version: 3,
+            },
+            conditions: [
+                {
+                    id: 'has-note',
+                    leftValue: '={{ $json.existing_note_id }}',
+                    rightValue: '',
+                    operator: {
+                        type: 'string',
+                        operation: 'notEmpty',
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
+    };
+
+    @node({
+        id: 'new-create-note-uuid',
+        name: 'Create Note AutoFulfill',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [2900, 100],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    CreateNoteAutofulfill = {
+        method: 'POST',
+        url: '=https://api.surecart.com/v1/notes',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Content-Type',
+                    value: 'application/json',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+    "note": {
+      "body": "Files ready for download",
+      "notable_id": "{{ $json.order_id }}",
+      "notable_type": "order",
+      "metadata": {{ JSON.stringify($json.metadata) }}
+    }
+}`,
+        options: {},
+    };
+
+    @node({
+        id: 'new-update-note-uuid',
+        name: 'Update Note AutoFulfill',
+        type: 'n8n-nodes-base.httpRequest',
+        version: 4.3,
+        position: [2900, 300],
+        credentials: {
+            httpBearerAuth: { id: 'fs3UN7UYgrHE4ads', name: 'surecart' },
+            httpHeaderAuth: { id: 'WqEyKDhHJUyfY0Iz', name: 'surecart' },
+        },
+    })
+    UpdateNoteAutofulfill = {
+        method: 'PATCH',
+        url: '=https://api.surecart.com/v1/notes/{{ $json.existing_note_id }}',
+        authentication: 'genericCredentialType',
+        genericAuthType: 'httpBearerAuth',
+        sendHeaders: true,
+        headerParameters: {
+            parameters: [
+                {
+                    name: 'Content-Type',
+                    value: 'application/json',
+                },
+            ],
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: `={
+    "note": {
+      "body": "Files ready for download (updated)",
+      "notable_id": "{{ $json.order_id }}",
+      "notable_type": "order",
+      "metadata": {{ JSON.stringify($json.metadata) }}
+    }
+}`,
+        options: {},
+    };
+
     // =====================================================================
     // ROUTAGE ET CONNEXIONS
     // =====================================================================
@@ -1113,10 +1370,9 @@ Order Dashboard: https://brokertricks.com/wp-admin/admin.php?page=surecart-order
         this.UploadStaticMap.out(0).to(this.EditFields1.in(0));
         this.EditFields1.out(0).to(this.KmlGenerator.in(0));
         this.KmlGenerator.out(0).to(this.UploadKmlToS3.in(0));
-        this.UploadKmlToS3.out(0).to(this.IsKmlOnly.in(0));
-        this.IsKmlOnly.out(0).to(this.AutoFulfill.in(0));
-        this.IsKmlOnly.out(1).to(this.DispatchGithubAndWait.in(0));
-        this.AutoFulfill.out(0).to(this.NtfyKmlReady.in(0));
+        this.UploadKmlToS3.out(0).to(this.NeedsRender.in(0));
+        this.NeedsRender.out(0).to(this.DispatchGithubAndWait.in(0));
+        this.NeedsRender.out(1).to(this.PrepareAutoFulfillLinks.in(0));
         this.DispatchGithubAndWait.out(0).to(this.GetArtifacts.in(0));
         this.GetArtifacts.out(0).to(this.DownloadArtifact.in(0));
         this.DownloadArtifact.out(0).to(this.Compression.in(0));
@@ -1124,7 +1380,18 @@ Order Dashboard: https://brokertricks.com/wp-admin/admin.php?page=surecart-order
         this.SplitFiles.out(0).to(this.UploadRenderedFile.in(0));
         this.UploadRenderedFile.out(0).to(this.EditFields3.in(0));
         this.EditFields3.out(0).to(this.EditFields2.in(0));
-        this.EditFields2.out(0).to(this.PrepareConfiguration.in(0));
+        this.EditFields2.out(0).to(this.IsAutoFulfill.in(0));
+        this.IsAutoFulfill.out(0).to(this.PrepareAutoFulfillLinks.in(0));
+        this.IsAutoFulfill.out(1).to(this.PrepareConfiguration.in(0));
+        this.PrepareAutoFulfillLinks.out(0).to(this.ShortenDownloadUrls.in(0));
+        this.ShortenDownloadUrls.out(0).to(this.CheckForNotesAutofulfill.in(0));
+        this.CheckForNotesAutofulfill.out(0).to(this.AggregateLinks.in(0));
+        this.AggregateLinks.out(0).to(this.IfNoteExists.in(0));
+        this.IfNoteExists.out(0).to(this.UpdateNoteAutofulfill.in(0));
+        this.IfNoteExists.out(1).to(this.CreateNoteAutofulfill.in(0));
+        this.UpdateNoteAutofulfill.out(0).to(this.AutoFulfill.in(0));
+        this.CreateNoteAutofulfill.out(0).to(this.AutoFulfill.in(0));
+        this.AutoFulfill.out(0).to(this.NtfyKmlReady.in(0));
         this.PrepareConfiguration.out(0).to(this.ShortenEditorUrl.in(0));
         this.ShortenEditorUrl.out(0).to(this.CheckForNotes.in(0));
         this.CheckForNotes.out(0).to(this.If_.in(0));
