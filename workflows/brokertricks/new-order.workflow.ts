@@ -955,7 +955,7 @@ return [{ json: { pathString: pathString } }];`,
         operation: 'getAll',
         limit: 1,
         options: {
-            search: "={{ $input['get checkout'].item.json.email }}",
+            search: "={{ $('get checkout').item.json.email }}",
         },
     };
 
