@@ -43,7 +43,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -61,7 +61,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class CookieWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -302,19 +302,19 @@ export class CookieWorkflow {
                 {
                     id: '3d411902-a481-48c1-bd0f-99d3793aa72e',
                     name: 'user_id_cookie',
-                    value: '={{ $json.headers["set-cookie"][0].split(\';\')[0] }}',
+                    value: '={{ ($json.headers["set-cookie"] || []).find(c => c.includes("user_id="))?.split(";")[0] || "" }}',
                     type: 'string',
                 },
                 {
                     id: '7f564e97-4d19-4485-9c31-bf66d7df843c',
                     name: 'user_expires_cookie',
-                    value: '={{ $json.headers["set-cookie"][1].split(\';\')[0] }}',
+                    value: '={{ ($json.headers["set-cookie"] || []).find(c => c.includes("user_expires="))?.split(";")[0] || "" }}',
                     type: 'string',
                 },
                 {
                     id: '36ca191c-4bc3-4d22-9634-43ba84d9f72a',
                     name: 'session_id_cookie',
-                    value: '={{ $json.headers["set-cookie"][2].split(\';\')[0] }}',
+                    value: '={{ ($json.headers["set-cookie"] || []).find(c => !c.includes("user_id=") && !c.includes("user_expires="))?.split(";")[0] || "" }}',
                     type: 'string',
                 },
             ],
@@ -505,7 +505,7 @@ export class CookieWorkflow {
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()

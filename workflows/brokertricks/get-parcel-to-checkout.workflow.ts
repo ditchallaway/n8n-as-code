@@ -21,7 +21,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -35,7 +35,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class GetParcelToCheckoutWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -212,10 +212,6 @@ export class GetParcelToCheckoutWorkflow {
                     value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
                 },
                 {
-                    name: 'x-csrf-token',
-                    value: '8nrHp/RiPDPJJEDnCWrNDe3OskdOjGAaeqWyZz3ZMTAvhtdKuk0pTO3e6zmGzzLLjYaBfwhXN+kgilsZ/dO/cQ==',
-                },
-                {
                     name: 'x-requested-with',
                     value: 'XMLHttpRequest',
                 },
@@ -240,7 +236,7 @@ export class GetParcelToCheckoutWorkflow {
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()

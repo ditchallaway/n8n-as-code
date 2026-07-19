@@ -326,10 +326,6 @@ return [{
                     value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
                 },
                 {
-                    name: 'x-csrf-token',
-                    value: '8nrHp/RiPDPJJEDnCWrNDe3OskdOjGAaeqWyZz3ZMTAvhtdKuk0pTO3e6zmGzzLLjYaBfwhXN+kgilsZ/dO/cQ==',
-                },
-                {
                     name: 'x-requested-with',
                     value: 'XMLHttpRequest',
                 },
@@ -406,10 +402,6 @@ return [{
                 {
                     name: 'user-agent',
                     value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-                },
-                {
-                    name: 'x-csrf-token',
-                    value: '8nrHp/RiPDPJJEDnCWrNDe3OskdOjGAaeqWyZz3ZMTAvhtdKuk0pTO3e6zmGzzLLjYaBfwhXN+kgilsZ/dO/cQ==',
                 },
                 {
                     name: 'x-requested-with',
@@ -530,9 +522,9 @@ return [{
     CallRenderWorkflow = {
         workflowId: {
             __rl: true,
-            value: 'eiHeW6leMz4NRikO',
+            value: 'q0BPuZQQFV0xwgjp',
             mode: 'list',
-            cachedResultUrl: '/workflow/eiHeW6leMz4NRikO',
+            cachedResultUrl: '/workflow/q0BPuZQQFV0xwgjp',
             cachedResultName: 'render',
         },
         workflowInputs: {

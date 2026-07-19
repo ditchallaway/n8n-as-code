@@ -1200,7 +1200,7 @@ if (snapshot_mode === 'single') {
     if (fileName) links.push({ url: baseUrl + fileName, key: "overhead_url" });
   } catch(e) {}
 }
-return [{ json: { links, order_id } }];`,
+return links.map(link => ({ json: { url: link.url, key: link.key, order_id } }));`,
     };
 
     @node({
@@ -1260,8 +1260,8 @@ return [{ json: { links, order_id } }];`,
         position: [2500, 200],
     })
     AggregateLinks = {
-        jsCode: `const shortLinks = $input.all().map(item => item.json.shortLink);
-const originalLinks = $('Prepare Auto Fulfill Links').first().json.links;
+        jsCode: `const shortLinks = $('Shorten Download URLs').all().map(item => item.json.shortLink);
+const originalLinks = $('Prepare Auto Fulfill Links').all().map(item => item.json);
 const order_id = $('Prepare Auto Fulfill Links').first().json.order_id;
 const notesNode = $('Check For Notes AutoFulfill').first().json;
 const notes = Array.isArray(notesNode) ? notesNode : (notesNode.data || []);

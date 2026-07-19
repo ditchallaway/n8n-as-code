@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : Idempotency Manage
-// Nodes   : 6  |  Connections: 5
+// Nodes   : 6  |  Connections: 4
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -18,14 +18,13 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // ──────────────────────────────────────────────────────────────────
 // WhenExecutedByAnotherWorkflow
 //    → Switch_
-//      → InitializeDatabase
-//        → InsertIdempotencyKey
-//          → FormatCheckResposne
+//      → InsertIdempotencyKey
+//        → FormatCheckResposne
 //     .out(1) → ExecuteASqlQuery
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -37,7 +36,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class IdempotencyManageWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -191,15 +190,14 @@ SELECT EXISTS(SELECT 1 FROM inserted) as is_new;`,
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()
     defineRouting() {
         this.WhenExecutedByAnotherWorkflow.out(0).to(this.Switch_.in(0));
-        this.Switch_.out(0).to(this.InitializeDatabase.in(0));
+        this.Switch_.out(0).to(this.InsertIdempotencyKey.in(0));
         this.Switch_.out(1).to(this.ExecuteASqlQuery.in(0));
-        this.InitializeDatabase.out(0).to(this.InsertIdempotencyKey.in(0));
         this.InsertIdempotencyKey.out(0).to(this.FormatCheckResposne.in(0));
     }
 }
