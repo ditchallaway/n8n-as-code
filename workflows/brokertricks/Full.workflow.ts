@@ -86,7 +86,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// METADATA DU WORKFLOW
+// WORKFLOW METADATA
 // =====================================================================
 
 @workflow({
@@ -106,7 +106,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class FullWorkflow {
     // =====================================================================
-    // CONFIGURATION DES NOEUDS
+    // NODE CONFIGURATION
     // =====================================================================
 
     @node({
@@ -1223,7 +1223,7 @@ Customer Email: {{ $("Webhook").item.json.body?.payload?.customer?.email || $("W
     };
 
     // =====================================================================
-    // ROUTAGE ET CONNEXIONS
+    // ROUTING AND CONNECTIONS
     // =====================================================================
 
     @links()

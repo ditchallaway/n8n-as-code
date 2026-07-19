@@ -109,6 +109,8 @@ const modeMap = {
   'd082d9a3-90d3-41e3-8b6a-53e8b4572cf6': { snapshot_mode: 'full', pack: 'full' },
   // KML-only product
   '372e0fc9-d4dd-455b-871a-fe188b08c5e7':              { snapshot_mode: 'kml_only', pack: 'kml_only' },
+  // Single Map product
+  'c28a2466-1b55-41c9-ad01-ae8a01570a85':              { snapshot_mode: 'single_map', pack: 'single_map' },
 };
 
 const mode = modeMap[pid.trim()] || { snapshot_mode: 'single', pack: 'overhead_only' };

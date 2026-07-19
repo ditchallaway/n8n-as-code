@@ -2,7 +2,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 
 // <workflow-map>
 // Workflow : render
-// Nodes   : 41  |  Connections: 41
+// Nodes   : 42  |  Connections: 43
 //
 // NODE INDEX
 // ──────────────────────────────────────────────────────────────────
@@ -21,6 +21,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // EditFields1                        set
 // KmlGenerator                       code
 // UploadKmlToS3                      s3                         [creds]
+// IsSingleMap                        if
 // NeedsRender                        if
 // AutoFulfill                        httpRequest                [creds]
 // NtfyKmlReady                       ntfySend                   [creds]
@@ -64,35 +65,37 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 //                      → EditFields1
 //                        → KmlGenerator
 //                          → UploadKmlToS3
-//                            → NeedsRender
-//                              → DispatchGithubAndWait
-//                                → GetArtifacts
-//                                  → DownloadArtifact
-//                                    → Compression
-//                                      → SplitFiles
-//                                        → UploadRenderedFile
-//                                          → EditFields3
-//                                            → EditFields2
-//                                              → IsAutoFulfill
-//                                                → PrepareAutoFulfillLinks
-//                                                  → ShortenDownloadUrls
-//                                                    → CheckForNotesAutofulfill
-//                                                      → AggregateLinks
-//                                                        → IfNoteExists
-//                                                          → UpdateNoteAutofulfill
-//                                                            → AutoFulfill
-//                                                              → NtfyKmlReady
-//                                                         .out(1) → CreateNoteAutofulfill
-//                                                            → AutoFulfill (↩ loop)
-//                                               .out(1) → PrepareConfiguration
-//                                                  → ShortenEditorUrl
-//                                                    → CheckForNotes
-//                                                      → If_
-//                                                        → CreateANote
-//                                                          → NtfySend
-//                                                       .out(1) → UpdateNote
-//                                                          → NtfySend (↩ loop)
-//                             .out(1) → PrepareAutoFulfillLinks (↩ loop)
+//                            → IsSingleMap
+//                              → PrepareConfiguration
+//                                → ShortenEditorUrl
+//                                  → CheckForNotes
+//                                    → If_
+//                                      → CreateANote
+//                                        → NtfySend
+//                                     .out(1) → UpdateNote
+//                                        → NtfySend (↩ loop)
+//                             .out(1) → NeedsRender
+//                                → DispatchGithubAndWait
+//                                  → GetArtifacts
+//                                    → DownloadArtifact
+//                                      → Compression
+//                                        → SplitFiles
+//                                          → UploadRenderedFile
+//                                            → EditFields3
+//                                              → EditFields2
+//                                                → IsAutoFulfill
+//                                                  → PrepareAutoFulfillLinks
+//                                                    → ShortenDownloadUrls
+//                                                      → CheckForNotesAutofulfill
+//                                                        → AggregateLinks
+//                                                          → IfNoteExists
+//                                                            → UpdateNoteAutofulfill
+//                                                              → AutoFulfill
+//                                                                → NtfyKmlReady
+//                                                           .out(1) → CreateNoteAutofulfill
+//                                                              → AutoFulfill (↩ loop)
+//                                                 .out(1) → PrepareConfiguration (↩ loop)
+//                               .out(1) → PrepareAutoFulfillLinks (↩ loop)
 // </workflow-map>
 
 // =====================================================================
@@ -577,6 +580,36 @@ return $input.all();`,
         fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
         binaryPropertyName: 'kml_data',
         additionalFields: {},
+    };
+
+    @node({
+        id: '9b3c4d5e-6a7b-8c9d-0e1f-2a3b4c5d6e7f',
+        name: 'Is Single Map',
+        type: 'n8n-nodes-base.if',
+        version: 2.3,
+        position: [-288, 250],
+    })
+    IsSingleMap = {
+        conditions: {
+            options: {
+                caseSensitive: true,
+                typeValidation: 'strict',
+                version: 3,
+            },
+            conditions: [
+                {
+                    id: 'is-single-map-check',
+                    leftValue: "={{ $('Webhook').item.json.snapshot_mode }}",
+                    rightValue: 'single_map',
+                    operator: {
+                        type: 'string',
+                        operation: 'equals',
+                    },
+                },
+            ],
+            combinator: 'and',
+        },
+        options: {},
     };
 
     @node({
@@ -1370,7 +1403,9 @@ return [{ json: { metadata, order_id, existing_note_id: existingNote ? existingN
         this.UploadStaticMap.out(0).to(this.EditFields1.in(0));
         this.EditFields1.out(0).to(this.KmlGenerator.in(0));
         this.KmlGenerator.out(0).to(this.UploadKmlToS3.in(0));
-        this.UploadKmlToS3.out(0).to(this.NeedsRender.in(0));
+        this.UploadKmlToS3.out(0).to(this.IsSingleMap.in(0));
+        this.IsSingleMap.out(0).to(this.PrepareConfiguration.in(0));
+        this.IsSingleMap.out(1).to(this.NeedsRender.in(0));
         this.NeedsRender.out(0).to(this.DispatchGithubAndWait.in(0));
         this.NeedsRender.out(1).to(this.PrepareAutoFulfillLinks.in(0));
         this.DispatchGithubAndWait.out(0).to(this.GetArtifacts.in(0));
