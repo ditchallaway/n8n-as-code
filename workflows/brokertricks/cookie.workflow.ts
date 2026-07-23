@@ -69,7 +69,7 @@ export class CookieWorkflow {
         name: 'HTML',
         type: 'n8n-nodes-base.html',
         version: 1.2,
-        position: [736, 0],
+        position: [1184, 0],
     })
     Html = {
         operation: 'extractHtmlContent',
@@ -92,7 +92,7 @@ export class CookieWorkflow {
         name: 'HTTP Request',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [1184, 0],
+        position: [1632, 0],
     })
     HttpRequest = {
         method: 'POST',
@@ -220,7 +220,7 @@ export class CookieWorkflow {
         name: 'HTTP Request1',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [288, 0],
+        position: [736, 0],
     })
     HttpRequest1 = {
         url: 'https://app.regrid.com/users/sign_in',
@@ -238,7 +238,7 @@ export class CookieWorkflow {
         name: 'Edit Fields1',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [960, 0],
+        position: [1408, 0],
     })
     EditFields1 = {
         assignments: {
@@ -265,7 +265,7 @@ export class CookieWorkflow {
         name: 'Edit Fields2',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [512, 0],
+        position: [960, 0],
     })
     EditFields2 = {
         assignments: {
@@ -294,7 +294,7 @@ export class CookieWorkflow {
         name: 'Edit Fields',
         type: 'n8n-nodes-base.set',
         version: 3.4,
-        position: [1408, 0],
+        position: [1856, 0],
     })
     EditFields = {
         assignments: {
@@ -302,19 +302,19 @@ export class CookieWorkflow {
                 {
                     id: '3d411902-a481-48c1-bd0f-99d3793aa72e',
                     name: 'user_id_cookie',
-                    value: '={{ ($json.headers["set-cookie"] || []).find(c => c.includes("user_id="))?.split(";")[0] || "" }}',
+                    value: '={{ ($json.headers["set-cookie"] || []).find(c => c.includes("user.id="))?.split(";")[0] || "" }}',
                     type: 'string',
                 },
                 {
                     id: '7f564e97-4d19-4485-9c31-bf66d7df843c',
                     name: 'user_expires_cookie',
-                    value: '={{ ($json.headers["set-cookie"] || []).find(c => c.includes("user_expires="))?.split(";")[0] || "" }}',
+                    value: '={{ ($json.headers["set-cookie"] || []).find(c => c.includes("user.expires_at="))?.split(";")[0] || "" }}',
                     type: 'string',
                 },
                 {
                     id: '36ca191c-4bc3-4d22-9634-43ba84d9f72a',
                     name: 'session_id_cookie',
-                    value: '={{ ($json.headers["set-cookie"] || []).find(c => !c.includes("user_id=") && !c.includes("user_expires="))?.split(";")[0] || "" }}',
+                    value: '={{ ($json.headers["set-cookie"] || []).find(c => !c.includes("user.id=") && !c.includes("user.expires_at="))?.split(";")[0] || "" }}',
                     type: 'string',
                 },
             ],
@@ -326,38 +326,43 @@ export class CookieWorkflow {
         id: 'ab2c9f45-1234-4567-89ab-cdef01234567',
         name: 'Check Login Status',
         type: 'n8n-nodes-base.if',
-        version: 1,
-        position: [1520, 0],
+        version: 2.3,
+        position: [2080, 0],
     })
     CheckLoginStatus = {
         conditions: {
-            string: [
-                {
-                    value1: '={{ $json.user_expires_cookie }}',
-                    operation: 'isNotEmpty',
-                },
-            ],
             options: {
                 caseSensitive: true,
                 leftValue: '',
                 typeValidation: 'strict',
+                version: 3,
             },
+            conditions: [
+                {
+                    id: '3c4d5e6f-7a8b-4c9d-0e1f-2a3b4c5d6e7f',
+                    leftValue: '={{ $json.user_expires_cookie }}',
+                    rightValue: '',
+                    operator: {
+                        type: 'string',
+                        operation: 'isNotEmpty',
+                    },
+                },
+            ],
+            combinator: 'and',
         },
+        options: {},
     };
 
     @node({
-        id: 'cd3e0f56-2345-5678-90bc-def012345678',
+        id: 'c1d2e3f4-g5h6-4i5j-8k7l-9m0n1o2p3q4r',
         name: 'Respond with Error',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.4,
-        position: [1632, 200],
+        position: [800, 480],
     })
     RespondWithError = {
         respondWith: 'json',
-        responseBody: `={
-  "success": false,
-  "error": "Login failed. Invalid email or password."
-}`,
+        responseBody: '={{ { "success": false, "error": "Login failed. Invalid email or password." } }}',
         options: {
             responseCode: 401,
         },
@@ -368,7 +373,7 @@ export class CookieWorkflow {
         name: 'HTTP Request2',
         type: 'n8n-nodes-base.httpRequest',
         version: 4.3,
-        position: [1632, 0],
+        position: [2304, 0],
     })
     HttpRequest2 = {
         url: 'https://app.regrid.com/users/lookup_limits.json',
@@ -416,10 +421,9 @@ export class CookieWorkflow {
         name: 'GetCookieTable',
         type: 'n8n-nodes-base.dataTable',
         version: 1.1,
-        position: [150, 0],
+        position: [288, 272],
     })
     Getcookietable = {
-        resource: 'row',
         operation: 'get',
         dataTableId: {
             mode: 'list',
@@ -432,8 +436,8 @@ export class CookieWorkflow {
         id: '9dfa9a83-a9c8-479c-b17b-232158863f69',
         name: 'Loopcredentials',
         type: 'n8n-nodes-base.splitInBatches',
-        version: 1,
-        position: [200, 0],
+        version: 3,
+        position: [512, 272],
     })
     Loopcredentials = {
         batchSize: 1,
@@ -445,7 +449,7 @@ export class CookieWorkflow {
         name: 'Checklimits',
         type: 'n8n-nodes-base.if',
         version: 2.3,
-        position: [1750, 0],
+        position: [2528, 176],
     })
     Checklimits = {
         conditions: {
@@ -477,7 +481,7 @@ export class CookieWorkflow {
         name: 'Webhook',
         type: 'n8n-nodes-base.webhook',
         version: 2.1,
-        position: [64, 0],
+        position: [64, 272],
     })
     Webhook = {
         path: 'cookie',
@@ -490,7 +494,7 @@ export class CookieWorkflow {
         name: 'Respond to Webhook',
         type: 'n8n-nodes-base.respondToWebhook',
         version: 1.4,
-        position: [1856, 0],
+        position: [2752, 176],
     })
     RespondToWebhook = {
         respondWith: 'json',

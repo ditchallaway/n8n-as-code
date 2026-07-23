@@ -61,3 +61,7 @@ Do not reconstruct `workflowsPath` from environment name/id, instance identifier
 
 Never write `n8nac-config.json`, `~/.n8n-manager`, or n8n-manager secret files by hand.
 <!-- n8n-as-code-end -->
+
+## Debugging Regressions
+
+Whenever tasked with debugging code or workflows that were previously working, you MUST check the git history (`git log -p <file>`) of the relevant files as your first step. Do this before making any new modifications to see if a recent commit introduced a breaking change or altered critical logic.
