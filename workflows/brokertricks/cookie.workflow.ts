@@ -249,12 +249,6 @@ export class CookieWorkflow {
                     value: '={{ $json.authenticity_token }}',
                     type: 'string',
                 },
-                {
-                    id: 'e51a873d-9098-40d1-bb4b-03ca1d9a0b66',
-                    name: '',
-                    value: '',
-                    type: 'string',
-                },
             ],
         },
         options: {},
@@ -326,31 +320,23 @@ export class CookieWorkflow {
         id: 'ab2c9f45-1234-4567-89ab-cdef01234567',
         name: 'Check Login Status',
         type: 'n8n-nodes-base.if',
-        version: 2.3,
+        version: 1,
         position: [2080, 0],
     })
     CheckLoginStatus = {
         conditions: {
+            string: [
+                {
+                    value1: '={{ $json.user_expires_cookie }}',
+                    operation: 'isNotEmpty',
+                },
+            ],
             options: {
                 caseSensitive: true,
                 leftValue: '',
                 typeValidation: 'strict',
-                version: 3,
             },
-            conditions: [
-                {
-                    id: '3c4d5e6f-7a8b-4c9d-0e1f-2a3b4c5d6e7f',
-                    leftValue: '={{ $json.user_expires_cookie }}',
-                    rightValue: '',
-                    operator: {
-                        type: 'string',
-                        operation: 'isNotEmpty',
-                    },
-                },
-            ],
-            combinator: 'and',
         },
-        options: {},
     };
 
     @node({
@@ -436,7 +422,7 @@ export class CookieWorkflow {
         id: '9dfa9a83-a9c8-479c-b17b-232158863f69',
         name: 'Loopcredentials',
         type: 'n8n-nodes-base.splitInBatches',
-        version: 3,
+        version: 1,
         position: [512, 272],
     })
     Loopcredentials = {
