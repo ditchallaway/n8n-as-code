@@ -121,6 +121,24 @@ Checkouts contain line items and metadata collected from custom checkout form fi
     }'
   ```
 
+### 3. Manage Order Notes (Notes API)
+SureCart supports adding notes to orders to store fulfillment data, metadata, or custom download links. This is especially useful for digital downloads that are custom generated per order.
+* **Endpoint**: `GET`, `POST`, `PATCH` to `/v1/notes`
+* **Query Params for GET**: `?notable_id=order_123&notable_type=order`
+* **Payload Example (Create)**:
+  ```json
+  {
+    "note": {
+      "body": "Your custom files are ready for download.",
+      "notable_id": "order_12345",
+      "notable_type": "order",
+      "metadata": {
+        "Download Link": "https://link.example.com/xyz"
+      }
+    }
+  }
+  ```
+
 ---
 
 ## WordPress Integration (Actions & Filters)
