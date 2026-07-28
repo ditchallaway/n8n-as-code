@@ -86,7 +86,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 // </workflow-map>
 
 // =====================================================================
-// WORKFLOW METADATA
+// METADATA DU WORKFLOW
 // =====================================================================
 
 @workflow({
@@ -105,7 +105,7 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
 })
 export class SingleWorkflow {
     // =====================================================================
-    // NODE CONFIGURATION
+    // CONFIGURATION DES NOEUDS
     // =====================================================================
 
     @node({
@@ -1245,7 +1245,7 @@ https://brokertricks.com/wp-admin/admin.php?page=surecart-orders&id={{ $("Prepar
     };
 
     // =====================================================================
-    // ROUTING AND CONNECTIONS
+    // ROUTAGE ET CONNEXIONS
     // =====================================================================
 
     @links()
