@@ -109,7 +109,12 @@ import { workflow, node, links } from '@n8n-as-code/transformer';
     description:
         'Unified render workflow. Receives snapshot_mode (single, double, full, kml_only) and pack from the new-order controller. Produces static map, KML boundary file, and optionally dispatches GitHub Actions for rendered snapshots. KML-only orders auto-fulfill and skip the snapshot pipeline.',
     isArchived: false,
-    settings: { executionOrder: 'v1', availableInMCP: true, callerPolicy: 'workflowsFromSameOwner' },
+    settings: {
+        executionOrder: 'v1',
+        availableInMCP: true,
+        callerPolicy: 'workflowsFromSameOwner',
+        binaryMode: 'separate',
+    },
 })
 export class RenderWorkflow {
     // =====================================================================
@@ -420,7 +425,7 @@ return [{ json: { ...$input.first().json, pathString: pathString } }];`,
     UploadStaticMap = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/property_map.png',
+        fileName: '=cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/property_map.png',
         binaryPropertyName: 'map',
         additionalFields: {},
     };
@@ -577,7 +582,7 @@ return $input.all();`,
     UploadKmlToS3 = {
         operation: 'upload',
         bucketName: 'btx-store',
-        fileName: 'cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
+        fileName: '=cust_{{ $json.customer_id }}/order_{{ $json.order_id }}/parcel_boundary.kml',
         binaryPropertyName: 'kml_data',
         additionalFields: {},
     };
